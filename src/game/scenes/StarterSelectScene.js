@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { battleSystem } from '../systems/battleSystem.js';
+import { questSystem } from '../systems/questSystem.js';
 
 /**
  * StarterSelectScene
@@ -93,12 +94,13 @@ export class StarterSelectScene extends Phaser.Scene {
     console.log(`Starter confirmed: ${this.selectedId}`);
     
     // Create initial party and collection
-    // Key must match CREATURES keys (LEAFKIT, EMBERPAW, MISTTAIL)
     const starterInstance = battleSystem.createInstance(this.selectedId.toUpperCase(), 5);
     
     this.registry.set('selectedStarter', this.selectedId);
     this.registry.set('playerParty', [starterInstance]);
     this.registry.set('playerCollection', [starterInstance]);
+
+    questSystem.completeObjective(this.registry, 'first_steps', 'choose_starter');
 
     this.cameras.main.fadeOut(500, 0, 0, 0);
     this.cameras.main.once('camerafadeoutcomplete', () => {

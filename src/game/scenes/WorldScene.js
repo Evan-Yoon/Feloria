@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { mapLoader } from '../systems/mapLoader.js';
 import { encounterSystem } from '../systems/encounterSystem.js';
 import { dialogueSystem } from '../systems/dialogueSystem.js';
+import { questSystem } from '../systems/questSystem.js';
 
 /**
  * WorldScene
@@ -40,6 +41,11 @@ export class WorldScene extends Phaser.Scene {
     this.mapData = mapLoader.createMap(this, this.mapId);
     if (!this.mapData) return;
 
+    // Quest Check: Enter Forest
+    if (this.mapId === 'greenpaw_forest') {
+      questSystem.completeObjective(this.registry, 'first_steps', 'enter_forest');
+    }
+
     // 2. Set Camera Bounds
     this.cameras.main.setBounds(0, 0, this.mapData.widthInPixels, this.mapData.heightInPixels);
 
@@ -56,9 +62,19 @@ export class WorldScene extends Phaser.Scene {
     // Interaction Key (Space)
     this.input.keyboard.on('keydown-SPACE', () => this.handleInteraction());
 
+    // Menu Key (ESC or ENTER)
+    this.input.keyboard.on('keydown-ESC', () => this.openMenu());
+    this.input.keyboard.on('keydown-ENTER', () => this.openMenu());
+
     // 6. Camera Follow
     this.cameras.main.startFollow(this.player, true);
     this.cameras.main.setZoom(2); // Zoom in for the pixel RPG feel
+  }
+
+  openMenu() {
+    if (this.isDialogueActive || this.isMoving) return;
+    this.scene.pause();
+    this.scene.launch('MenuScene');
   }
 
   /**
@@ -203,6 +219,16 @@ export class WorldScene extends Phaser.Scene {
       this.isDialogueActive = true;
       const dialogue = dialogueSystem.getDialogue(npc.npcId);
       
+      // Quest progression for Elder Mira
+      if (npc.npcId === 'mira') {
+        const quest = questSystem.getQuest(this.registry, 'first_steps');
+        if (quest && !quest.objectives.find(o => o.id === 'talk_mira').completed) {
+          questSystem.completeObjective(this.registry, 'first_steps', 'talk_mira');
+        } else if (quest && quest.objectives.find(o => o.id === 'capture_cat').completed) {
+          questSystem.completeObjective(this.registry, 'first_steps', 'return_mira');
+        }
+      }
+
       this.scene.launch('DialogScene', {
         dialogue: dialogue,
         onComplete: () => {
@@ -212,12 +238,23 @@ export class WorldScene extends Phaser.Scene {
     }
   }
 
-  triggerBattle() {
-    console.log('ENCOUNTER TRIGGERED!');
+  triggerBattle(encounter) {
+    if (!encounter) return;
+    
+    console.log(`ENCOUNTER TRIGGERED: ${encounter.creatureId} Lvl ${encounter.level}`);
+    
+    // Save return state
+    this.registry.set('world_mapId', this.mapId);
+    this.registry.set('world_spawnX', this.player.tileX);
+    this.registry.set('world_spawnY', this.player.tileY);
+
     this.cameras.main.flash(500, 255, 255, 255);
     
     this.time.delayedCall(600, () => {
-        this.scene.start('BattleScene');
+        this.scene.start('BattleScene', {
+            enemyId: encounter.creatureId,
+            enemyLevel: encounter.level
+        });
     });
   }
 }

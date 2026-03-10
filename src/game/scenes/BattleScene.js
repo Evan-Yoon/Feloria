@@ -1,5 +1,6 @@
-import Phaser from 'phaser';
 import { battleSystem } from '../systems/battleSystem.js';
+import { codexSystem } from '../systems/codexSystem.js';
+import { questSystem } from '../systems/questSystem.js';
 
 /**
  * BattleScene
@@ -29,7 +30,11 @@ export class BattleScene extends Phaser.Scene {
       this.enemyCat = battleSystem.createInstance('SNAGPUSS', 2);
     }
 
-    // 3. Battle State
+    // 3. Mark Codex and Quests
+    codexSystem.markSeen(this.registry, this.enemyCat.id);
+    questSystem.completeObjective(this.registry, 'first_steps', 'trigger_encounter');
+
+    // 4. Battle State
     this.isPlayerTurn = true;
     this.isBattleOver = false;
     this.canInput = true;
@@ -143,11 +148,17 @@ export class BattleScene extends Phaser.Scene {
     this.time.delayedCall(1000, () => {
       if (battleSystem.checkCapture(this.enemyCat)) {
         this.updateLog('Success! You captured the wild cat!');
-        this.time.delayedCall(1500, () => {
+        
+        // Update Codex and Quest
+        codexSystem.markCaught(this.registry, this.enemyCat.id);
+        questSystem.completeObjective(this.registry, 'first_steps', 'capture_cat');
+
+        this.time.delayedCall(2000, () => {
           // Add to collection
           const collection = this.registry.get('playerCollection') || [];
           collection.push(this.enemyCat);
           this.registry.set('playerCollection', collection);
+          
           this.endBattle();
         });
       } else {
@@ -211,12 +222,29 @@ export class BattleScene extends Phaser.Scene {
 
   victory() {
     this.isBattleOver = true;
-    this.updateLog(`${this.enemyCat.name} fainted! You win!`);
-    this.time.delayedCall(1500, () => this.endBattle());
+    
+    // Calculate EXP
+    const expGain = battleSystem.calculateExp(this.enemyCat);
+    const leveledUp = battleSystem.gainExp(this.playerCat, expGain);
+    
+    // Save party changes
+    this.registry.set('playerParty', this.playerParty);
+    
+    let msg = `${this.enemyCat.name} fainted! You win!\nGained ${expGain} EXP.`;
+    if (leveledUp) {
+      msg += `\n${this.playerCat.name} grew to Lvl ${this.playerCat.level}!`;
+    }
+    
+    this.updateLog(msg);
+    this.time.delayedCall(2500, () => this.endBattle());
   }
 
   defeat() {
     this.isBattleOver = true;
+    
+    // Persist HP (will be 0)
+    this.registry.set('playerParty', this.playerParty);
+    
     this.updateLog(`${this.playerCat.name} fainted...`);
     this.time.delayedCall(1500, () => this.endBattle());
   }
@@ -226,6 +254,9 @@ export class BattleScene extends Phaser.Scene {
   }
 
   endBattle() {
+    // Ensure final state is saved right before transitioning
+    this.registry.set('playerParty', this.playerParty);
+
     this.cameras.main.fadeOut(500, 0, 0, 0);
     this.cameras.main.once('camerafadeoutcomplete', () => {
       // Return to world using saved position

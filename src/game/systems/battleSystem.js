@@ -47,10 +47,45 @@ export const battleSystem = {
    */
   checkCapture: (enemy) => {
     const hpRatio = enemy.currentHp / enemy.maxHp;
-    
-    // Base 20% chance + up to 60% based on missing health
     const successProbability = 0.2 + (1.0 - hpRatio) * 0.6;
-    
     return Math.random() < successProbability;
+  },
+
+  /**
+   * Calculates experience gained from defeating an enemy.
+   */
+  calculateExp: (enemy) => {
+    // Basic formula: Base EXP * Enemy Level
+    return enemy.baseExp * enemy.level;
+  },
+
+  /**
+   * Adds experience to a creature and handles leveling up.
+   * Returns true if the creature leveled up.
+   */
+  gainExp: (creature, amount) => {
+    if (!creature.exp) creature.exp = 0;
+    creature.exp += amount;
+    
+    // Simple fixed threshold for now: 50 EXP per level
+    const expNeeded = creature.level * 50;
+    
+    if (creature.exp >= expNeeded) {
+      creature.level += 1;
+      creature.exp -= expNeeded; // Carry over
+      
+      // Stat increases
+      creature.maxHp += 2;
+      creature.currentHp += 2; // Heal slightly on level up
+      creature.stats.attack += 1;
+      creature.stats.defense += 1;
+
+      // Check for evolution
+      if (creature.evolution && creature.level >= creature.evolution.level) {
+        creature.readyToEvolve = true;
+      }
+      return true; // Leveled up
+    }
+    return false;
   }
 };
