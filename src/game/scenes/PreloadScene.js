@@ -73,108 +73,73 @@ export class PreloadScene extends Phaser.Scene {
    * This ensures the game is playable without external files.
    */
   createPlaceholderTextures() {
-    // --- TILESET (32x32 tiles in a grid) ---
-    // We'll create a tileset image with several different tiles
-    const tileWidth = 32;
-    const tileHeight = 32;
-    const tilesetWidth = 256; // 8 tiles wide
-    const tilesetHeight = 256; // 8 tiles high
+    // --- TILESET (256x256 image with 32x32 tiles) ---
     const tileGraphics = this.make.graphics({ x: 0, y: 0, add: false });
 
-    // 0: Empty/Transparent (default)
-    
-    // 1: Grass (light green)
+    // 1: Grass
     tileGraphics.fillStyle(0x78ab46, 1);
-    tileGraphics.fillRect(tileWidth * 1, 0, tileWidth, tileHeight);
-    tileGraphics.fillStyle(0x86b94d, 1);
-    tileGraphics.fillRect(tileWidth * 1 + 2, 2, 4, 4);
-
-    // 2: Dirt/Path (brown)
+    tileGraphics.fillRect(32, 0, 32, 32);
+    // 2: Dirt
     tileGraphics.fillStyle(0x966f33, 1);
-    tileGraphics.fillRect(tileWidth * 2, 0, tileWidth, tileHeight);
-
-    // 3: Water (blue)
+    tileGraphics.fillRect(64, 0, 32, 32);
+    // 3: Water
     tileGraphics.fillStyle(0x3498db, 1);
-    tileGraphics.fillRect(tileWidth * 3, 0, tileWidth, tileHeight);
-
-    // 4: Wall/Collision (gray) - Though not rendered, good to have a placeholder
+    tileGraphics.fillRect(96, 0, 32, 32);
+    // 4: Wall
     tileGraphics.fillStyle(0x7f8c8d, 1);
-    tileGraphics.fillRect(tileWidth * 4, 0, tileWidth, tileHeight);
-    tileGraphics.lineStyle(2, 0x2c3e50, 1);
-    tileGraphics.strokeRect(tileWidth * 4 + 2, 2, 28, 28);
-
-    // 5: Tall Grass (darker green with detail)
+    tileGraphics.fillRect(128, 0, 32, 32);
+    // 5: Tall Grass
     tileGraphics.fillStyle(0x2d5a27, 1);
-    tileGraphics.fillRect(tileWidth * 5, 0, tileWidth, tileHeight);
-    tileGraphics.fillStyle(0x3d7a36, 1);
-    tileGraphics.fillRect(tileWidth * 5 + 4, 4, 2, 10);
-    tileGraphics.fillRect(tileWidth * 5 + 10, 8, 2, 12);
-    tileGraphics.fillRect(tileWidth * 5 + 20, 4, 2, 10);
-
-    // 6: Tree/Object (dark green)
+    tileGraphics.fillRect(160, 0, 32, 32);
+    // 6: Tree
     tileGraphics.fillStyle(0x1e3a1a, 1);
-    tileGraphics.fillRect(tileWidth * 6, 0, tileWidth, tileHeight);
+    tileGraphics.fillRect(192, 0, 32, 32);
 
-    tileGraphics.generateTexture('overworld-tiles', tilesetWidth, tilesetHeight);
+    tileGraphics.generateTexture('overworld-tiles', 256, 256);
 
-    // --- PLAYER SPRITES (4 directions) ---
-    // We'll create a small spritesheet for the player
-    const playerGraphics = this.make.graphics({ x: 0, y: 0, add: false });
+    // --- PLAYER SPRITES ---
+    const pg = this.make.graphics({ x: 0, y: 0, add: false });
     
-    // Down (Facing front)
-    playerGraphics.fillStyle(0x3498db, 1);
-    playerGraphics.fillRect(0, 0, 32, 32);
-    playerGraphics.fillStyle(0xffffff, 1);
-    playerGraphics.fillRect(6, 10, 6, 6); // Left eye
-    playerGraphics.fillRect(20, 10, 6, 6); // Right eye
-    
-    // Up (Facing back)
-    playerGraphics.fillStyle(0x3498db, 1);
-    playerGraphics.fillRect(32, 0, 32, 32);
-    playerGraphics.fillStyle(0x2980b9, 1);
-    playerGraphics.fillRect(32 + 6, 4, 20, 10); // Back detail
-    
-    // Left
-    playerGraphics.fillStyle(0x3498db, 1);
-    playerGraphics.fillRect(64, 0, 32, 32);
-    playerGraphics.fillStyle(0xffffff, 1);
-    playerGraphics.fillRect(64 + 6, 10, 6, 6); // Single eye
-    
-    // Right
-    playerGraphics.fillStyle(0x3498db, 1);
-    playerGraphics.fillRect(96, 0, 32, 32);
-    playerGraphics.fillStyle(0xffffff, 1);
-    playerGraphics.fillRect(96 + 20, 10, 6, 6); // Single eye
+    // Create a 128x32 strip for the player spritesheet
+    // Frame 0: Down
+    pg.fillStyle(0x3498db, 1).fillRect(0, 0, 32, 32);
+    pg.fillStyle(0xffffff, 1).fillRect(8, 8, 4, 4).fillRect(20, 8, 4, 4);
+    // Frame 1: Up
+    pg.fillStyle(0x3498db, 1).fillRect(32, 0, 32, 32);
+    pg.fillStyle(0x2980b9, 1).fillRect(40, 4, 16, 8);
+    // Frame 2: Left
+    pg.fillStyle(0x3498db, 1).fillRect(64, 0, 32, 32);
+    pg.fillStyle(0xffffff, 1).fillRect(72, 8, 4, 4);
+    // Frame 3: Right
+    pg.fillStyle(0x3498db, 1).fillRect(96, 0, 32, 32);
+    pg.fillStyle(0xffffff, 1).fillRect(116, 8, 4, 4);
 
-    playerGraphics.generateTexture('player', 128, 32);
+    pg.generateTexture('player-sheet', 128, 32);
+    
+    // Register the spritesheet
+    this.textures.addSpriteSheet('player', this.textures.get('player-sheet').getSourceImage(), {
+      frameWidth: 32,
+      frameHeight: 32
+    });
 
     // --- OTHER ASSETS ---
-    // NPC (Orange square)
     const npcGraphics = this.make.graphics({ x: 0, y: 0, add: false });
-    npcGraphics.fillStyle(0xe67e22, 1);
-    npcGraphics.fillRect(0, 0, 32, 32);
+    npcGraphics.fillStyle(0xe67e22, 1).fillRect(0, 0, 32, 32);
     npcGraphics.generateTexture('npc', 32, 32);
 
-    // Starters (Same as before but cleaned up)
     this.createStarterTexture('leafkit', 0x2ecc71);
     this.createStarterTexture('emberpaw', 0xe74c3c);
     this.createStarterTexture('misttail', 0x34ace0);
 
-    // UI Frame
     const uiFrameGraphics = this.make.graphics({ x: 0, y: 0, add: false });
-    uiFrameGraphics.lineStyle(4, 0xffffff, 1);
-    uiFrameGraphics.strokeRect(0, 0, 64, 64);
-    uiFrameGraphics.fillStyle(0x000000, 0.9);
-    uiFrameGraphics.fillRect(0, 0, 64, 64);
+    uiFrameGraphics.fillStyle(0x000000, 0.9).fillRect(0, 0, 64, 64);
+    uiFrameGraphics.lineStyle(2, 0xffffff, 1).strokeRect(0, 0, 64, 64);
     uiFrameGraphics.generateTexture('ui-frame', 64, 64);
   }
 
   createStarterTexture(key, color) {
     const graphics = this.make.graphics({ x: 0, y: 0, add: false });
-    graphics.fillStyle(color, 1);
-    graphics.fillRect(0, 0, 32, 32);
-    graphics.fillStyle(0xffffff, 0.5);
-    graphics.fillRect(4, 4, 8, 8);
+    graphics.fillStyle(color, 1).fillRect(0, 0, 32, 32);
     graphics.generateTexture(key, 32, 32);
   }
 }
