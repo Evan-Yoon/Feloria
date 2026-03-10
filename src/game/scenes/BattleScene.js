@@ -171,7 +171,7 @@ export class BattleScene extends Phaser.Scene {
             }
           }
           
-          this.endBattle();
+          this.showSummaryPanel('Captured', 0, false, this.playerCat.level, false);
         });
       } else {
         this.updateLog('The wild cat broke free!');
@@ -183,7 +183,7 @@ export class BattleScene extends Phaser.Scene {
   playerRun() {
     this.updateLog('You ran away...');
     this.time.delayedCall(1000, () => {
-      this.endBattle();
+      this.showSummaryPanel('Fled', 0, false, this.playerCat.level, false);
     });
   }
 
@@ -237,21 +237,14 @@ export class BattleScene extends Phaser.Scene {
     
     // Calculate EXP
     const expGain = battleSystem.calculateExp(this.enemyCat);
+    let oldLevel = this.playerCat.level;
     const leveledUp = battleSystem.gainExp(this.playerCat, expGain);
-    
-    let msg = `${this.enemyCat.name} fainted! You win!\nGained ${expGain} EXP.`;
-    let delay = 2500;
+    let evolutionHappened = false;
 
-    if (leveledUp) {
-      msg += `\n${this.playerCat.name} grew to Lvl ${this.playerCat.level}!`;
-    }
-    
     // Process Evolution if threshold hit
     if (this.playerCat.readyToEvolve) {
-        const oldName = this.playerCat.name;
         battleSystem.evolveCreature(this.playerCat);
-        msg += `\nWhat's happening?! ${oldName} evolved into ${this.playerCat.name}!`;
-        delay = 4500; // Extra time to read the evolution log
+        evolutionHappened = true;
     }
 
     // Save party changes to registry to persist
@@ -263,8 +256,11 @@ export class BattleScene extends Phaser.Scene {
     if (collIndex !== -1) collection[collIndex] = this.playerCat;
     this.registry.set('playerCollection', collection);
 
-    this.updateLog(msg);
-    this.time.delayedCall(delay, () => this.endBattle());
+    this.updateLog("Battle won! Click the summary window to continue.");
+    
+    this.time.delayedCall(2000, () => {
+      this.showSummaryPanel('Victory', expGain, leveledUp, oldLevel, evolutionHappened);
+    });
   }
 
   defeat() {
@@ -274,11 +270,54 @@ export class BattleScene extends Phaser.Scene {
     this.registry.set('playerParty', this.playerParty);
     
     this.updateLog(`${this.playerCat.name} fainted...`);
-    this.time.delayedCall(1500, () => this.endBattle());
+    this.time.delayedCall(1500, () => {
+      this.showSummaryPanel('Defeat', 0, false, this.playerCat.level, false);
+    });
   }
 
   updateLog(msg) {
     this.logText.setText(msg);
+  }
+
+  showSummaryPanel(result, expGained, leveledUp, oldLevel, evolutionHappened) {
+    const { width, height } = this.cameras.main;
+    
+    // Dim background
+    this.add.rectangle(0, 0, width, height, 0x000000, 0.8).setOrigin(0);
+
+    const panelWidth = 600;
+    const panelHeight = 400;
+    const panelBg = this.add.rectangle(width / 2, height / 2, panelWidth, panelHeight, 0x2c3e50).setInteractive({ useHandCursor: true });
+    this.add.rectangle(width / 2, height / 2, panelWidth, panelHeight).setStrokeStyle(4, 0xecf0f1);
+
+    this.add.text(width / 2, height / 2 - 150, `Battle Result: ${result}`, { font: 'bold 36px Arial', fill: '#f1c40f' }).setOrigin(0.5);
+
+    let yPos = height / 2 - 80;
+
+    if (result === 'Victory') {
+      this.add.text(width / 2, yPos, `EXP Gained: +${expGained}`, { font: '24px Arial', fill: '#2ecc71' }).setOrigin(0.5);
+      yPos += 40;
+      
+      const expNeeded = this.playerCat.level * 50;
+      this.add.text(width / 2, yPos, `Total EXP: ${this.playerCat.exp} / ${expNeeded}`, { font: '24px Arial', fill: '#ffffff' }).setOrigin(0.5);
+      yPos += 50;
+
+      if (leveledUp) {
+        this.add.text(width / 2, yPos, `LEVEL UP! (${oldLevel} -> ${this.playerCat.level})`, { font: 'bold 28px Arial', fill: '#3498db' }).setOrigin(0.5);
+        yPos += 40;
+      }
+      if (evolutionHappened) {
+        this.add.text(width / 2, yPos, `EVOLUTION! Now ${this.playerCat.name}`, { font: 'bold 28px Arial', fill: '#9b59b6' }).setOrigin(0.5);
+        yPos += 40;
+      }
+    } else {
+        this.add.text(width / 2, yPos, `No EXP gained.`, { font: '24px Arial', fill: '#95a5a6' }).setOrigin(0.5);
+    }
+
+    this.add.text(width / 2, height / 2 + 150, '- Click anywhere to continue -', { font: '20px Arial', fill: '#bdc3c7' }).setOrigin(0.5);
+
+    // Click to proceed
+    panelBg.on('pointerdown', () => this.endBattle());
   }
 
   endBattle() {

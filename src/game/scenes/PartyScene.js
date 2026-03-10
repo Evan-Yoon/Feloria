@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { battleSystem } from '../systems/battleSystem.js';
 
 /**
  * PartyScene
@@ -71,9 +72,23 @@ export class PartyScene extends Phaser.Scene {
     });
 
     this.input.keyboard.on('keydown-ESC', () => {
+      // Remove debug listeners when leaving
+      this.input.keyboard.off('keydown-ONE');
+      this.input.keyboard.off('keydown-TWO');
+      this.input.keyboard.off('keydown-THREE');
+      this.input.keyboard.off('keydown-FOUR');
+      
       this.scene.stop();
       this.scene.resume('MenuScene');
     });
+
+    // --- DEBUG CONTROLS (Temporary for Phase 5.5) ---
+    this.add.text(width / 2, height - 90, '[DEBUG] 1: +50 EXP | 2: +200 EXP | 3: Lvl 9 (Pre-Evo) | 4: Heal', { font: '16px Arial', fill: '#e74c3c' }).setOrigin(0.5);
+
+    this.input.keyboard.on('keydown-ONE', () => this.debugAction('add50'));
+    this.input.keyboard.on('keydown-TWO', () => this.debugAction('add200'));
+    this.input.keyboard.on('keydown-THREE', () => this.debugAction('setLvl9'));
+    this.input.keyboard.on('keydown-FOUR', () => this.debugAction('heal'));
   }
 
   createCreatureCard(creature, x, y, isParty, isActive) {
@@ -85,9 +100,13 @@ export class PartyScene extends Phaser.Scene {
     const bg = this.add.rectangle(0, 0, bgWidth, bgHeight, bgColor).setInteractive({ useHandCursor: true });
     
     // Details
-    const nameText = this.add.text(-bgWidth/2 + 20, -30, creature.name, { font: 'bold 24px Arial', fill: '#ffffff' });
-    const lvlText = this.add.text(-bgWidth/2 + 20, 0, `Lvl ${creature.level}`, { font: '20px Arial', fill: '#ecf0f1' });
-    const hpText = this.add.text(-bgWidth/2 + 20, 25, `HP: ${creature.currentHp}/${creature.maxHp}`, { font: '18px Arial', fill: '#e74c3c' });
+    const nameText = this.add.text(-bgWidth/2 + 20, -35, creature.name, { font: 'bold 24px Arial', fill: '#ffffff' });
+    const lvlText = this.add.text(-bgWidth/2 + 20, -5, `Lvl ${creature.level}`, { font: '20px Arial', fill: '#ecf0f1' });
+    const hpText = this.add.text(-bgWidth/2 + 20, 20, `HP: ${creature.currentHp}/${creature.maxHp}`, { font: '18px Arial', fill: '#e74c3c' });
+    
+    // Exact EXP Ratio
+    const expNeeded = creature.level * 50;
+    const expText = this.add.text(-bgWidth/2 + 150, 20, `EXP: ${creature.exp}/${expNeeded}`, { font: '18px Arial', fill: '#3498db' });
     
     // Action Buttons
     const btnContainer = this.add.container(bgWidth/2 - 120, 0);
@@ -159,5 +178,31 @@ export class PartyScene extends Phaser.Scene {
         this.saveState();
         this.createUI(this.cameras.main.width, this.cameras.main.height);
     }
+  }
+
+  // --- DEBUG METHODS ---
+  debugAction(actionType) {
+    if (this.party.length === 0) return;
+    const active = this.party[0];
+
+    if (actionType === 'add50') {
+        battleSystem.gainExp(active, 50);
+        if (active.readyToEvolve) battleSystem.evolveCreature(active);
+    } else if (actionType === 'add200') {
+        battleSystem.gainExp(active, 200);
+        if (active.readyToEvolve) battleSystem.evolveCreature(active);
+    } else if (actionType === 'setLvl9') {
+        active.level = 9;
+        active.exp = 400; // Close to level 10
+        active.maxHp = Math.floor(active.baseHp * (1 + (9 - 1) * 0.1));
+        active.currentHp = active.maxHp;
+        active.stats.attack = Math.floor(active.baseAttack * (1 + (9 - 1) * 0.1));
+        active.stats.defense = Math.floor(active.baseDefense * (1 + (9 - 1) * 0.1));
+    } else if (actionType === 'heal') {
+        active.currentHp = active.maxHp;
+    }
+
+    this.saveState();
+    this.createUI(this.cameras.main.width, this.cameras.main.height);
   }
 }
