@@ -156,8 +156,20 @@ export class BattleScene extends Phaser.Scene {
         this.time.delayedCall(2000, () => {
           // Add to collection
           const collection = this.registry.get('playerCollection') || [];
-          collection.push(this.enemyCat);
-          this.registry.set('playerCollection', collection);
+          // Double check instanceId isn't duped (should be safe since it's newly created)
+          if (!collection.find(c => c.instanceId === this.enemyCat.instanceId)) {
+            collection.push(this.enemyCat);
+            this.registry.set('playerCollection', collection);
+            
+            // Auto-add to party if space available (Max 3)
+            if (this.playerParty.length < 3) {
+                this.playerParty.push(this.enemyCat);
+                this.registry.set('playerParty', this.playerParty);
+                console.log(`BattleScene: Added ${this.enemyCat.name} to party.`);
+            } else {
+                console.log(`BattleScene: Party full. ${this.enemyCat.name} sent to collection.`);
+            }
+          }
           
           this.endBattle();
         });
@@ -227,16 +239,32 @@ export class BattleScene extends Phaser.Scene {
     const expGain = battleSystem.calculateExp(this.enemyCat);
     const leveledUp = battleSystem.gainExp(this.playerCat, expGain);
     
-    // Save party changes
-    this.registry.set('playerParty', this.playerParty);
-    
     let msg = `${this.enemyCat.name} fainted! You win!\nGained ${expGain} EXP.`;
+    let delay = 2500;
+
     if (leveledUp) {
       msg += `\n${this.playerCat.name} grew to Lvl ${this.playerCat.level}!`;
     }
     
+    // Process Evolution if threshold hit
+    if (this.playerCat.readyToEvolve) {
+        const oldName = this.playerCat.name;
+        battleSystem.evolveCreature(this.playerCat);
+        msg += `\nWhat's happening?! ${oldName} evolved into ${this.playerCat.name}!`;
+        delay = 4500; // Extra time to read the evolution log
+    }
+
+    // Save party changes to registry to persist
+    this.registry.set('playerParty', this.playerParty);
+    
+    // Also ensure collection reference reflects the updated HP/Level/Evolution
+    const collection = this.registry.get('playerCollection') || [];
+    const collIndex = collection.findIndex(c => c.instanceId === this.playerCat.instanceId);
+    if (collIndex !== -1) collection[collIndex] = this.playerCat;
+    this.registry.set('playerCollection', collection);
+
     this.updateLog(msg);
-    this.time.delayedCall(2500, () => this.endBattle());
+    this.time.delayedCall(delay, () => this.endBattle());
   }
 
   defeat() {

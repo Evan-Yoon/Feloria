@@ -17,14 +17,60 @@ export const battleSystem = {
     
     return {
       ...species,
+      instanceId: `${creatureId}_${Date.now()}_${Math.floor(Math.random() * 10000)}`, // Unique ID for party tracking
       level,
       maxHp: hp,
       currentHp: hp,
+      exp: 0,
       stats: {
         attack: Math.floor(species.baseAttack * (1 + (level - 1) * 0.1)),
         defense: Math.floor(species.baseDefense * (1 + (level - 1) * 0.1))
       }
     };
+  },
+
+  /**
+   * Evolves a creature instance into its target evolution data.
+   * Safely maintains instanceId, level, exp, and HP proportions.
+   */
+  evolveCreature: (creature) => {
+    if (!creature.evolution || !creature.evolution.target) return creature;
+
+    const evolvedSpecies = CREATURES[creature.evolution.target];
+    if (!evolvedSpecies) return creature;
+
+    // Calculate new stats based on current level
+    const newMaxHp = Math.floor(evolvedSpecies.baseHp * (1 + (creature.level - 1) * 0.1));
+    const newAttack = Math.floor(evolvedSpecies.baseAttack * (1 + (creature.level - 1) * 0.1));
+    const newDefense = Math.floor(evolvedSpecies.baseDefense * (1 + (creature.level - 1) * 0.1));
+
+    // Preserve HP proportion
+    const hpRatio = creature.currentHp / creature.maxHp;
+    const newCurrentHp = Math.max(1, Math.floor(newMaxHp * hpRatio));
+
+    // Mutate the original object to ensure references in Party/Collection arrays stay valid
+    creature.id = evolvedSpecies.id;
+    creature.name = evolvedSpecies.name;
+    creature.type = evolvedSpecies.type;
+    creature.baseHp = evolvedSpecies.baseHp;
+    creature.baseAttack = evolvedSpecies.baseAttack;
+    creature.baseDefense = evolvedSpecies.baseDefense;
+    creature.baseExp = evolvedSpecies.baseExp;
+    creature.skills = [...evolvedSpecies.skills];
+    creature.description = evolvedSpecies.description;
+    creature.habitat = evolvedSpecies.habitat;
+    
+    // Clear old evolution to prevent re-triggering (or assign next stage if it existed)
+    creature.evolution = evolvedSpecies.evolution || null;
+    creature.readyToEvolve = false;
+
+    // Set new calculated stats
+    creature.maxHp = newMaxHp;
+    creature.currentHp = newCurrentHp;
+    creature.stats.attack = newAttack;
+    creature.stats.defense = newDefense;
+
+    return creature;
   },
 
   /**
