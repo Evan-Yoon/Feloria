@@ -3,6 +3,7 @@ import { mapLoader } from '../systems/mapLoader.js';
 import { encounterSystem } from '../systems/encounterSystem.js';
 import { dialogueSystem } from '../systems/dialogueSystem.js';
 import { questSystem } from '../systems/questSystem.js';
+import { TRAINers } from '../data/trainers.js';
 
 /**
  * WorldScene
@@ -29,9 +30,10 @@ export class WorldScene extends Phaser.Scene {
   }
 
   preload() {
-    // In Phase 2, we load map data dynamically or ensure it was preloaded
+    // In Phase 6, we load map data dynamically or ensure it was preloaded
     mapLoader.preloadMap(this, 'starwhisk_village');
     mapLoader.preloadMap(this, 'greenpaw_forest');
+    mapLoader.preloadMap(this, 'mosslight_path');
   }
 
   create() {
@@ -177,10 +179,15 @@ export class WorldScene extends Phaser.Scene {
     // 1. Check Warps
     const warp = this.mapData.warps.find(w => w.x === this.player.tileX && w.y === this.player.tileY);
     if (warp) {
-      this.scene.start('WorldScene', {
-        mapId: warp.targetMap,
-        spawnX: warp.targetX,
-        spawnY: warp.targetY
+      // Add a slight delay to prevent warp loop jitter
+      this.isMoving = true; 
+      this.cameras.main.fadeOut(300, 0, 0, 0);
+      this.cameras.main.once('camerafadeoutcomplete', () => {
+          this.scene.start('WorldScene', {
+            mapId: warp.targetMap,
+            spawnX: warp.targetX,
+            spawnY: warp.targetY
+          });
       });
       return;
     }
@@ -217,7 +224,34 @@ export class WorldScene extends Phaser.Scene {
     const npc = this.npcs.getChildren().find(n => n.tileX === targetX && n.tileY === targetY);
     if (npc) {
       this.isDialogueActive = true;
-      const dialogue = dialogueSystem.getDialogue(npc.npcId);
+      let dialogue;
+
+      // Check if it's a Trainer
+      if (npc.npcId.startsWith('trainer_')) {
+          const trainerId = npc.npcId.replace('trainer_', '');
+          const trainerData = TRAINers[trainerId];
+          const defeatedTrainers = this.registry.get('defeatedTrainers') || [];
+          const isDefeated = defeatedTrainers.includes(trainerId);
+
+          dialogue = {
+              name: trainerData.name,
+              pages: [isDefeated ? trainerData.dialogueAfter : trainerData.dialogueBefore]
+          };
+
+          this.scene.launch('DialogScene', {
+              dialogue: dialogue,
+              onComplete: () => {
+                  this.isDialogueActive = false;
+                  if (!isDefeated) {
+                      this.triggerTrainerBattle(trainerId);
+                  }
+              }
+          });
+          return;
+      }
+
+      // Standard NPC Dialogue
+      dialogue = dialogueSystem.getDialogue(npc.npcId);
       
       // Quest progression for Elder Mira
       if (npc.npcId === 'mira') {
@@ -233,9 +267,43 @@ export class WorldScene extends Phaser.Scene {
         dialogue: dialogue,
         onComplete: () => {
           this.isDialogueActive = false;
+          // Check special post-dialogue flags
+          if (dialogue.pages.includes('[HEAL_PROMPT]')) {
+              this.healParty();
+          } else if (dialogue.pages.includes('[SHOP_PROMPT]')) {
+              this.scene.pause();
+              this.scene.launch('ShopScene');
+          }
         }
       });
     }
+  }
+
+  healParty() {
+      const party = this.registry.get('playerParty') || [];
+      party.forEach(p => p.currentHp = p.maxHp);
+      this.registry.set('playerParty', party);
+
+      this.cameras.main.flash(300, 150, 255, 150);
+      
+      // Flash completely heals, log internally
+      console.log("WorldScene: Party fully healed via Elder Mira.");
+  }
+
+  triggerTrainerBattle(trainerId) {
+      console.log(`TRAINER BATTLE: ${trainerId}`);
+      this.registry.set('world_mapId', this.mapId);
+      this.registry.set('world_spawnX', this.player.tileX);
+      this.registry.set('world_spawnY', this.player.tileY);
+
+      this.cameras.main.flash(500, 255, 0, 0); // Red flash
+
+      this.time.delayedCall(600, () => {
+          this.scene.start('BattleScene', {
+              isTrainer: true,
+              trainerId: trainerId
+          });
+      });
   }
 
   triggerBattle(encounter) {

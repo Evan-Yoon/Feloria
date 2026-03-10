@@ -9,9 +9,9 @@
     {
       "name": "groundLayer",
       "data": [
-        1,1,1,1,1,1,1,1,2,2,1,1,1,1,1,1,1,1,1,1,
-        1,5,5,5,1,1,1,1,2,2,1,1,1,1,1,5,5,5,1,1,
-        1,5,5,5,5,1,1,1,2,2,1,1,1,1,5,5,5,5,5,1,
+        1,1,1,1,1,1,1,1,2,2,2,2,1,1,1,1,1,1,1,1,
+        1,5,5,5,1,1,1,1,2,2,2,2,1,1,1,5,5,5,1,1,
+        1,5,5,5,5,1,1,1,2,2,2,2,1,1,5,5,5,5,5,1,
         1,5,5,5,5,1,1,1,2,2,1,1,1,1,5,5,5,5,5,1,
         1,1,1,1,1,1,1,1,2,2,1,1,1,1,1,1,1,1,1,1,
         1,1,1,1,1,1,1,1,2,2,1,1,1,1,1,1,1,1,1,1,
@@ -61,6 +61,10 @@
     { "type": "npc", "x": 12, "y": 6, "id": "explorer", "name": "Forest Explorer" }
   ],
   "warps": [
+    { "x": 8, "y": 0, "targetMap": "mosslight_path", "targetX": 8, "targetY": 18 },
+    { "x": 9, "y": 0, "targetMap": "mosslight_path", "targetX": 9, "targetY": 18 },
+    { "x": 10, "y": 0, "targetMap": "mosslight_path", "targetX": 10, "targetY": 18 },
+    { "x": 11, "y": 0, "targetMap": "mosslight_path", "targetX": 11, "targetY": 18 },
     { "x": 9, "y": 19, "targetMap": "starwhisk_village", "targetX": 9, "targetY": 1 },
     { "x": 10, "y": 19, "targetMap": "starwhisk_village", "targetX": 10, "targetY": 1 }
   ]

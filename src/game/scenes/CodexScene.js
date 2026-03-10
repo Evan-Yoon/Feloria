@@ -36,7 +36,11 @@ export class CodexScene extends Phaser.Scene {
         this.add.text(padding, yPos + 55, creature.description, { font: '16px Arial', fill: '#ffffff' });
         
         if (isCaught) {
-           this.add.text(width - padding - 100, yPos, 'CAUGHT', { font: '20px Arial', fill: '#2ecc71' });
+           this.add.text(width - padding - 120, yPos, 'CAUGHT', { font: 'bold 20px Arial', fill: '#2ecc71' });
+           // Expanded stat details for caught creatures
+           this.add.text(width - padding - 220, yPos + 35, `Base HP: ${creature.baseStats.hp}`, { font: '16px Arial', fill: '#ecf0f1' });
+           this.add.text(width - padding - 220, yPos + 55, `Base ATK: ${creature.baseStats.attack}`, { font: '16px Arial', fill: '#e74c3c' });
+           this.add.text(width - padding - 220, yPos + 75, `Base DEF: ${creature.baseStats.defense}`, { font: '16px Arial', fill: '#3498db' });
         }
       } else {
         // Display unknown
@@ -44,8 +48,8 @@ export class CodexScene extends Phaser.Scene {
       }
       
       // Separator
-      this.add.line(0, 0, padding, yPos + 85, width - padding, yPos + 85, 0x34495e).setOrigin(0);
-      yPos += 100;
+      this.add.line(0, 0, padding, yPos + 105, width - padding, yPos + 105, 0x34495e).setOrigin(0);
+      yPos += 125;
     });
 
     this.add.text(padding, height - padding, `Seen: ${seenCount} | Caught: ${caughtCount}`, { font: '20px Arial', fill: '#ffffff' }).setOrigin(0, 0.5);

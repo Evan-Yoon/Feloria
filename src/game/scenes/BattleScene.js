@@ -1,6 +1,7 @@
 import { battleSystem } from '../systems/battleSystem.js';
 import { codexSystem } from '../systems/codexSystem.js';
 import { questSystem } from '../systems/questSystem.js';
+import { TRAINers } from '../data/trainers.js';
 
 /**
  * BattleScene
@@ -21,18 +22,33 @@ export class BattleScene extends Phaser.Scene {
       this.registry.set('playerParty', [this.playerCat]);
     }
 
-    // 2. Generate enemy from data passed by WorldScene (with fallback for HMR caching old boolean encounters)
-    const enemyId = data.enemyId && typeof data.enemyId === 'string' ? data.enemyId : 'SNAGPUSS';
-    this.enemyCat = battleSystem.createInstance(enemyId, data.enemyLevel || 2);
-
-    if (!this.enemyCat) {
-      console.warn(`BattleScene: Failed to load enemy ${enemyId}, falling back to Snagpuss.`);
-      this.enemyCat = battleSystem.createInstance('SNAGPUSS', 2);
+    // 2. Generate enemy (Wild vs Trainer)
+    this.isTrainer = data.isTrainer || false;
+    this.trainerId = data.trainerId || null;
+    this.enemyParty = [];
+    
+    if (this.isTrainer && this.trainerId) {
+        const trainerData = TRAINers[this.trainerId];
+        trainerData.party.forEach(member => {
+            this.enemyParty.push(battleSystem.createInstance(member.creatureId, member.level));
+        });
+        this.enemyCat = this.enemyParty[0];
+        console.log(`BattleScene: Trainer ${trainerData.name} wants to battle!`);
+    } else {
+        const enemyId = data.enemyId && typeof data.enemyId === 'string' ? data.enemyId : 'SNAGPUSS';
+        this.enemyCat = battleSystem.createInstance(enemyId, data.enemyLevel || 2);
+        this.enemyParty.push(this.enemyCat);
+        
+        if (!this.enemyCat) {
+          console.warn(`BattleScene: Failed to load enemy ${enemyId}, falling back to Snagpuss.`);
+          this.enemyCat = battleSystem.createInstance('SNAGPUSS', 2);
+          this.enemyParty.push(this.enemyCat);
+        }
     }
 
-    // 3. Mark Codex and Quests
+    // 3. Mark Codex and Quests (For active enemy)
     codexSystem.markSeen(this.registry, this.enemyCat.id);
-    questSystem.completeObjective(this.registry, 'first_steps', 'trigger_encounter');
+    if (!this.isTrainer) questSystem.completeObjective(this.registry, 'first_steps', 'trigger_encounter');
 
     // 4. Battle State
     this.isPlayerTurn = true;
@@ -143,6 +159,15 @@ export class BattleScene extends Phaser.Scene {
   }
 
   playerCapture() {
+    if (this.isTrainer) {
+        this.updateLog("You can't catch a Trainer's cat!");
+        this.time.delayedCall(1500, () => {
+             this.menuUI.setVisible(true);
+             this.canInput = true;
+        });
+        return;
+    }
+
     this.updateLog(`You threw a capture crystal...`);
 
     this.time.delayedCall(1000, () => {
@@ -181,6 +206,15 @@ export class BattleScene extends Phaser.Scene {
   }
 
   playerRun() {
+    if (this.isTrainer) {
+        this.updateLog("You can't run from a Trainer battle!");
+        this.time.delayedCall(1500, () => {
+             this.menuUI.setVisible(true);
+             this.canInput = true;
+        });
+        return;
+    }
+
     this.updateLog('You ran away...');
     this.time.delayedCall(1000, () => {
       this.showSummaryPanel('Fled', 0, false, this.playerCat.level, false);
@@ -233,10 +267,53 @@ export class BattleScene extends Phaser.Scene {
   }
 
   victory() {
+    // If trainer battle and more enemies remain
+    if (this.isTrainer && this.enemyParty.length > 1) {
+        this.enemyParty.shift(); // Remove defeated enemy
+        this.enemyCat = this.enemyParty[0]; // Set next enemy
+        
+        // Mark seen
+        codexSystem.markSeen(this.registry, this.enemyCat.id);
+
+        this.updateLog(`Trainer sent out ${this.enemyCat.name}!`);
+        
+        // Refresh UI
+        this.enemySprite.setTexture(this.enemyCat.id.toLowerCase()); // Temp placeholder, using IDs assuming we add sprites soon
+        this.enemyName.setText(`${this.enemyCat.name} Lvl ${this.enemyCat.level}`);
+        this.enemyHpText.setText(`HP: ${this.enemyCat.currentHp}/${this.enemyCat.maxHp}`);
+        this.enemyHpBar.width = 150;
+
+        this.time.delayedCall(1500, () => {
+            this.canInput = true;
+            this.menuUI.setVisible(true);
+            this.updateLog(`What will ${this.playerCat.name} do?`);
+        });
+        return;
+    }
+
     this.isBattleOver = true;
     
-    // Calculate EXP
-    const expGain = battleSystem.calculateExp(this.enemyCat);
+    // Calculate rewards
+    let expGain = battleSystem.calculateExp(this.enemyCat);
+    let goldGain = 0;
+
+    if (this.isTrainer) {
+        const trainerData = TRAINers[this.trainerId];
+        expGain = Math.floor(expGain * (trainerData.rewards.expMultiplier || 1.5));
+        goldGain = trainerData.rewards.gold;
+
+        // Mark defeated
+        const defeatedTrainers = this.registry.get('defeatedTrainers') || [];
+        if (!defeatedTrainers.includes(this.trainerId)) {
+            defeatedTrainers.push(this.trainerId);
+            this.registry.set('defeatedTrainers', defeatedTrainers);
+        }
+
+        // Grant Gold
+        const currentGold = this.registry.get('playerGold') || 0;
+        this.registry.set('playerGold', currentGold + goldGain);
+    }
+
     let oldLevel = this.playerCat.level;
     const leveledUp = battleSystem.gainExp(this.playerCat, expGain);
     let evolutionHappened = false;
@@ -259,7 +336,7 @@ export class BattleScene extends Phaser.Scene {
     this.updateLog("Battle won! Click the summary window to continue.");
     
     this.time.delayedCall(2000, () => {
-      this.showSummaryPanel('Victory', expGain, leveledUp, oldLevel, evolutionHappened);
+      this.showSummaryPanel('Victory', expGain, leveledUp, oldLevel, evolutionHappened, goldGain);
     });
   }
 
@@ -279,7 +356,7 @@ export class BattleScene extends Phaser.Scene {
     this.logText.setText(msg);
   }
 
-  showSummaryPanel(result, expGained, leveledUp, oldLevel, evolutionHappened) {
+  showSummaryPanel(result, expGained, leveledUp, oldLevel, evolutionHappened, goldGain = 0) {
     const { width, height } = this.cameras.main;
     
     // Dim background
@@ -295,7 +372,10 @@ export class BattleScene extends Phaser.Scene {
     let yPos = height / 2 - 80;
 
     if (result === 'Victory') {
-      this.add.text(width / 2, yPos, `EXP Gained: +${expGained}`, { font: '24px Arial', fill: '#2ecc71' }).setOrigin(0.5);
+      let line = `EXP Gained: +${expGained}`;
+      if (goldGain > 0) line += ` | Gold: +${goldGain}`;
+      
+      this.add.text(width / 2, yPos, line, { font: '24px Arial', fill: '#2ecc71' }).setOrigin(0.5);
       yPos += 40;
       
       const expNeeded = this.playerCat.level * 50;

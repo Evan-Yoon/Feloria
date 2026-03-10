@@ -14,6 +14,7 @@ import { PartyScene } from '../scenes/PartyScene.js';
 import { CodexScene } from '../scenes/CodexScene.js';
 import { QuestScene } from '../scenes/QuestScene.js';
 import { EvolutionScene } from '../scenes/EvolutionScene.js';
+import { ShopScene } from '../scenes/ShopScene.js';
 
 /**
  * Centralized Phaser game configuration.
@@ -40,7 +41,8 @@ export const gameConfig = {
     PartyScene,
     CodexScene,
     QuestScene,
-    EvolutionScene
+    EvolutionScene,
+    ShopScene
   ],
   physics: {
     default: 'arcade',

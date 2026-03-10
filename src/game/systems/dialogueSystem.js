@@ -6,14 +6,15 @@ export const dialogueData = {
     name: "Elder Mira",
     pages: [
       "Feloria has grown restless lately.",
-      "Take care of your companion."
+      "Would you like me to heal your companions?",
+      "[HEAL_PROMPT]" // Special dialogue flag for WorldScene to catch
     ]
   },
   shopkeeper: {
     name: "Village Shopkeeper",
     pages: [
-      "Potions help during battles.",
-      "Yarn Balls may help recruit wild cats."
+      "Welcome to my humble shop!",
+      "[SHOP_PROMPT]" // Special flag
     ]
   },
   explorer: {
