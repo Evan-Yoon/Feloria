@@ -70,42 +70,111 @@ export class PreloadScene extends Phaser.Scene {
 
   /**
    * Generates simple placeholder textures for development.
-   * This ensures the game runs even if external assets are missing.
+   * This ensures the game is playable without external files.
    */
   createPlaceholderTextures() {
-    // Player placeholder (Blue square with eyes)
+    // --- TILESET (32x32 tiles in a grid) ---
+    // We'll create a tileset image with several different tiles
+    const tileWidth = 32;
+    const tileHeight = 32;
+    const tilesetWidth = 256; // 8 tiles wide
+    const tilesetHeight = 256; // 8 tiles high
+    const tileGraphics = this.make.graphics({ x: 0, y: 0, add: false });
+
+    // 0: Empty/Transparent (default)
+    
+    // 1: Grass (light green)
+    tileGraphics.fillStyle(0x78ab46, 1);
+    tileGraphics.fillRect(tileWidth * 1, 0, tileWidth, tileHeight);
+    tileGraphics.fillStyle(0x86b94d, 1);
+    tileGraphics.fillRect(tileWidth * 1 + 2, 2, 4, 4);
+
+    // 2: Dirt/Path (brown)
+    tileGraphics.fillStyle(0x966f33, 1);
+    tileGraphics.fillRect(tileWidth * 2, 0, tileWidth, tileHeight);
+
+    // 3: Water (blue)
+    tileGraphics.fillStyle(0x3498db, 1);
+    tileGraphics.fillRect(tileWidth * 3, 0, tileWidth, tileHeight);
+
+    // 4: Wall/Collision (gray) - Though not rendered, good to have a placeholder
+    tileGraphics.fillStyle(0x7f8c8d, 1);
+    tileGraphics.fillRect(tileWidth * 4, 0, tileWidth, tileHeight);
+    tileGraphics.lineStyle(2, 0x2c3e50, 1);
+    tileGraphics.strokeRect(tileWidth * 4 + 2, 2, 28, 28);
+
+    // 5: Tall Grass (darker green with detail)
+    tileGraphics.fillStyle(0x2d5a27, 1);
+    tileGraphics.fillRect(tileWidth * 5, 0, tileWidth, tileHeight);
+    tileGraphics.fillStyle(0x3d7a36, 1);
+    tileGraphics.fillRect(tileWidth * 5 + 4, 4, 2, 10);
+    tileGraphics.fillRect(tileWidth * 5 + 10, 8, 2, 12);
+    tileGraphics.fillRect(tileWidth * 5 + 20, 4, 2, 10);
+
+    // 6: Tree/Object (dark green)
+    tileGraphics.fillStyle(0x1e3a1a, 1);
+    tileGraphics.fillRect(tileWidth * 6, 0, tileWidth, tileHeight);
+
+    tileGraphics.generateTexture('overworld-tiles', tilesetWidth, tilesetHeight);
+
+    // --- PLAYER SPRITES (4 directions) ---
+    // We'll create a small spritesheet for the player
     const playerGraphics = this.make.graphics({ x: 0, y: 0, add: false });
+    
+    // Down (Facing front)
     playerGraphics.fillStyle(0x3498db, 1);
     playerGraphics.fillRect(0, 0, 32, 32);
     playerGraphics.fillStyle(0xffffff, 1);
-    playerGraphics.fillRect(4, 4, 8, 8);
-    playerGraphics.fillRect(20, 4, 8, 8);
-    playerGraphics.generateTexture('player', 32, 32);
+    playerGraphics.fillRect(6, 10, 6, 6); // Left eye
+    playerGraphics.fillRect(20, 10, 6, 6); // Right eye
+    
+    // Up (Facing back)
+    playerGraphics.fillStyle(0x3498db, 1);
+    playerGraphics.fillRect(32, 0, 32, 32);
+    playerGraphics.fillStyle(0x2980b9, 1);
+    playerGraphics.fillRect(32 + 6, 4, 20, 10); // Back detail
+    
+    // Left
+    playerGraphics.fillStyle(0x3498db, 1);
+    playerGraphics.fillRect(64, 0, 32, 32);
+    playerGraphics.fillStyle(0xffffff, 1);
+    playerGraphics.fillRect(64 + 6, 10, 6, 6); // Single eye
+    
+    // Right
+    playerGraphics.fillStyle(0x3498db, 1);
+    playerGraphics.fillRect(96, 0, 32, 32);
+    playerGraphics.fillStyle(0xffffff, 1);
+    playerGraphics.fillRect(96 + 20, 10, 6, 6); // Single eye
 
-    // Leafkit placeholder (Green)
-    const leafkitGraphics = this.make.graphics({ x: 0, y: 0, add: false });
-    leafkitGraphics.fillStyle(0x2ecc71, 1);
-    leafkitGraphics.fillRect(0, 0, 32, 32);
-    leafkitGraphics.generateTexture('leafkit', 32, 32);
+    playerGraphics.generateTexture('player', 128, 32);
 
-    // Emberpaw placeholder (Red)
-    const emberpawGraphics = this.make.graphics({ x: 0, y: 0, add: false });
-    emberpawGraphics.fillStyle(0xe74c3c, 1);
-    emberpawGraphics.fillRect(0, 0, 32, 32);
-    emberpawGraphics.generateTexture('emberpaw', 32, 32);
+    // --- OTHER ASSETS ---
+    // NPC (Orange square)
+    const npcGraphics = this.make.graphics({ x: 0, y: 0, add: false });
+    npcGraphics.fillStyle(0xe67e22, 1);
+    npcGraphics.fillRect(0, 0, 32, 32);
+    npcGraphics.generateTexture('npc', 32, 32);
 
-    // Misttail placeholder (Blue)
-    const misttailGraphics = this.make.graphics({ x: 0, y: 0, add: false });
-    misttailGraphics.fillStyle(0x34ace0, 1);
-    misttailGraphics.fillRect(0, 0, 32, 32);
-    misttailGraphics.generateTexture('misttail', 32, 32);
+    // Starters (Same as before but cleaned up)
+    this.createStarterTexture('leafkit', 0x2ecc71);
+    this.createStarterTexture('emberpaw', 0xe74c3c);
+    this.createStarterTexture('misttail', 0x34ace0);
 
-    // UI Frame (Gray border)
+    // UI Frame
     const uiFrameGraphics = this.make.graphics({ x: 0, y: 0, add: false });
     uiFrameGraphics.lineStyle(4, 0xffffff, 1);
-    uiFrameGraphics.strokeRect(0, 0, 32, 32);
-    uiFrameGraphics.fillStyle(0x000000, 0.8);
-    uiFrameGraphics.fillRect(0, 0, 32, 32);
-    uiFrameGraphics.generateTexture('ui-frame', 32, 32);
+    uiFrameGraphics.strokeRect(0, 0, 64, 64);
+    uiFrameGraphics.fillStyle(0x000000, 0.9);
+    uiFrameGraphics.fillRect(0, 0, 64, 64);
+    uiFrameGraphics.generateTexture('ui-frame', 64, 64);
+  }
+
+  createStarterTexture(key, color) {
+    const graphics = this.make.graphics({ x: 0, y: 0, add: false });
+    graphics.fillStyle(color, 1);
+    graphics.fillRect(0, 0, 32, 32);
+    graphics.fillStyle(0xffffff, 0.5);
+    graphics.fillRect(4, 4, 8, 8);
+    graphics.generateTexture(key, 32, 32);
   }
 }
