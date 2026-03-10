@@ -174,8 +174,9 @@ export class WorldScene extends Phaser.Scene {
     if (encounterLayer) {
         const tile = encounterLayer.getTileAt(this.player.tileX, this.player.tileY);
         if (tile && tile.index !== 0) {
-            if (encounterSystem.checkEncounter(0.15)) {
-                this.triggerBattle();
+            const encounter = encounterSystem.checkEncounter(this.mapId, 0.15);
+            if (encounter) {
+                this.triggerBattle(encounter);
             }
         }
     }

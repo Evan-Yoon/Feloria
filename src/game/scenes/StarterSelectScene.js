@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { battleSystem } from '../systems/battleSystem.js';
 
 /**
  * StarterSelectScene
@@ -11,7 +12,7 @@ export class StarterSelectScene extends Phaser.Scene {
 
   create() {
     const { width, height } = this.cameras.main;
-    const playerName = this.registry.get('playerName');
+    const playerName = this.registry.get('playerName') || 'Trainer';
 
     // Background
     this.add.rectangle(0, 0, width, height, 0x2c3e50).setOrigin(0);
@@ -27,18 +28,22 @@ export class StarterSelectScene extends Phaser.Scene {
       fill: '#ecf0f1'
     }).setOrigin(0.5);
 
-    // Starters
-    this.createStarterOption(width * 0.25, height / 2, 'Leafkit', 'Forest Type', '#2ecc71', 'leafkit');
-    this.createStarterOption(width * 0.5, height / 2, 'Emberpaw', 'Fire Type', '#e74c3c', 'emberpaw');
-    this.createStarterOption(width * 0.75, height / 2, 'Misttail', 'Water Type', '#34ace0', 'misttail');
+    // Starters pool
+    this.starters = [
+      { id: 'leafkit', name: 'Leafkit', type: 'Forest', color: '#2ecc71', x: width * 0.25 },
+      { id: 'emberpaw', name: 'Emberpaw', type: 'Fire', color: '#e74c3c', x: width * 0.5 },
+      { id: 'misttail', name: 'Misttail', type: 'Water', color: '#34ace0', x: width * 0.75 }
+    ];
 
-    // Selection Details (hidden until selection)
+    this.starters.forEach(s => this.createStarterOption(s));
+
+    // Selection Details
     this.selectionDetail = this.add.text(width / 2, height * 0.8, '', {
       font: '20px Arial',
       fill: '#ffffff'
     }).setOrigin(0.5);
 
-    // Confirm Button (hidden until selection)
+    // Confirm Button
     this.confirmButton = this.add.text(width / 2, height * 0.9, 'Confirm Selection', {
       font: '28px Arial',
       fill: '#27ae60',
@@ -50,63 +55,54 @@ export class StarterSelectScene extends Phaser.Scene {
     .setVisible(false);
 
     this.confirmButton.on('pointerdown', () => this.confirmStarter());
+    
+    this.selectedId = null;
   }
 
-  createStarterOption(x, y, name, type, color, textureKey) {
-    const container = this.add.container(x, y);
+  createStarterOption(data) {
+    const height = this.cameras.main.height;
+    const container = this.add.container(data.x, height / 2);
 
-    // Sprite placeholder
-    const sprite = this.add.sprite(0, -20, textureKey).setScale(2);
-    
-    // Label
-    const label = this.add.text(0, 30, name, {
-      font: 'bold 24px Arial',
-      fill: color
-    }).setOrigin(0.5);
-
-    const typeLabel = this.add.text(0, 55, type, {
-      font: '16px Arial',
-      fill: '#ffffff'
-    }).setOrigin(0.5);
+    const sprite = this.add.sprite(0, -20, data.id).setScale(2);
+    const label = this.add.text(0, 30, data.name, { font: 'bold 24px Arial', fill: data.color }).setOrigin(0.5);
+    const typeLabel = this.add.text(0, 55, data.type, { font: '16px Arial', fill: '#ffffff' }).setOrigin(0.5);
 
     container.add([sprite, label, typeLabel]);
 
-    // Interactivity
-    const hitArea = this.add.rectangle(0, 0, 150, 200, 0xffffff, 0)
-      .setInteractive({ useHandCursor: true });
-    
+    const hitArea = this.add.rectangle(0, 0, 150, 200, 0xffffff, 0).setInteractive({ useHandCursor: true });
     container.add(hitArea);
 
-    hitArea.on('pointerover', () => {
-      sprite.setScale(2.5);
-      label.setScale(1.1);
-    });
-
-    hitArea.on('pointerout', () => {
-      sprite.setScale(2);
-      label.setScale(1);
-    });
+    hitArea.on('pointerover', () => { sprite.setScale(2.5); label.setScale(1.1); });
+    hitArea.on('pointerout', () => { if (this.selectedId !== data.id) { sprite.setScale(2); label.setScale(1); } });
 
     hitArea.on('pointerdown', () => {
-      this.selectedStarter = name;
-      this.selectionDetail.setText(`You have selected ${name}.`);
+      this.selectedId = data.id;
+      this.selectionDetail.setText(`You have selected ${data.name}.`);
       this.confirmButton.setVisible(true);
       
-      // Highlight selected
       this.children.list.forEach(child => {
-        if (child instanceof Phaser.GameObjects.Container) {
-          child.setAlpha(0.6);
-        }
+          if (child instanceof Phaser.GameObjects.Container) child.setAlpha(0.6);
       });
       container.setAlpha(1);
     });
   }
 
   confirmStarter() {
-    console.log(`Starter confirmed: ${this.selectedStarter}`);
-    this.registry.set('selectedStarter', this.selectedStarter);
+    if (!this.selectedId) return;
     
-    // Move to WorldScene (placeholder for now)
-    this.scene.start('WorldScene');
+    console.log(`Starter confirmed: ${this.selectedId}`);
+    
+    // Create initial party and collection
+    // Key must match CREATURES keys (LEAFKIT, EMBERPAW, MISTTAIL)
+    const starterInstance = battleSystem.createInstance(this.selectedId.toUpperCase(), 5);
+    
+    this.registry.set('selectedStarter', this.selectedId);
+    this.registry.set('playerParty', [starterInstance]);
+    this.registry.set('playerCollection', [starterInstance]);
+
+    this.cameras.main.fadeOut(500, 0, 0, 0);
+    this.cameras.main.once('camerafadeoutcomplete', () => {
+      this.scene.start('WorldScene', { mapId: 'starwhisk_village' });
+    });
   }
 }
