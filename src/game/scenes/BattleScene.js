@@ -168,7 +168,24 @@ export class BattleScene extends Phaser.Scene {
         return;
     }
 
-    this.updateLog(`You threw a capture crystal...`);
+    // Check Inventory
+    const inventory = this.registry.get('playerInventory') || {};
+    const crystalCount = inventory['capture_crystal'] || 0;
+    
+    if (crystalCount <= 0) {
+        this.updateLog("You have no Capture Crystals!");
+        this.time.delayedCall(1500, () => {
+             this.menuUI.setVisible(true);
+             this.canInput = true;
+        });
+        return;
+    }
+
+    // Consume 1 crystal
+    inventory['capture_crystal']--;
+    this.registry.set('playerInventory', inventory);
+
+    this.updateLog(`You threw a capture crystal... (${inventory['capture_crystal']} left)`);
 
     this.time.delayedCall(1000, () => {
       if (battleSystem.checkCapture(this.enemyCat)) {
@@ -300,7 +317,7 @@ export class BattleScene extends Phaser.Scene {
     if (this.isTrainer) {
         const trainerData = TRAINers[this.trainerId];
         expGain = Math.floor(expGain * (trainerData.rewards.expMultiplier || 1.5));
-        goldGain = trainerData.rewards.gold;
+        goldGain = battleSystem.calculateGold(true, trainerData.rewards.gold);
 
         // Mark defeated
         const defeatedTrainers = this.registry.get('defeatedTrainers') || [];
@@ -308,11 +325,14 @@ export class BattleScene extends Phaser.Scene {
             defeatedTrainers.push(this.trainerId);
             this.registry.set('defeatedTrainers', defeatedTrainers);
         }
-
-        // Grant Gold
-        const currentGold = this.registry.get('playerGold') || 0;
-        this.registry.set('playerGold', currentGold + goldGain);
+    } else {
+        // Wild Gold Drop
+        goldGain = battleSystem.calculateGold(false);
     }
+
+    // Grant Gold
+    const currentGold = this.registry.get('playerGold') || 0;
+    this.registry.set('playerGold', currentGold + goldGain);
 
     let oldLevel = this.playerCat.level;
     const leveledUp = battleSystem.gainExp(this.playerCat, expGain);

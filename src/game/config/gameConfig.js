@@ -9,12 +9,12 @@ import { WorldScene } from '../scenes/WorldScene.js';
 import { BattleScene } from '../scenes/BattleScene.js';
 import { DialogScene } from '../scenes/DialogScene.js';
 import { MenuScene } from '../scenes/MenuScene.js';
-import { InventoryScene } from '../scenes/InventoryScene.js';
 import { PartyScene } from '../scenes/PartyScene.js';
 import { CodexScene } from '../scenes/CodexScene.js';
 import { QuestScene } from '../scenes/QuestScene.js';
 import { EvolutionScene } from '../scenes/EvolutionScene.js';
 import { ShopScene } from '../scenes/ShopScene.js';
+import { InventoryScene } from '../scenes/InventoryScene.js';
 
 /**
  * Centralized Phaser game configuration.
@@ -37,12 +37,12 @@ export const gameConfig = {
     BattleScene,
     DialogScene,
     MenuScene,
-    InventoryScene,
     PartyScene,
     CodexScene,
     QuestScene,
     EvolutionScene,
-    ShopScene
+    ShopScene,
+    InventoryScene
   ],
   physics: {
     default: 'arcade',

@@ -10,6 +10,15 @@ export class PartyScene extends Phaser.Scene {
     super({ key: 'PartyScene' });
   }
 
+  init(data) {
+    data = data || {};
+    this.isTargetMode = data.isTargetMode || false;
+    this.itemId = data.itemId || null;
+    this.itemEffect = data.itemEffect || 0;
+    this.itemName = data.itemName || '';
+    this.returnScene = data.returnScene || 'MenuScene';
+  }
+
   create() {
     const { width, height } = this.cameras.main;
     this.add.rectangle(0, 0, width, height, 0x2c3e50).setOrigin(0);
@@ -49,37 +58,38 @@ export class PartyScene extends Phaser.Scene {
     this.mainContainer = this.add.container(0, 0);
 
     // Titles
-    this.mainContainer.add(this.add.text(width * 0.25, 40, `Active Party (${this.party.length}/3)`, { font: 'bold 32px Arial', fill: '#f1c40f' }).setOrigin(0.5));
-    this.mainContainer.add(this.add.text(width * 0.75, 40, `Collection`, { font: 'bold 32px Arial', fill: '#bdc3c7' }).setOrigin(0.5));
+    if (this.isTargetMode) {
+      this.mainContainer.add(this.add.text(width / 2, 40, `Select target for ${this.itemName}`, { font: 'bold 36px Arial', fill: '#f1c40f' }).setOrigin(0.5));
+    } else {
+      this.mainContainer.add(this.add.text(width * 0.25, 40, `Active Party (${this.party.length}/3)`, { font: 'bold 32px Arial', fill: '#f1c40f' }).setOrigin(0.5));
+      this.mainContainer.add(this.add.text(width * 0.75, 40, `Collection`, { font: 'bold 32px Arial', fill: '#bdc3c7' }).setOrigin(0.5));
+    }
 
     this.mainContainer.add(this.add.text(width / 2, height - 30, 'Press ESC to return', { font: '20px Arial', fill: '#95a5a6' }).setOrigin(0.5));
 
-    // Render Party List (Left Side)
+    // Render Party List
     this.party.forEach((member, index) => {
-      const card = this.createCreatureCard(member, width * 0.25, 120 + (index * 130), true, index === 0);
+      const cardX = this.isTargetMode ? width / 2 : width * 0.25;
+      const card = this.createCreatureCard(member, cardX, 120 + (index * 130), true, index === 0);
       this.mainContainer.add(card);
     });
 
-    // Render Collection List (Right Side)
-    // Only show creatures NOT currently in the party
-    const partyIds = this.party.map(p => p.instanceId);
-    const benchedCreatures = this.collection.filter(c => !partyIds.includes(c.instanceId));
+    // Render Collection List (Only if NOT in target mode)
+    if (!this.isTargetMode) {
+        // Only show creatures NOT currently in the party
+        const partyIds = this.party.map(p => p.instanceId);
+        const benchedCreatures = this.collection.filter(c => !partyIds.includes(c.instanceId));
 
-    benchedCreatures.forEach((member, index) => {
-      // Very simple list spanning down
-      const card = this.createCreatureCard(member, width * 0.75, 120 + (index * 130), false, false);
-      this.mainContainer.add(card);
-    });
+        benchedCreatures.forEach((member, index) => {
+          const card = this.createCreatureCard(member, width * 0.75, 120 + (index * 130), false, false);
+          this.mainContainer.add(card);
+        });
+    }
 
-    this.input.keyboard.on('keydown-ESC', () => {
-      // Remove debug listeners when leaving
-      this.input.keyboard.off('keydown-ONE');
-      this.input.keyboard.off('keydown-TWO');
-      this.input.keyboard.off('keydown-THREE');
-      this.input.keyboard.off('keydown-FOUR');
-      
-      this.scene.stop();
-      this.scene.resume('MenuScene');
+    this.setupInputs();
+
+    this.events.on('resume', () => {
+        this.setupInputs();
     });
 
     // --- DEBUG CONTROLS (Temporary for Phase 5.5) ---
@@ -89,6 +99,20 @@ export class PartyScene extends Phaser.Scene {
     this.input.keyboard.on('keydown-TWO', () => this.debugAction('add200'));
     this.input.keyboard.on('keydown-THREE', () => this.debugAction('setLvl9'));
     this.input.keyboard.on('keydown-FOUR', () => this.debugAction('heal'));
+  }
+
+  setupInputs() {
+    this.input.keyboard.off('keydown-ESC');
+    this.input.keyboard.on('keydown-ESC', () => {
+      // Remove debug listeners when leaving
+      this.input.keyboard.off('keydown-ONE');
+      this.input.keyboard.off('keydown-TWO');
+      this.input.keyboard.off('keydown-THREE');
+      this.input.keyboard.off('keydown-FOUR');
+      
+      this.scene.stop();
+      this.scene.resume(this.returnScene);
+    });
   }
 
   createCreatureCard(creature, x, y, isParty, isActive) {
@@ -111,23 +135,31 @@ export class PartyScene extends Phaser.Scene {
     // Action Buttons
     const btnContainer = this.add.container(bgWidth/2 - 120, 0);
 
-    if (isParty) {
-      if (!isActive) {
-        // Make Active Button
-        const makeActiveBtn = this.createButton(0, -20, 'Make Active', 0xf39c12, () => this.makeActive(creature));
-        btnContainer.add(makeActiveBtn);
-      }
-      
-      // Remove Button (Only if party > 1)
-      if (this.party.length > 1) {
-        const removeBtn = this.createButton(0, 20, 'Remove', 0xc0392b, () => this.removeFromParty(creature));
-        btnContainer.add(removeBtn);
+    if (this.isTargetMode) {
+      // In Target Mode, explicitly only show USE button for Party members
+      if (isParty) {
+          const useBtn = this.createButton(0, 0, 'Use Item', 0x27ae60, () => this.applyItem(creature));
+          btnContainer.add(useBtn);
       }
     } else {
-      // Add to Party Button (Only if party < 3)
-      if (this.party.length < 3) {
-        const addBtn = this.createButton(0, 0, 'Add to Party', 0x27ae60, () => this.addToParty(creature));
-        btnContainer.add(addBtn);
+      if (isParty) {
+        if (!isActive) {
+          // Make Active Button
+          const makeActiveBtn = this.createButton(0, -20, 'Make Active', 0xf39c12, () => this.makeActive(creature));
+          btnContainer.add(makeActiveBtn);
+        }
+        
+        // Remove Button (Only if party > 1)
+        if (this.party.length > 1) {
+          const removeBtn = this.createButton(0, 20, 'Remove', 0xc0392b, () => this.removeFromParty(creature));
+          btnContainer.add(removeBtn);
+        }
+      } else {
+        // Add to Party Button (Only if party < 3)
+        if (this.party.length < 3) {
+          const addBtn = this.createButton(0, 0, 'Add to Party', 0x27ae60, () => this.addToParty(creature));
+          btnContainer.add(addBtn);
+        }
       }
     }
 
@@ -178,6 +210,40 @@ export class PartyScene extends Phaser.Scene {
         this.saveState();
         this.createUI(this.cameras.main.width, this.cameras.main.height);
     }
+  }
+
+  applyItem(creature) {
+     if (creature.currentHp >= creature.maxHp) {
+        // Full HP, deny usage to save the item
+        this.cameras.main.shake(100, 0.005);
+        return;
+     }
+
+     // Double check inventory
+     const inventory = this.registry.get('playerInventory') || {};
+     if (!inventory[this.itemId] || inventory[this.itemId] <= 0) return;
+
+     // Consume item
+     inventory[this.itemId]--;
+     this.registry.set('playerInventory', inventory);
+
+     // Apply Healing
+     creature.currentHp = Math.min(creature.maxHp, creature.currentHp + this.itemEffect);
+     
+     // Save and Return cleanly
+     this.saveState();
+     this.cameras.main.flash(200, 150, 255, 150);
+
+     this.time.delayedCall(300, () => {
+         this.scene.stop();
+         
+         // Resume InventoryScene and tell it to wake up to refresh counts
+         this.scene.resume(this.returnScene);
+         const returnInstance = this.scene.get(this.returnScene);
+         if (returnInstance && returnInstance.wake) {
+             returnInstance.wake();
+         }
+     });
   }
 
   // --- DEBUG METHODS ---

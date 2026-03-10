@@ -98,15 +98,25 @@ export const battleSystem = {
   },
 
   /**
-   * Calculates experience gained from defeating an enemy.
+   * Calculates EXP gained from defeating an enemy.
    */
-  calculateExp: (enemy) => {
-    // Basic formula: Base EXP * Enemy Level
-    return enemy.baseExp * enemy.level;
+  calculateExp: (enemyInstance) => {
+    // Formula: (Base XP * Level) / 5
+    const baseExp = enemyInstance.baseExp || 50;
+    return Math.max(1, Math.floor((baseExp * enemyInstance.level) / 5));
   },
 
   /**
-   * Adds experience to a creature and handles leveling up.
+   * Calculates Gold gained from winning a battle.
+   */
+  calculateGold: (isTrainer = false, trainerGold = 0) => {
+      if (isTrainer) return trainerGold;
+      // Wild battles drop between 3 and 10 Gold
+      return Math.floor(Math.random() * 8) + 3;
+  },
+
+  /**
+   * Applies EXP to a creature and handles level ups.
    * Returns true if the creature leveled up.
    */
   gainExp: (creature, amount) => {
