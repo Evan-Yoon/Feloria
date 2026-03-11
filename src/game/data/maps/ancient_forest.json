@@ -98,7 +98,8 @@
     }
   ],
   "spawns": [
-    { "type": "npc", "x": 16, "y": 14, "id": "trainer_forest_scout", "name": "Forest Scout" }
+    { "type": "npc", "x": 16, "y": 14, "id": "trainer_luke", "name": "Trainer Luke" },
+    { "type": "npc", "x": 8, "y": 14, "id": "evan", "name": "Evan" }
   ],
   "warps": [
     { "x": 8, "y": 24, "targetMap": "mosslight_path", "targetX": 8, "targetY": 1 },

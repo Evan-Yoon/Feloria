@@ -1,8 +1,9 @@
-import { battleSystem } from '../systems/battleSystem.js';
-import { codexSystem } from '../systems/codexSystem.js';
-import { saveSystem } from '../systems/saveSystem.js';
+import { battleSystem } from "../systems/battleSystem.js";
+import { codexSystem } from "../systems/codexSystem.js";
+import { saveSystem } from "../systems/saveSystem.js";
 import { questSystem } from '../systems/questSystem.js';
 import { TRAINers } from '../data/trainers.js';
+import { NPCS } from '../data/npcs.js';
 
 /**
  * BattleScene
@@ -10,46 +11,63 @@ import { TRAINers } from '../data/trainers.js';
  */
 export class BattleScene extends Phaser.Scene {
   constructor() {
-    super({ key: 'BattleScene' });
+    super({ key: "BattleScene" });
   }
 
   init(data) {
     // 1. Get player data from Registry (with fallback for HMR testing)
-    this.playerParty = this.registry.get('playerParty') || [];
+    this.playerParty = this.registry.get("playerParty") || [];
     this.playerCat = this.playerParty[0];
     if (!this.playerCat) {
-      console.warn('BattleScene: No player party found, using fallback Leafkit.');
-      this.playerCat = battleSystem.createInstance('LEAFKIT', 5);
-      this.registry.set('playerParty', [this.playerCat]);
+      console.warn(
+        "BattleScene: No player party found, using fallback Leafkit.",
+      );
+      this.playerCat = battleSystem.createInstance("LEAFKIT", 5);
+      this.registry.set("playerParty", [this.playerCat]);
     }
 
     // 2. Generate enemy (Wild vs Trainer)
     this.isTrainer = data.isTrainer || false;
     this.trainerId = data.trainerId || null;
     this.enemyParty = [];
-    
+
     if (this.isTrainer && this.trainerId) {
-        const trainerData = TRAINers[this.trainerId];
-        trainerData.party.forEach(member => {
-            this.enemyParty.push(battleSystem.createInstance(member.creatureId, member.level));
-        });
-        this.enemyCat = this.enemyParty[0];
-        console.log(`BattleScene: Trainer ${trainerData.name} wants to battle!`);
+      const trainerData = TRAINers[this.trainerId];
+      trainerData.party.forEach((member) => {
+        this.enemyParty.push(
+          battleSystem.createInstance(member.creatureId, member.level),
+        );
+      });
+      this.enemyCat = this.enemyParty[0];
+      console.log(`BattleScene: Trainer ${trainerData.name} wants to battle!`);
     } else {
-        const enemyId = data.enemyId && typeof data.enemyId === 'string' ? data.enemyId : 'SNAGPUSS';
-        this.enemyCat = battleSystem.createInstance(enemyId, data.enemyLevel || 2);
+      const enemyId =
+        data.enemyId && typeof data.enemyId === "string"
+          ? data.enemyId
+          : "SNAGPUSS";
+      this.enemyCat = battleSystem.createInstance(
+        enemyId,
+        data.enemyLevel || 2,
+      );
+      this.enemyParty.push(this.enemyCat);
+
+      if (!this.enemyCat) {
+        console.warn(
+          `BattleScene: Failed to load enemy ${enemyId}, falling back to Snagpuss.`,
+        );
+        this.enemyCat = battleSystem.createInstance("SNAGPUSS", 2);
         this.enemyParty.push(this.enemyCat);
-        
-        if (!this.enemyCat) {
-          console.warn(`BattleScene: Failed to load enemy ${enemyId}, falling back to Snagpuss.`);
-          this.enemyCat = battleSystem.createInstance('SNAGPUSS', 2);
-          this.enemyParty.push(this.enemyCat);
-        }
+      }
     }
 
     // 3. Mark Codex and Quests (For active enemy)
     codexSystem.markSeen(this.registry, this.enemyCat.id);
-    if (!this.isTrainer) questSystem.completeObjective(this.registry, 'first_steps', 'trigger_encounter');
+    if (!this.isTrainer)
+      questSystem.completeObjective(
+        this.registry,
+        "first_steps",
+        "trigger_encounter",
+      );
 
     // 4. Battle State
     this.isPlayerTurn = true;
@@ -74,56 +92,129 @@ export class BattleScene extends Phaser.Scene {
     // 1. Player UI (Bottom Right)
     this.playerUI = this.add.container(width * 0.7, height * 0.55);
     // Draw the generated placeholder sprite
-    this.playerSprite = this.add.sprite(0, -100, this.playerCat.id.toLowerCase()).setScale(3);
-    
+    this.playerSprite = this.add
+      .sprite(0, -100, this.playerCat.id.toLowerCase())
+      .setScale(3);
+
     // UI Panel for Player
-    this.playerBg = this.add.rectangle(0, 40, 300, 100, 0x1a252f).setStrokeStyle(3, 0x3498db).setOrigin(0.5);
-    this.playerName = this.add.text(0, 10, `${this.playerCat.name} Lvl ${this.playerCat.level}`, { font: 'bold 22px Arial', fill: '#ffffff' }).setOrigin(0.5);
-    this.playerHpText = this.add.text(0, 40, `HP: ${this.playerCat.currentHp}/${this.playerCat.maxHp}`, { font: 'bold 18px Arial', fill: '#2ecc71' }).setOrigin(0.5);
+    this.playerBg = this.add
+      .rectangle(0, 40, 300, 100, 0x1a252f)
+      .setStrokeStyle(3, 0x3498db)
+      .setOrigin(0.5);
+    this.playerName = this.add
+      .text(0, 10, `${this.playerCat.name} Lvl ${this.playerCat.level}`, {
+        font: "bold 22px Arial",
+        fill: "#ffffff",
+      })
+      .setOrigin(0.5);
+    this.playerHpText = this.add
+      .text(0, 40, `HP: ${this.playerCat.currentHp}/${this.playerCat.maxHp}`, {
+        font: "bold 18px Arial",
+        fill: "#2ecc71",
+      })
+      .setOrigin(0.5);
 
     // Player HP Bar
-    this.playerHpBg = this.add.rectangle(0, 70, 260, 15, 0x000000).setOrigin(0.5);
-    this.playerHpBar = this.add.rectangle(-130, 62.5, 260, 15, 0x27ae60).setOrigin(0);
+    this.playerHpBg = this.add
+      .rectangle(0, 70, 260, 15, 0x000000)
+      .setOrigin(0.5);
+    this.playerHpBar = this.add
+      .rectangle(-130, 62.5, 260, 15, 0x27ae60)
+      .setOrigin(0);
 
-    this.playerUI.add([this.playerSprite, this.playerBg, this.playerName, this.playerHpText, this.playerHpBg, this.playerHpBar]);
+    this.playerUI.add([
+      this.playerSprite,
+      this.playerBg,
+      this.playerName,
+      this.playerHpText,
+      this.playerHpBg,
+      this.playerHpBar,
+    ]);
 
     // 2. Enemy UI (Top Left)
     this.enemyUI = this.add.container(width * 0.3, height * 0.25);
-    this.enemySprite = this.add.sprite(0, 0, this.enemyCat.id.toLowerCase()).setScale(3); 
-    
-    this.enemyBg = this.add.rectangle(0, 120, 300, 100, 0x1a252f).setStrokeStyle(3, 0xe74c3c).setOrigin(0.5);
-    this.enemyName = this.add.text(0, 90, `${this.enemyCat.name} Lvl ${this.enemyCat.level}`, { font: 'bold 22px Arial', fill: '#ffffff' }).setOrigin(0.5);
-    this.enemyHpText = this.add.text(0, 120, `HP: ${this.enemyCat.currentHp}/${this.enemyCat.maxHp}`, { font: 'bold 18px Arial', fill: '#e74c3c' }).setOrigin(0.5);
+    this.enemySprite = this.add
+      .sprite(0, 0, this.enemyCat.id.toLowerCase())
+      .setScale(3);
+
+    this.enemyBg = this.add
+      .rectangle(0, 120, 300, 100, 0x1a252f)
+      .setStrokeStyle(3, 0xe74c3c)
+      .setOrigin(0.5);
+    this.enemyName = this.add
+      .text(0, 90, `${this.enemyCat.name} Lvl ${this.enemyCat.level}`, {
+        font: "bold 22px Arial",
+        fill: "#ffffff",
+      })
+      .setOrigin(0.5);
+    this.enemyHpText = this.add
+      .text(0, 120, `HP: ${this.enemyCat.currentHp}/${this.enemyCat.maxHp}`, {
+        font: "bold 18px Arial",
+        fill: "#e74c3c",
+      })
+      .setOrigin(0.5);
 
     // Enemy HP Bar
-    this.enemyHpBg = this.add.rectangle(0, 150, 260, 15, 0x000000).setOrigin(0.5);
-    this.enemyHpBar = this.add.rectangle(-130, 142.5, 260, 15, 0xc0392b).setOrigin(0);
+    this.enemyHpBg = this.add
+      .rectangle(0, 150, 260, 15, 0x000000)
+      .setOrigin(0.5);
+    this.enemyHpBar = this.add
+      .rectangle(-130, 142.5, 260, 15, 0xc0392b)
+      .setOrigin(0);
 
-    this.enemyUI.add([this.enemySprite, this.enemyBg, this.enemyName, this.enemyHpText, this.enemyHpBg, this.enemyHpBar]);
+    this.enemyUI.add([
+      this.enemySprite,
+      this.enemyBg,
+      this.enemyName,
+      this.enemyHpText,
+      this.enemyHpBg,
+      this.enemyHpBar,
+    ]);
 
     // 3. Battle Log (Bottom)
-    this.logBg = this.add.rectangle(0, height - 140, width - 280, 140, 0x1a252f).setOrigin(0).setStrokeStyle(4, 0x34495e);
-    this.logText = this.add.text((width - 280) / 2, height - 70, '', { font: 'bold 24px Arial', fill: '#ffffff', align: 'center', wordWrap: { width: width - 380 } }).setOrigin(0.5);
+    this.logBg = this.add
+      .rectangle(0, height - 140, width - 280, 140, 0x1a252f)
+      .setOrigin(0)
+      .setStrokeStyle(4, 0x34495e);
+    this.logText = this.add
+      .text((width - 280) / 2, height - 70, "", {
+        font: "bold 24px Arial",
+        fill: "#ffffff",
+        align: "center",
+        wordWrap: { width: width - 380 },
+      })
+      .setOrigin(0.5);
 
     // 4. Action Menu (Right Side)
     this.menuUI = this.add.container(width - 280, height - 140);
-    this.menuBg = this.add.rectangle(0, 0, 280, 140, 0x2c3e50).setOrigin(0).setStrokeStyle(4, 0x34495e);
+    this.menuBg = this.add
+      .rectangle(0, 0, 280, 140, 0x2c3e50)
+      .setOrigin(0)
+      .setStrokeStyle(4, 0x34495e);
     this.menuUI.add(this.menuBg);
-    
-    const menuItems = ['Attack', 'Skill', 'Capture', 'Run'];
+
+    const menuItems = ["Attack", "Skill", "Capture", "Run"];
     this.menuButtons = [];
 
     menuItems.forEach((text, i) => {
       const col = i % 2;
       const row = Math.floor(i / 2);
-      
-      const btnBg = this.add.rectangle(10 + col * 135, 10 + row * 65, 125, 55, 0x34495e).setOrigin(0).setInteractive({ useHandCursor: true });
-      const btnText = this.add.text(10 + col * 135 + 62.5, 10 + row * 65 + 27.5, text, { font: 'bold 20px Arial', fill: '#ffffff' }).setOrigin(0.5);
 
-      btnBg.on('pointerdown', () => this.handleAction(text));
-      btnBg.on('pointerover', () => btnBg.setFillStyle(0xe74c3c));
-      btnBg.on('pointerout', () => btnBg.setFillStyle(0x34495e));
-      
+      const btnBg = this.add
+        .rectangle(10 + col * 135, 10 + row * 65, 125, 55, 0x34495e)
+        .setOrigin(0)
+        .setInteractive({ useHandCursor: true });
+      const btnText = this.add
+        .text(10 + col * 135 + 62.5, 10 + row * 65 + 27.5, text, {
+          font: "bold 20px Arial",
+          fill: "#ffffff",
+        })
+        .setOrigin(0.5);
+
+      btnBg.on("pointerdown", () => this.handleAction(text));
+      btnBg.on("pointerover", () => btnBg.setFillStyle(0xe74c3c));
+      btnBg.on("pointerout", () => btnBg.setFillStyle(0x34495e));
+
       this.menuUI.add([btnBg, btnText]);
       this.menuButtons.push(btnBg);
     });
@@ -136,19 +227,31 @@ export class BattleScene extends Phaser.Scene {
     this.menuUI.setVisible(false);
 
     switch (action) {
-      case 'Attack': this.playerAttack(); break;
-      case 'Skill': this.playerSkill(); break;
-      case 'Capture': this.playerCapture(); break;
-      case 'Run': this.playerRun(); break;
+      case "Attack":
+        this.playerAttack();
+        break;
+      case "Skill":
+        this.playerSkill();
+        break;
+      case "Capture":
+        this.playerCapture();
+        break;
+      case "Run":
+        this.playerRun();
+        break;
     }
   }
 
   playerAttack() {
     this.updateLog(`${this.playerCat.name} used Scratch!`);
-    const damage = battleSystem.calculateDamage(this.playerCat, this.enemyCat, 'scratch');
+    const damage = battleSystem.calculateDamage(
+      this.playerCat,
+      this.enemyCat,
+      "scratch",
+    );
 
     this.time.delayedCall(800, () => {
-      this.applyDamage(this.enemyCat, damage, 'enemy');
+      this.applyDamage(this.enemyCat, damage, "enemy");
       if (this.enemyCat.currentHp <= 0) {
         this.victory();
       } else {
@@ -160,12 +263,16 @@ export class BattleScene extends Phaser.Scene {
   playerSkill() {
     // Use the first specialized skill
     const skillsList = this.playerCat.skills || [];
-    const skillId = skillsList.find(s => s !== 'scratch') || 'scratch';
-    this.updateLog(`${this.playerCat.name} used ${skillId.replace('_', ' ')}!`);
-    const damage = battleSystem.calculateDamage(this.playerCat, this.enemyCat, skillId);
+    const skillId = skillsList.find((s) => s !== "scratch") || "scratch";
+    this.updateLog(`${this.playerCat.name} used ${skillId.replace("_", " ")}!`);
+    const damage = battleSystem.calculateDamage(
+      this.playerCat,
+      this.enemyCat,
+      skillId,
+    );
 
     this.time.delayedCall(800, () => {
-      this.applyDamage(this.enemyCat, damage, 'enemy');
+      this.applyDamage(this.enemyCat, damage, "enemy");
       if (this.enemyCat.currentHp <= 0) {
         this.victory();
       } else {
@@ -176,63 +283,79 @@ export class BattleScene extends Phaser.Scene {
 
   playerCapture() {
     if (this.isTrainer) {
-        this.updateLog("You can't catch a Trainer's cat!");
-        this.time.delayedCall(1500, () => {
-             this.menuUI.setVisible(true);
-             this.canInput = true;
-        });
-        return;
+      this.updateLog("You can't catch a Trainer's cat!");
+      this.time.delayedCall(1500, () => {
+        this.menuUI.setVisible(true);
+        this.canInput = true;
+      });
+      return;
     }
 
     // Check Inventory
-    const inventory = this.registry.get('playerInventory') || {};
-    const crystalCount = inventory['capture_crystal'] || 0;
-    
+    const inventory = this.registry.get("playerInventory") || {};
+    const crystalCount = inventory["capture_crystal"] || 0;
+
     if (crystalCount <= 0) {
-        this.updateLog("You have no Capture Crystals!");
-        this.time.delayedCall(1500, () => {
-             this.menuUI.setVisible(true);
-             this.canInput = true;
-        });
-        return;
+      this.updateLog("You have no Capture Crystals!");
+      this.time.delayedCall(1500, () => {
+        this.menuUI.setVisible(true);
+        this.canInput = true;
+      });
+      return;
     }
 
     // Consume 1 crystal
-    inventory['capture_crystal']--;
-    this.registry.set('playerInventory', inventory);
+    inventory["capture_crystal"]--;
+    this.registry.set("playerInventory", inventory);
 
-    this.updateLog(`You threw a capture crystal... (${inventory['capture_crystal']} left)`);
+    this.updateLog(
+      `You threw a capture crystal... (${inventory["capture_crystal"]} left)`,
+    );
 
     this.time.delayedCall(1000, () => {
       if (battleSystem.checkCapture(this.enemyCat)) {
-        this.updateLog('Success! You captured the wild cat!');
-        
+        this.updateLog("Success! You captured the wild cat!");
+
         // Update Codex and Quest
         codexSystem.markCaught(this.registry, this.enemyCat.id);
-        questSystem.completeObjective(this.registry, 'first_steps', 'capture_cat');
+        questSystem.completeObjective(
+          this.registry,
+          "first_steps",
+          "capture_cat",
+        );
 
         this.time.delayedCall(2000, () => {
           // Add to collection
-          const collection = this.registry.get('playerCollection') || [];
+          const collection = this.registry.get("playerCollection") || [];
           // Double check instanceId isn't duped (should be safe since it's newly created)
-          if (!collection.find(c => c.instanceId === this.enemyCat.instanceId)) {
+          if (
+            !collection.find((c) => c.instanceId === this.enemyCat.instanceId)
+          ) {
             collection.push(this.enemyCat);
-            this.registry.set('playerCollection', collection);
-            
+            this.registry.set("playerCollection", collection);
+
             // Auto-add to party if space available (Max 3)
             if (this.playerParty.length < 3) {
-                this.playerParty.push(this.enemyCat);
-                this.registry.set('playerParty', this.playerParty);
-                console.log(`BattleScene: Added ${this.enemyCat.name} to party.`);
+              this.playerParty.push(this.enemyCat);
+              this.registry.set("playerParty", this.playerParty);
+              console.log(`BattleScene: Added ${this.enemyCat.name} to party.`);
             } else {
-                console.log(`BattleScene: Party full. ${this.enemyCat.name} sent to collection.`);
+              console.log(
+                `BattleScene: Party full. ${this.enemyCat.name} sent to collection.`,
+              );
             }
           }
-          
-          this.showSummaryPanel('Captured', 0, false, this.playerCat.level, false);
+
+          this.showSummaryPanel(
+            "Captured",
+            0,
+            false,
+            this.playerCat.level,
+            false,
+          );
         });
       } else {
-        this.updateLog('The wild cat broke free!');
+        this.updateLog("The wild cat broke free!");
         this.time.delayedCall(1000, () => this.nextTurn());
       }
     });
@@ -240,26 +363,30 @@ export class BattleScene extends Phaser.Scene {
 
   playerRun() {
     if (this.isTrainer) {
-        this.updateLog("You can't run from a Trainer battle!");
-        this.time.delayedCall(1500, () => {
-             this.menuUI.setVisible(true);
-             this.canInput = true;
-        });
-        return;
+      this.updateLog("You can't run from a Trainer battle!");
+      this.time.delayedCall(1500, () => {
+        this.menuUI.setVisible(true);
+        this.canInput = true;
+      });
+      return;
     }
 
-    this.updateLog('You ran away...');
+    this.updateLog("You ran away...");
     this.time.delayedCall(1000, () => {
-      this.showSummaryPanel('Fled', 0, false, this.playerCat.level, false);
+      this.showSummaryPanel("Fled", 0, false, this.playerCat.level, false);
     });
   }
 
   enemyTurn() {
     this.updateLog(`${this.enemyCat.name} used Scratch!`);
-    const damage = battleSystem.calculateDamage(this.enemyCat, this.playerCat, 'scratch');
+    const damage = battleSystem.calculateDamage(
+      this.enemyCat,
+      this.playerCat,
+      "scratch",
+    );
 
     this.time.delayedCall(1000, () => {
-      this.applyDamage(this.playerCat, damage, 'player');
+      this.applyDamage(this.playerCat, damage, "player");
       if (this.playerCat.currentHp <= 0) {
         this.defeat();
       } else {
@@ -273,7 +400,7 @@ export class BattleScene extends Phaser.Scene {
 
     // Update HP UI
     const ratio = target.currentHp / target.maxHp;
-    if (targetType === 'player') {
+    if (targetType === "player") {
       this.playerHpText.setText(`HP: ${target.currentHp}/${target.maxHp}`);
       this.playerHpBar.width = 260 * ratio;
       this.cameras.main.shake(200, 0.01);
@@ -302,62 +429,68 @@ export class BattleScene extends Phaser.Scene {
   victory() {
     // If trainer battle and more enemies remain
     if (this.isTrainer && this.enemyParty.length > 1) {
-        this.enemyParty.shift(); // Remove defeated enemy
-        this.enemyCat = this.enemyParty[0]; // Set next enemy
-        
-        // Mark seen
-        codexSystem.markSeen(this.registry, this.enemyCat.id);
+      this.enemyParty.shift(); // Remove defeated enemy
+      this.enemyCat = this.enemyParty[0]; // Set next enemy
 
-        this.updateLog(`Trainer sent out ${this.enemyCat.name}!`);
-        
-        // Refresh UI
-        this.enemySprite.setTexture(this.enemyCat.id.toLowerCase());
-        this.enemyName.setText(`${this.enemyCat.name} Lvl ${this.enemyCat.level}`);
-        this.enemyHpText.setText(`HP: ${this.enemyCat.currentHp}/${this.enemyCat.maxHp}`);
-        this.enemyHpBar.width = 260;
+      // Mark seen
+      codexSystem.markSeen(this.registry, this.enemyCat.id);
 
-        this.time.delayedCall(1500, () => {
-            this.canInput = true;
-            this.menuUI.setVisible(true);
-            this.updateLog(`What will ${this.playerCat.name} do?`);
-        });
-        return;
+      this.updateLog(`Trainer sent out ${this.enemyCat.name}!`);
+
+      // Refresh UI
+      this.enemySprite.setTexture(this.enemyCat.id.toLowerCase());
+      this.enemyName.setText(
+        `${this.enemyCat.name} Lvl ${this.enemyCat.level}`,
+      );
+      this.enemyHpText.setText(
+        `HP: ${this.enemyCat.currentHp}/${this.enemyCat.maxHp}`,
+      );
+      this.enemyHpBar.width = 260;
+
+      this.time.delayedCall(1500, () => {
+        this.canInput = true;
+        this.menuUI.setVisible(true);
+        this.updateLog(`What will ${this.playerCat.name} do?`);
+      });
+      return;
     }
 
     this.isBattleOver = true;
-    
+
     // Calculate rewards
     let expGain = battleSystem.calculateExp(this.enemyCat);
     let goldGain = 0;
 
     if (this.isTrainer) {
-        const trainerData = TRAINers[this.trainerId];
-        expGain = Math.floor(expGain * (trainerData.rewards.expMultiplier || 1.5));
-        goldGain = battleSystem.calculateGold(true, trainerData.rewards.gold);
+      const trainerData = TRAINers[this.trainerId];
+      expGain = Math.floor(
+        expGain * (trainerData.rewards.expMultiplier || 1.5),
+      );
+      goldGain = battleSystem.calculateGold(true, trainerData.rewards.gold);
 
-        // Mark defeated
-        const defeatedTrainers = this.registry.get('defeatedTrainers') || [];
-        if (!defeatedTrainers.includes(this.trainerId)) {
-            defeatedTrainers.push(this.trainerId);
-            this.registry.set('defeatedTrainers', defeatedTrainers);
-        }
+      // Mark defeated
+      const defeatedTrainers = this.registry.get("defeatedTrainers") || [];
+      if (!defeatedTrainers.includes(this.trainerId)) {
+        defeatedTrainers.push(this.trainerId);
+        this.registry.set("defeatedTrainers", defeatedTrainers);
+      }
 
-        // Grant Item Reward if exists
-        if (trainerData.rewards.item) {
-            const inventory = this.registry.get('playerInventory') || {};
-            const itemId = trainerData.rewards.item;
-            inventory[itemId] = (inventory[itemId] || 0) + 1;
-            this.registry.set('playerInventory', inventory);
-            console.log(`BattleScene: Granted item reward ${itemId}`);
-        }
+      // Grant Item Reward if exists
+      if (trainerData.rewards.item) {
+        const inventory = this.registry.get("playerInventory") || {};
+        const itemId = trainerData.rewards.item;
+        inventory[itemId] = (inventory[itemId] || 0) + 1;
+        this.registry.set("playerInventory", inventory);
+        console.log(`BattleScene: Granted item reward ${itemId}`);
+      }
     } else {
-        // Wild Gold Drop
-        goldGain = battleSystem.calculateGold(false);
+      // Wild Gold Drop
+      goldGain = battleSystem.calculateGold(false);
     }
 
     // Grant Gold
-    const currentGold = this.registry.get('playerGold') || 0;
-    this.registry.set('playerGold', currentGold + goldGain);
+    const currentGold = this.registry.get("playerGold") || 0;
+    this.registry.set("playerGold", currentGold + goldGain);
 
     let oldLevel = this.playerCat.level;
     const leveledUp = battleSystem.gainExp(this.playerCat, expGain);
@@ -365,35 +498,44 @@ export class BattleScene extends Phaser.Scene {
 
     // Process Evolution if threshold hit
     if (this.playerCat.readyToEvolve) {
-        battleSystem.evolveCreature(this.playerCat);
-        evolutionHappened = true;
+      battleSystem.evolveCreature(this.playerCat);
+      evolutionHappened = true;
     }
 
     // Save party changes to registry to persist
-    this.registry.set('playerParty', this.playerParty);
-    
+    this.registry.set("playerParty", this.playerParty);
+
     // Also ensure collection reference reflects the updated HP/Level/Evolution
-    const collection = this.registry.get('playerCollection') || [];
-    const collIndex = collection.findIndex(c => c.instanceId === this.playerCat.instanceId);
+    const collection = this.registry.get("playerCollection") || [];
+    const collIndex = collection.findIndex(
+      (c) => c.instanceId === this.playerCat.instanceId,
+    );
     if (collIndex !== -1) collection[collIndex] = this.playerCat;
-    this.registry.set('playerCollection', collection);
+    this.registry.set("playerCollection", collection);
 
     this.updateLog("Battle won! Click the summary window to continue.");
-    
+
     this.time.delayedCall(2000, () => {
-      this.showSummaryPanel('Victory', expGain, leveledUp, oldLevel, evolutionHappened, goldGain);
+      this.showSummaryPanel(
+        "Victory",
+        expGain,
+        leveledUp,
+        oldLevel,
+        evolutionHappened,
+        goldGain,
+      );
     });
   }
 
   defeat() {
     this.isBattleOver = true;
-    
+
     // Persist HP (will be 0)
-    this.registry.set('playerParty', this.playerParty);
-    
+    this.registry.set("playerParty", this.playerParty);
+
     this.updateLog(`${this.playerCat.name} fainted...`);
     this.time.delayedCall(1500, () => {
-      this.showSummaryPanel('Defeat', 0, false, this.playerCat.level, false);
+      this.showSummaryPanel("Defeat", 0, false, this.playerCat.level, false);
     });
   }
 
@@ -401,70 +543,172 @@ export class BattleScene extends Phaser.Scene {
     this.logText.setText(msg);
   }
 
-  showSummaryPanel(result, expGained, leveledUp, oldLevel, evolutionHappened, goldGain = 0) {
+  showSummaryPanel(
+    result,
+    expGained,
+    leveledUp,
+    oldLevel,
+    evolutionHappened,
+    goldGain = 0,
+  ) {
     const { width, height } = this.cameras.main;
-    
+
     // Dim background
     this.add.rectangle(0, 0, width, height, 0x000000, 0.8).setOrigin(0);
 
     const panelWidth = 660;
     const panelHeight = 460;
-    const panelBg = this.add.rectangle(width / 2, height / 2, panelWidth, panelHeight, 0x1a252f).setInteractive({ useHandCursor: true });
-    this.add.rectangle(width / 2, height / 2, panelWidth, panelHeight).setStrokeStyle(4, 0x34db98).setOrigin(0.5);
+    const panelBg = this.add
+      .rectangle(width / 2, height / 2, panelWidth, panelHeight, 0x1a252f)
+      .setInteractive({ useHandCursor: true });
+    this.add
+      .rectangle(width / 2, height / 2, panelWidth, panelHeight)
+      .setStrokeStyle(4, 0x34db98)
+      .setOrigin(0.5);
 
-    this.add.text(width / 2, height / 2 - 170, `BATTLE ${result.toUpperCase()}`, { 
-        font: 'bold 40px "Press Start 2P", Courier, monospace', fill: '#f1c40f',
-        shadow: { offsetX: 2, offsetY: 2, color: '#000', blur: 0, fill: true }
-    }).setOrigin(0.5);
+    this.add
+      .text(width / 2, height / 2 - 170, `BATTLE ${result.toUpperCase()}`, {
+        font: 'bold 40px "Press Start 2P", Courier, monospace',
+        fill: "#f1c40f",
+        shadow: { offsetX: 2, offsetY: 2, color: "#000", blur: 0, fill: true },
+      })
+      .setOrigin(0.5);
 
     let yPos = height / 2 - 80;
 
-    if (result === 'Victory') {
+    if (result === "Victory") {
       let line = `EXP Gained: +${expGained}`;
       if (goldGain > 0) line += ` | Gold: +${goldGain}`;
-      
-      this.add.text(width / 2, yPos, line, { font: '24px Arial', fill: '#2ecc71' }).setOrigin(0.5);
+
+      this.add
+        .text(width / 2, yPos, line, { font: "24px Arial", fill: "#2ecc71" })
+        .setOrigin(0.5);
       yPos += 40;
-      
+
       const expNeeded = this.playerCat.level * 50;
-      this.add.text(width / 2, yPos, `Total EXP: ${this.playerCat.exp} / ${expNeeded}`, { font: '24px Arial', fill: '#ffffff' }).setOrigin(0.5);
+      this.add
+        .text(
+          width / 2,
+          yPos,
+          `Total EXP: ${this.playerCat.exp} / ${expNeeded}`,
+          { font: "24px Arial", fill: "#ffffff" },
+        )
+        .setOrigin(0.5);
       yPos += 50;
 
       if (leveledUp) {
-        this.add.text(width / 2, yPos, `LEVEL UP! (${oldLevel} -> ${this.playerCat.level})`, { font: 'bold 28px Arial', fill: '#3498db' }).setOrigin(0.5);
+        this.add
+          .text(
+            width / 2,
+            yPos,
+            `LEVEL UP! (${oldLevel} -> ${this.playerCat.level})`,
+            { font: "bold 28px Arial", fill: "#3498db" },
+          )
+          .setOrigin(0.5);
         yPos += 40;
       }
       if (evolutionHappened) {
-        this.add.text(width / 2, yPos, `EVOLUTION! Now ${this.playerCat.name}`, { font: 'bold 28px Arial', fill: '#9b59b6' }).setOrigin(0.5);
+        this.add
+          .text(width / 2, yPos, `EVOLUTION! Now ${this.playerCat.name}`, {
+            font: "bold 28px Arial",
+            fill: "#9b59b6",
+          })
+          .setOrigin(0.5);
         yPos += 40;
       }
     } else {
-        this.add.text(width / 2, yPos, `No EXP gained.`, { font: '24px Arial', fill: '#95a5a6' }).setOrigin(0.5);
+      this.add
+        .text(width / 2, yPos, `No EXP gained.`, {
+          font: "24px Arial",
+          fill: "#95a5a6",
+        })
+        .setOrigin(0.5);
     }
 
-    this.add.text(width / 2, height / 2 + 150, '- Click anywhere to continue -', { font: '20px Arial', fill: '#bdc3c7' }).setOrigin(0.5);
+    this.add
+      .text(width / 2, height / 2 + 150, "- Click anywhere to continue -", {
+        font: "20px Arial",
+        fill: "#bdc3c7",
+      })
+      .setOrigin(0.5);
 
     // Click to proceed
-    panelBg.on('pointerdown', () => this.endBattle());
+    panelBg.on("pointerdown", () => this.endBattle());
   }
 
   endBattle() {
     // Ensure final state is saved right before transitioning
-    this.registry.set('playerParty', this.playerParty);
+    this.registry.set("playerParty", this.playerParty);
 
     this.cameras.main.fadeOut(500, 0, 0, 0);
-    this.cameras.main.once('camerafadeoutcomplete', () => {
+    this.cameras.main.once("camerafadeoutcomplete", () => {
       // Return to world using saved position
-      const mapId = this.registry.get('world_mapId') || 'starwhisk_village';
-      const tx = this.registry.get('world_spawnX') || 10;
-      const ty = this.registry.get('world_spawnY') || 10;
+      const mapId = this.registry.get("world_mapId") || "starwhisk_village";
+      const tx = this.registry.get("world_spawnX") || 10;
+      const ty = this.registry.get("world_spawnY") || 10;
 
       // Autosave after battle (captures, exp, gold, codex)
       saveSystem.saveData(this.registry, mapId, tx, ty);
 
-      this.scene.start('WorldScene', {
-        mapId, spawnX: tx, spawnY: ty
+      // Chapter 1 Boss Twist Sequence
+      if (this.trainerId === "guardian_rowan" && !this.registry.get("chapter1_done")) {
+        this.runChapterCompleteSequence(mapId, tx, ty);
+        return;
+      }
+
+      this.scene.start("WorldScene", {
+        mapId,
+        spawnX: tx,
+        spawnY: ty,
       });
+    });
+  }
+
+  runChapterCompleteSequence(mapId, tx, ty) {
+    // 1. Rowan Defeat Dialogue
+    const rowanData = NPCS['trainer_guardian_rowan'];
+    const rowanDialogue = {
+        name: rowanData.name,
+        pages: rowanData.getDialogue(this.registry)
+    };
+
+    // 2. Hyunseok Twist Dialogue
+    const hyunseokDialogue = {
+        name: "촌장 현석", // Hyunseok
+        pages: [
+            "훌륭하구나.",
+            "로완, 이 고지식한 친구가 길을 비켜주지 않아 곤란하던 참이었단다.",
+            "역시 내가 선택한 아이답게 훌륭히 자라주었어."
+        ]
+    };
+
+    // Launch Dialog 1 (Rowan)
+    this.scene.launch("DialogScene", {
+        dialogue: rowanDialogue,
+        onComplete: () => {
+            // Launch Dialog 2 (Hyunseok)
+            this.scene.launch("DialogScene", {
+                dialogue: hyunseokDialogue,
+                onComplete: () => {
+                    this.registry.set("chapter1_done", true);
+                    
+                    // Launch Ending Cutscene instead of WorldScene
+                    this.scene.start("CutsceneScene", {
+                        messages: [
+                            "고대 고양이의 봉인이 깨졌다.",
+                            "전설 속 존재들이 펠로리아 대륙 곳곳으로 흩어지기 시작했다.",
+                            "- 시즌 1 종료 -"
+                        ],
+                        nextScene: "WorldScene", // Then actually return to the world to keep playing if they want
+                        sceneData: {
+                            mapId,
+                            spawnX: tx,
+                            spawnY: ty
+                        }
+                    });
+                }
+            });
+        }
     });
   }
 }

@@ -12,6 +12,7 @@ import { MenuScene } from '../scenes/MenuScene.js';
 import { PartyScene } from '../scenes/PartyScene.js';
 import { CodexScene } from '../scenes/CodexScene.js';
 import { QuestScene } from '../scenes/QuestScene.js';
+import { CutsceneScene } from '../scenes/CutsceneScene.js';
 import { EvolutionScene } from '../scenes/EvolutionScene.js';
 import { ShopScene } from '../scenes/ShopScene.js';
 import { InventoryScene } from '../scenes/InventoryScene.js';
@@ -42,6 +43,7 @@ export const gameConfig = {
     PartyScene,
     CodexScene,
     QuestScene,
+    CutsceneScene,
     EvolutionScene,
     ShopScene,
     InventoryScene,

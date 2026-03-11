@@ -32,7 +32,16 @@ export class StartScene extends Phaser.Scene {
 
     // Menu Options
     this.createMenuItem(width / 2, height * 0.6, "New Game", () => {
-      this.scene.start("NameScene");
+      this.scene.start("CutsceneScene", {
+        messages: [
+          "펠로리아 대륙.",
+          "아주 오래전, 이 대륙에는 세계의 균형을 지키는 존재들이 있었다.",
+          "사람들은 그들을 '고대 고양이'라 불렀다.",
+          "하지만 지금… 숲의 기운이 뒤틀리기 시작했다.",
+          "그리고 그 힘을 노리는 누군가가 움직이고 있다."
+        ],
+        nextScene: "NameScene"
+      });
     });
 
     // Check if Save Data Exists

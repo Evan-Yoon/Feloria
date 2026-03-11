@@ -1,0 +1,220 @@
+/**
+ * npcs.js
+ * Centralized data structure for all NPCs in Feloria.
+ * Defines roles, reactivity, and Korean dialogue based on the game state.
+ */
+
+export const NPCS = {
+  // --- STARWHISK VILLAGE ---
+  mira: {
+    id: "Chief Hyunseok",
+    name: "촌장 현석",
+    role: "healer_quest",
+    sprite: "npc_mira",
+    getDialogue: (registry) => {
+      const activeQuests = registry.get("activeQuests") || {};
+      const firstSteps = activeQuests["first_steps"];
+
+      // Quest progression checks
+      if (!firstSteps || !firstSteps.objectives[1].completed) {
+        // Starter not chosen yet
+        return [
+          "어서 오너라, 여행자야.",
+          "요즘 숲의 기운이 조금 이상하단다. 무언가 거대한 것이 꿈틀대는 것 같아...",
+        ];
+      }
+      if (firstSteps && !firstSteps.completed) {
+        return [
+          "네 고양이를 잘 돌봐주거라.",
+          "숲에서는 언제 어떤 일이 벌어질지 모른단다. 그게 누구의 계획이든 말이지.",
+        ];
+      }
+
+      // Default / Healer Dialogue
+      return [
+        "피곤해 보이는구나. 이리 오렴.",
+        "내가 네 파티를 아주 '건강하게' 유지해 주마.",
+      ];
+    },
+  },
+  shopkeeper: {
+    id: "shopkeeper",
+    name: "상인 토비",
+    role: "shopkeeper",
+    sprite: "npc",
+    getDialogue: (registry) => {
+      return [
+        "어서 와! 필요한 물건이 있나?",
+        "포션은 전투에서 정말 유용하지. 특히 깊은 숲에선 필수야!",
+      ];
+    },
+  },
+  villager1: {
+    id: "villager1",
+    name: "마을 주민 리나",
+    role: "hint_npc",
+    sprite: "npc",
+    getDialogue: (registry) => {
+      const collection = registry.get("playerCollection") || [];
+      if (collection.length > 1) {
+        // Has captured at least one cat (since starter is 1)
+        return [
+          "와! 벌써 고양이를 잡았구나!",
+          "촌장님이 널 아주 특별하게 생각하시는 것 같더라.",
+        ];
+      }
+      return [
+        "숲에 들어가면 풀숲을 조심해.",
+        "야생 고양이들이 갑자기 나타나거든. 요즘 들어 유독 더 사나워졌어.",
+      ];
+    },
+  },
+  eugene: {
+    id: "eugene",
+    name: "고양이 연구가 유진",
+    role: "lore_npc",
+    sprite: "npc",
+    getDialogue: (registry) => {
+      const caughtIds = registry.get("caughtCreatureIds") || [];
+      if (caughtIds.length >= 3) {
+        return [
+          "도감을 채우고 있구나!",
+          "언젠가 전설 속 '고대 고양이'도 만날 수 있을지 몰라.",
+        ];
+      }
+      return [
+        "이 세계에는 아주 다양한 고양이들이 살고 있어.",
+        "어떤 고양이는 숲에서, 어떤 고양이는 물가에서 살아.",
+      ];
+    },
+  },
+
+  // --- GREENPAW FOREST ---
+  darin: {
+    id: "darin",
+    name: "숲 탐험가 다린",
+    role: "hint_npc",
+    sprite: "npc",
+    getDialogue: (registry) => {
+      // Very simple reactive check: if their highest level cat is > 3
+      const party = registry.get("playerParty") || [];
+      const hasStrongCat = party.some((c) => c.level > 3);
+      if (hasStrongCat) {
+        return [
+          "전투에서 살아남았구나!",
+          "다음엔 더 강한 고양이도 만날 거야. 안쪽은 기운이 심상치 않거든.",
+        ];
+      }
+      return [
+        "이 숲은 생각보다 깊어.",
+        "풀숲에서는 언제든 야생 고양이들이 널 노릴 수 있어.",
+      ];
+    },
+  },
+  trainer_kyle: {
+    id: "trainer_kyle",
+    name: "초보 트레이너 카일",
+    role: "trainer",
+    trainerId: "kyle",
+    sprite: "npc",
+    getDialogue: (registry) => {
+      const defeated = registry.get("defeatedTrainers") || [];
+      if (defeated.includes("kyle")) {
+        return ["와… 내가 졌어.", "더 열심히 훈련해야겠어."];
+      }
+      return ["너도 트레이너야?", "내 고양이랑 한번 붙어보자!"];
+    },
+  },
+
+  // --- MOSSLIGHT PATH ---
+  noah: {
+    id: "noah",
+    name: "여행자 노아",
+    role: "hint_npc",
+    sprite: "npc",
+    getDialogue: (registry) => {
+      return [
+        "이 길은 고대 숲으로 이어진단다.",
+        "하지만 조심해. 숲을 지키려는 자들이 예민해져 있어.",
+      ];
+    },
+  },
+  trainer_sera: {
+    id: "trainer_sera",
+    name: "트레이너 세라",
+    role: "trainer",
+    trainerId: "sera",
+    sprite: "npc",
+    getDialogue: (registry) => {
+      const defeated = registry.get("defeatedTrainers") || [];
+      if (defeated.includes("sera")) {
+        return ["대단하네…", "넌 정말 강한 트레이너야. 신전에 갈 자격이 있어."];
+      }
+      return ["이 길을 지나가려면 나를 이겨야 해!"];
+    },
+  },
+
+  // --- ANCIENT FOREST ---
+  evan: {
+    id: "evan",
+    name: "신비한 여행자 에반",
+    role: "lore_npc",
+    sprite: "npc",
+    getDialogue: (registry) => {
+      return [
+        "이 숲은 아주 오래된 곳이야.",
+        "고대 고양이들이 잠들어 있다는 이야기가 있지.",
+        "…그리고 누군가 신전의 봉인을 노리고 있는 것 같아.",
+      ];
+    },
+  },
+  trainer_luke: {
+    id: "trainer_luke",
+    name: "숲 수호자 견습 루크",
+    role: "trainer",
+    trainerId: "luke",
+    sprite: "npc",
+    getDialogue: (registry) => {
+      const defeated = registry.get("defeatedTrainers") || [];
+      if (defeated.includes("luke")) {
+        return ["너라면 이 숲의 시련을 이겨낼 수 있을 거다. 로완 님을 도와줘."];
+      }
+      return ["더 이상은 못 간다! 신전을 보호해야 해!"];
+    },
+  },
+
+  // --- MOSSLIGHT SHRINE ---
+  ellie: {
+    id: "ellie",
+    name: "순례자 엘리",
+    role: "hint_npc",
+    sprite: "npc",
+    getDialogue: (registry) => {
+      return [
+        "신전에 들어가기 전에 준비를 단단히 해.",
+        "수호자님은 강한 힘으로 무언가를 억누르고 계셔.",
+      ];
+    },
+  },
+  trainer_guardian_rowan: {
+    id: "trainer_guardian_rowan",
+    name: "신전 수호자 로완",
+    role: "boss_trainer",
+    trainerId: "guardian_rowan",
+    sprite: "npc_mira", // Uses unique sprite
+    getDialogue: (registry) => {
+      const defeated = registry.get("defeatedTrainers") || [];
+      if (defeated.includes("guardian_rowan")) {
+        return [
+          "크윽... 훌륭하다...",
+          "하지만 네가 무슨 짓을 했는지 아느냐?",
+          "결계가... 깨져버렸어. 설마 이 모든 게 그 자의 계획이었단 말인가!",
+        ];
+      }
+      return [
+        "여기까지 온 걸 보니 꽤 실력이 있군.",
+        "하지만 이 앞은 절대 지나갈 수 없다. 세계의 균형을 위해 나를 꺾어봐라!",
+      ];
+    },
+  },
+};

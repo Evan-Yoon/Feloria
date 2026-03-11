@@ -98,7 +98,8 @@
     }
   ],
   "spawns": [
-    { "type": "npc", "x": 17, "y": 14, "id": "trainer_youngster_tim", "name": "Youngster Tim" },
+    { "type": "npc", "x": 17, "y": 14, "id": "trainer_kyle", "name": "Trainer Kyle" },
+    { "type": "npc", "x": 10, "y": 18, "id": "darin", "name": "Darin" },
     { "type": "npc", "x": 2, "y": 14, "id": "item_potion", "name": "Hidden Item" }
   ],
   "warps": [

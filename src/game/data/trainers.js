@@ -1,37 +1,42 @@
 import { CREATURES } from "./creatures.js";
 
 export const TRAINers = {
-  youngster_tim: {
-    id: "youngster_tim",
-    name: "Youngster Tim",
-    dialogueBefore: "{playerName}! My Forest cat is top tier! Let's battle!",
-    dialogueAfter: "Whoa, your cat is way stronger!",
+  kyle: {
+    id: "kyle",
+    name: "초보 트레이너 카일",
     rewards: {
       gold: 50,
-      expMultiplier: 1.5, // Trainers give more EXP
+      expMultiplier: 1.5,
     },
     party: [{ creatureId: "LEAFKIT", level: 4 }],
   },
-  hiker_bob: {
-    id: "hiker_bob",
-    name: "Hiker Bob",
-    dialogueBefore:
-      "The path gets dangerous from here. Show me what you've got, {playerName}!",
-    dialogueAfter: "You're ready. Stay safe out there.",
+  sera: {
+    id: "sera",
+    name: "트레이너 세라",
     rewards: {
       gold: 100,
       expMultiplier: 1.5,
     },
     party: [
       { creatureId: "EMBERPAW", level: 5 },
-      { creatureId: "SNAGPUSS", level: 5 },
+      { creatureId: "SNAGPUSS", level: 6 },
+    ],
+  },
+  luke: {
+    id: "luke",
+    name: "숲 수호자 견습 루크",
+    rewards: {
+      gold: 150,
+      expMultiplier: 1.5,
+    },
+    party: [
+      { creatureId: "BRAMBLECAT", level: 10 },
+      { creatureId: "AQUATAIL", level: 9 },
     ],
   },
   guardian_rowan: {
     id: "guardian_rowan",
-    name: "Guardian Rowan",
-    dialogueBefore: "The Shrine is sacred. You must prove your strength to pass!",
-    dialogueAfter: "I haven't seen power like that in years. The Forest Badge is yours.",
+    name: "신전 수호자 로완",
     rewards: {
         gold: 500,
         expMultiplier: 2.5,

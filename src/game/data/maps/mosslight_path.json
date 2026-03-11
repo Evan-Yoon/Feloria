@@ -83,7 +83,8 @@
     }
   ],
   "spawns": [
-    { "type": "npc", "x": 11, "y": 8, "id": "trainer_hiker_bob", "name": "Hiker Bob" }
+    { "type": "npc", "x": 11, "y": 8, "id": "trainer_sera", "name": "Trainer Sera" },
+    { "type": "npc", "x": 11, "y": 15, "id": "noah", "name": "Noah" }
   ],
   "warps": [
     { "x": 8, "y": 19, "targetMap": "greenpaw_forest", "targetX": 11, "targetY": 1 },

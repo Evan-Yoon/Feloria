@@ -5,6 +5,7 @@ import { encounterSystem } from "../systems/encounterSystem.js";
 import { dialogueSystem } from "../systems/dialogueSystem.js";
 import { questSystem } from "../systems/questSystem.js";
 import { TRAINers } from "../data/trainers.js";
+import { NPCS } from "../data/npcs.js";
 
 /**
  * WorldScene
@@ -98,6 +99,42 @@ export class WorldScene extends Phaser.Scene {
         } else if (this.mapId === 'ancient_forest') {
             questSystem.completeObjective(this.registry, 'forest_awakening', 'enter_ancient_forest');
         }
+
+        // Forced Intro Check
+        if (this.mapId === 'starwhisk_village' && !this.registry.get("intro_done")) {
+            this.time.delayedCall(500, () => {
+                this.triggerForcedDialogue("mira");
+            });
+        }
+    });
+  }
+
+  triggerForcedDialogue(npcId) {
+    const npcData = NPCS[npcId];
+    if (!npcData) return;
+
+    this.isDialogueActive = true;
+    
+    // Check if player needs to face a certain way? Just force it.
+    // Assuming Hyunseok is above the spawn point (10, 8) and player spawns at (10, 10).
+    this.playerDir = "up";
+    this.player.setFrame(1); 
+
+    this.scene.launch("DialogScene", {
+      dialogue: {
+        name: npcData.name,
+        pages: npcData.getDialogue(this.registry)
+      },
+      onComplete: () => {
+        this.isDialogueActive = false;
+        this.registry.set("intro_done", true);
+        
+        // Start first quest instantly after forced dialogue completes
+        const activeQuests = this.registry.get('activeQuests') || {};
+        if (activeQuests['first_steps']) {
+            questSystem.completeObjective(this.registry, "first_steps", "talk_mira");
+        }
+      }
     });
   }
 
@@ -273,9 +310,6 @@ export class WorldScene extends Phaser.Scene {
     }
   }
 
-  /**
-   * Handles NPC interaction when the action key is pressed.
-   */
   handleInteraction() {
     if (this.isMoving || this.isDialogueActive) return;
 
@@ -288,80 +322,64 @@ export class WorldScene extends Phaser.Scene {
     else if (this.playerDir === "up") targetY--;
     else if (this.playerDir === "down") targetY++;
 
-    // Find NPC
-    const npc = this.npcs
+    // Find NPC Sprite
+    const npcSprite = this.npcs
       .getChildren()
       .find((n) => n.tileX === targetX && n.tileY === targetY);
-    if (npc) {
-      this.isDialogueActive = true;
-      let dialogue;
-
-      // Check if it's a Trainer
-      if (npc.npcId.startsWith("trainer_")) {
-        const trainerId = npc.npcId.replace("trainer_", "");
-        const trainerData = TRAINers[trainerId];
-        const defeatedTrainers = this.registry.get("defeatedTrainers") || [];
-        const isDefeated = defeatedTrainers.includes(trainerId);
-
-        dialogue = {
-          name: trainerData.name,
-          pages: [
-            isDefeated ? trainerData.dialogueAfter : trainerData.dialogueBefore,
-          ],
-        };
-
-        this.scene.launch("DialogScene", {
-          dialogue: dialogue,
-          onComplete: () => {
-            this.isDialogueActive = false;
-            if (!isDefeated) {
-              this.triggerTrainerBattle(trainerId);
-            } else if (trainerId === "guardian_rowan") {
-                // Secondary quest completion check
-                questSystem.completeObjective(this.registry, 'forest_awakening', 'defeat_rowan');
-            }
-          },
-        });
+      
+    if (npcSprite) {
+      // Find NPC Data
+      const npcData = NPCS[npcSprite.npcId];
+      
+      if (!npcData) {
+        console.warn(`WorldScene: NPC ID '${npcSprite.npcId}' not found in npcs.js`);
         return;
       }
 
-      // Standard NPC Dialogue
-      dialogue = dialogueSystem.getDialogue(npc.npcId);
+      this.isDialogueActive = true;
+      let pages = npcData.getDialogue(this.registry);
 
-      // Quest progression for Elder Mira
-      if (npc.npcId === "mira") {
+      // Pre-dialogue objective triggers
+      if (npcData.id === "mira") {
         const quest = questSystem.getQuest(this.registry, "first_steps");
-        if (
-          quest &&
-          !quest.objectives.find((o) => o.id === "talk_mira").completed
-        ) {
-          questSystem.completeObjective(
-            this.registry,
-            "first_steps",
-            "talk_mira",
-          );
-        } else if (
-          quest &&
-          quest.objectives.find((o) => o.id === "capture_cat").completed
-        ) {
-          questSystem.completeObjective(
-            this.registry,
-            "first_steps",
-            "return_mira",
-          );
+        if (quest && !quest.objectives.find((o) => o.id === "talk_mira").completed) {
+          questSystem.completeObjective(this.registry, "first_steps", "talk_mira");
+        } else if (quest && quest.objectives.find((o) => o.id === "capture_cat").completed) {
+          questSystem.completeObjective(this.registry, "first_steps", "return_mira");
         }
       }
 
       this.scene.launch("DialogScene", {
-        dialogue: dialogue,
+        dialogue: {
+          name: npcData.name,
+          pages: pages
+        },
         onComplete: () => {
           this.isDialogueActive = false;
-          // Check special post-dialogue flags
-          if (dialogue.pages.includes("[HEAL_PROMPT]")) {
-            this.healParty();
-          } else if (dialogue.pages.includes("[SHOP_PROMPT]")) {
-            this.scene.pause();
-            this.scene.launch("ShopScene");
+          
+          // Role-based post-dialogue actions
+          switch (npcData.role) {
+            case 'healer_quest':
+              this.healParty();
+              break;
+            case 'shopkeeper':
+              this.scene.pause();
+              this.scene.launch("ShopScene");
+              break;
+            case 'trainer':
+            case 'boss_trainer':
+              const defeated = this.registry.get("defeatedTrainers") || [];
+              if (!defeated.includes(npcData.trainerId)) {
+                this.triggerTrainerBattle(npcData.trainerId);
+              } else if (npcData.role === 'boss_trainer' && npcData.trainerId === 'guardian_rowan') {
+                questSystem.completeObjective(this.registry, 'forest_awakening', 'defeat_rowan');
+              }
+              break;
+            case 'hint_npc':
+            case 'lore_npc':
+            default:
+              // Just dialogue, nothing extra.
+              break;
           }
         },
       });
