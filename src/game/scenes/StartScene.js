@@ -24,14 +24,14 @@ export class StartScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    this.add.text(width / 2, height / 3 + 40, "A Cat-Mon Taming RPG", {
+    this.add.text(width / 2, height / 3 + 40, "고양이 정령 육성 RPG", {
         font: "italic 28px Arial",
         fill: "#bdc3c7",
       })
       .setOrigin(0.5);
 
     // Menu Options
-    this.createMenuItem(width / 2, height * 0.6, "New Game", () => {
+    this.createMenuItem(width / 2, height * 0.6, "새 게임", () => {
       this.scene.start("CutsceneScene", {
         messages: [
           "펠로리아 대륙.",
@@ -48,7 +48,7 @@ export class StartScene extends Phaser.Scene {
     const saves = saveSystem.getAllSaves();
     const hasSave = saves.some(s => s.exists);
 
-    const continueBtn = this.createMenuItem(width / 2, height * 0.7, "Continue", () => {
+    const continueBtn = this.createMenuItem(width / 2, height * 0.7, "이어하기", () => {
       if (hasSave) {
         this.scene.pause();
         this.scene.launch("SaveLoadScene", { mode: 'load' });
@@ -65,7 +65,7 @@ export class StartScene extends Phaser.Scene {
 
     // Instructions
     this.add
-      .text(width / 2, height - 50, "Use Mouse to select", {
+      .text(width / 2, height - 50, "마우스를 사용하여 선택", {
         font: "16px Arial",
         fill: "#bdc3c7",
       })

@@ -1,5 +1,5 @@
-import { CREATURES } from '../data/creatures.js';
-import { SKILLS } from '../data/skills.js';
+import { CREATURES } from "../data/creatures.js";
+import { SKILLS } from "../data/skills.js";
 
 /**
  * battleSystem.js - Core logic for turn-based battles.
@@ -14,7 +14,7 @@ export const battleSystem = {
 
     // Stat scaling logic (simple for now)
     const hp = Math.floor(species.baseHp * (1 + (level - 1) * 0.1));
-    
+
     return {
       ...species,
       instanceId: `${creatureId}_${Date.now()}_${Math.floor(Math.random() * 10000)}`, // Unique ID for party tracking
@@ -24,9 +24,9 @@ export const battleSystem = {
       exp: 0,
       stats: {
         attack: Math.floor(species.baseAttack * (1 + (level - 1) * 0.1)),
-        defense: Math.floor(species.baseDefense * (1 + (level - 1) * 0.1))
+        defense: Math.floor(species.baseDefense * (1 + (level - 1) * 0.1)),
       },
-      skills: species.skills ? [...species.skills] : []
+      skills: species.skills ? [...species.skills] : [],
     };
   },
 
@@ -41,9 +41,15 @@ export const battleSystem = {
     if (!evolvedSpecies) return creature;
 
     // Calculate new stats based on current level
-    const newMaxHp = Math.floor(evolvedSpecies.baseHp * (1 + (creature.level - 1) * 0.1));
-    const newAttack = Math.floor(evolvedSpecies.baseAttack * (1 + (creature.level - 1) * 0.1));
-    const newDefense = Math.floor(evolvedSpecies.baseDefense * (1 + (creature.level - 1) * 0.1));
+    const newMaxHp = Math.floor(
+      evolvedSpecies.baseHp * (1 + (creature.level - 1) * 0.1),
+    );
+    const newAttack = Math.floor(
+      evolvedSpecies.baseAttack * (1 + (creature.level - 1) * 0.1),
+    );
+    const newDefense = Math.floor(
+      evolvedSpecies.baseDefense * (1 + (creature.level - 1) * 0.1),
+    );
 
     // Preserve HP proportion
     const hpRatio = creature.currentHp / creature.maxHp;
@@ -60,7 +66,7 @@ export const battleSystem = {
     creature.skills = evolvedSpecies.skills ? [...evolvedSpecies.skills] : [];
     creature.description = evolvedSpecies.description || "";
     creature.habitat = evolvedSpecies.habitat;
-    
+
     // Clear old evolution to prevent re-triggering (or assign next stage if it existed)
     creature.evolution = evolvedSpecies.evolution || null;
     creature.readyToEvolve = false;
@@ -81,20 +87,22 @@ export const battleSystem = {
     const atk = attacker.stats.attack;
     const def = target.stats.defense;
 
+    // Basic Attack check (IDs used by SNAGPUSS and others as basics or fallbacks)
     if (!skillId || skillId === "attack" || skillId === "scratch") {
       // Basic Attack is intentionally weak
-      return Math.max(1, Math.floor((atk * 0.5) - (def * 0.2)));
+      return Math.max(1, Math.floor(atk * 0.5 - def * 0.2));
     }
 
     const skill = SKILLS[skillId];
     if (!skill) return 0;
 
     // Skill Damage
-    const power = skill.power || 1.0;
-    
-    // Damage = (Attack * PowerMultiplier) - (Defense * 0.5)
-    let damage = (atk * power) - (def * 0.5);
-    
+    // Scaling: skill.power 50 is base (1.0x attack)
+    const powerMultiplier = (skill.power || 50) / 50;
+
+    // Damage = (Attack * Multiplier) - (Defense * 0.5)
+    let damage = atk * powerMultiplier - def * 0.5;
+
     return Math.max(1, Math.floor(damage));
   },
 
@@ -107,11 +115,11 @@ export const battleSystem = {
     // Base formula: catchRate * (1 - hpRatio) + small flat bonus
     // A legendary with catchRate 0.01 at 10% HP = 0.01 * 0.9 + 0.05 = ~0.059 (6% catch chance)
     // A regular with catchRate 0.8 at 10% HP = 0.8 * 0.9 + 0.05 = ~0.77 (77% catch chance)
-    
+
     // Default to 0.5 if not found
     const baseRate = enemy.catchRate !== undefined ? enemy.catchRate : 0.5;
-    
-    const successProbability = (baseRate * (1.0 - hpRatio)) + (baseRate * 0.2); 
+
+    const successProbability = baseRate * (1.0 - hpRatio) + baseRate * 0.2;
     return Math.random() < successProbability;
   },
 
@@ -128,9 +136,9 @@ export const battleSystem = {
    * Calculates Gold gained from winning a battle.
    */
   calculateGold: (isTrainer = false, trainerGold = 0) => {
-      if (isTrainer) return trainerGold;
-      // Wild battles drop between 3 and 10 Gold
-      return Math.floor(Math.random() * 8) + 3;
+    if (isTrainer) return trainerGold;
+    // Wild battles drop between 3 and 10 Gold
+    return Math.floor(Math.random() * 8) + 3;
   },
 
   /**
@@ -140,14 +148,14 @@ export const battleSystem = {
   gainExp: (creature, amount) => {
     if (!creature.exp) creature.exp = 0;
     creature.exp += amount;
-    
+
     // Simple fixed threshold for now: 50 EXP per level
     const expNeeded = creature.level * 50;
-    
+
     if (creature.exp >= expNeeded) {
       creature.level += 1;
       creature.exp -= expNeeded; // Carry over
-      
+
       // Stat increases
       creature.maxHp += 2;
       creature.currentHp += 2; // Heal slightly on level up
@@ -161,5 +169,5 @@ export const battleSystem = {
       return true; // Leveled up
     }
     return false;
-  }
+  },
 };

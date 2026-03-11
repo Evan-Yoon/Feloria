@@ -19,21 +19,21 @@ export class StarterSelectScene extends Phaser.Scene {
     this.add.rectangle(0, 0, width, height, 0x2c3e50).setOrigin(0);
 
     // Header
-    this.add.text(width / 2, 50, `Hello, ${playerName}!`, {
+    this.add.text(width / 2, 50, `안녕, ${playerName}!`, {
       font: '32px Arial',
       fill: '#ffffff'
     }).setOrigin(0.5);
 
-    this.add.text(width / 2, 100, 'Choose your companion:', {
+    this.add.text(width / 2, 100, '함께 모험을 떠날 고양이를 선택하세요:', {
       font: '24px Arial',
       fill: '#ecf0f1'
     }).setOrigin(0.5);
 
     // Starters pool
     this.starters = [
-      { id: 'leafkit', name: 'Leafkit', type: 'Forest', color: '#2ecc71', x: width * 0.25 },
-      { id: 'emberpaw', name: 'Emberpaw', type: 'Fire', color: '#e74c3c', x: width * 0.5 },
-      { id: 'misttail', name: 'Misttail', type: 'Water', color: '#34ace0', x: width * 0.75 }
+      { id: 'leafkit', name: '리프킷', type: '숲', color: '#2ecc71', x: width * 0.25 },
+      { id: 'emberpaw', name: '엠버파우', type: '불', color: '#e74c3c', x: width * 0.5 },
+      { id: 'misttail', name: '미스트테일', type: '물', color: '#34ace0', x: width * 0.75 }
     ];
 
     this.starters.forEach(s => this.createStarterOption(s));
@@ -45,7 +45,7 @@ export class StarterSelectScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     // Confirm Button
-    this.confirmButton = this.add.text(width / 2, height * 0.9, 'Confirm Selection', {
+    this.confirmButton = this.add.text(width / 2, height * 0.9, '선택 완료', {
       font: '28px Arial',
       fill: '#27ae60',
       backgroundColor: '#ffffff',
@@ -78,7 +78,7 @@ export class StarterSelectScene extends Phaser.Scene {
 
     hitArea.on('pointerdown', () => {
       this.selectedId = data.id;
-      this.selectionDetail.setText(`You have selected ${data.name}.`);
+      this.selectionDetail.setText(`${data.name}를 선택하셨습니다.`);
       this.confirmButton.setVisible(true);
       
       this.children.list.forEach(child => {

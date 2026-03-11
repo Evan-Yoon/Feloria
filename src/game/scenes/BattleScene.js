@@ -195,7 +195,7 @@ export class BattleScene extends Phaser.Scene {
       .setStrokeStyle(4, 0x34495e);
     this.menuUI.add(this.menuBg);
 
-    const menuItems = ["Attack", "Skill", "Capture", "Run"];
+    const menuItems = ["공격", "스킬", "포획", "도망"];
     this.menuButtons = [];
 
     menuItems.forEach((text, i) => {
@@ -223,18 +223,24 @@ export class BattleScene extends Phaser.Scene {
 
     // 5. Skill Submenu (Hidden initially)
     this.skillMenuUI = this.add.container(width - 280, height - 140);
-    this.skillMenuUI.add(
-      this.add.rectangle(0, 0, 280, 140, 0x2c3e50).setOrigin(0).setStrokeStyle(4, 0x34495e)
-    );
+    this.skillMenuBg = this.add.rectangle(0, 0, 280, 140, 0x2c3e50).setOrigin(0).setStrokeStyle(4, 0x34495e);
+    this.skillMenuUI.add(this.skillMenuBg);
     this.skillButtons = [];
 
     const skills = this.playerCat.skills || [];
-    const skillList = [
-      skills[0] ? SKILLS[skills[0]] : { name: "-", id: null },
-      skills[1] ? SKILLS[skills[1]] : { name: "-", id: null },
-      skills[2] ? SKILLS[skills[2]] : { name: "-", id: null },
-      { name: "Back", id: "back" }
-    ];
+    const skillList = [];
+    skills.forEach(sid => {
+      if (SKILLS[sid]) skillList.push(SKILLS[sid]);
+    });
+    skillList.push({ name: "뒤로", id: "back" });
+
+    // Expand menu if more than 4 items
+    if (skillList.length > 4) {
+      this.skillMenuBg.height = 200;
+      this.skillMenuUI.y = height - 200;
+      // Also maybe the main menu background should be consistent? 
+      // For now just adjust the skill menu.
+    }
 
     skillList.forEach((skillItem, i) => {
       const col = i % 2;
@@ -245,18 +251,20 @@ export class BattleScene extends Phaser.Scene {
         .setOrigin(0)
         .setInteractive({ useHandCursor: true });
       const btnText = this.add
-        .text(10 + col * 135 + 62.5, 10 + row * 65 + 27.5, skillItem ? skillItem.name : "-", {
+        .text(10 + col * 135 + 62.5, 10 + row * 65 + 27.5, skillItem.name, {
           font: "bold 16px Arial",
           fill: "#ffffff",
+          align: 'center',
+          wordWrap: { width: 110 }
         })
         .setOrigin(0.5);
 
-      if (skillItem && skillItem.id === "back") {
+      if (skillItem.id === "back") {
         btnBg.on("pointerdown", () => {
           this.skillMenuUI.setVisible(false);
           this.menuUI.setVisible(true);
         });
-      } else if (skillItem && skillItem.id) {
+      } else {
         btnBg.on("pointerdown", () => {
           this.skillMenuUI.setVisible(false);
           this.playerSkill(skillItem.id);
@@ -280,20 +288,17 @@ export class BattleScene extends Phaser.Scene {
     this.menuUI.setVisible(false);
 
     switch (action) {
-      case "Attack":
-        this.menuUI.setVisible(false);
+      case "공격":
         this.playerAttack();
         break;
-      case "Skill":
-        this.menuUI.setVisible(false);
+      case "스킬":
         this.skillMenuUI.setVisible(true);
         this.canInput = true; // Allow clicking on skill menu
         break;
-      case "Capture":
-        this.menuUI.setVisible(false);
+      case "포획":
         this.playerCapture();
         break;
-      case "Run":
+      case "도망":
         this.playerRun();
         break;
     }
@@ -377,7 +382,7 @@ export class BattleScene extends Phaser.Scene {
 
     this.time.delayedCall(1000, () => {
       if (battleSystem.checkCapture(this.enemyCat)) {
-        this.updateLog("Success! You captured the wild cat!");
+        this.updateLog("성공! 야생 고양이를 포획했다!");
 
         // Update Codex and Quest
         codexSystem.markCaught(this.registry, this.enemyCat.id);
@@ -513,7 +518,7 @@ export class BattleScene extends Phaser.Scene {
     this.canInput = this.isPlayerTurn;
 
     if (this.isPlayerTurn) {
-      this.updateLog(`What will ${this.playerCat.name} do?`);
+      this.updateLog(`${this.playerCat.name}는 무엇을 할까?`);
       this.menuUI.setVisible(true);
     } else {
       this.enemyTurn();
@@ -529,7 +534,7 @@ export class BattleScene extends Phaser.Scene {
       // Mark seen
       codexSystem.markSeen(this.registry, this.enemyCat.id);
 
-      this.updateLog(`Trainer sent out ${this.enemyCat.name}!`);
+      this.updateLog(`트레이너가 ${this.enemyCat.name}를 내보냈다!`);
 
       // Refresh UI
       this.enemySprite.setTexture(this.enemyCat.id.toLowerCase());
@@ -544,7 +549,7 @@ export class BattleScene extends Phaser.Scene {
       this.time.delayedCall(1500, () => {
         this.canInput = true;
         this.menuUI.setVisible(true);
-        this.updateLog(`What will ${this.playerCat.name} do?`);
+        this.updateLog(`${this.playerCat.name}는 무엇을 할까?`);
       });
       return;
     }
@@ -619,7 +624,7 @@ export class BattleScene extends Phaser.Scene {
     if (collIndex !== -1) collection[collIndex] = this.playerCat;
     this.registry.set("playerCollection", collection);
 
-    this.updateLog("Battle won!");
+    this.updateLog("배틀에서 승리했다!");
 
     if (leveledUp) {
       this.time.delayedCall(1000, () => {
@@ -635,7 +640,7 @@ export class BattleScene extends Phaser.Scene {
     } else {
       this.time.delayedCall(1500, () => {
         this.showSummaryPanel(
-          "Victory",
+          "승리",
           expGain,
           leveledUp,
           oldLevel,
@@ -682,7 +687,7 @@ export class BattleScene extends Phaser.Scene {
           delay: 1000,
           onComplete: () => {
             levelUpText.destroy();
-            this.showSummaryPanel("Victory", expGained, true, oldLevel, evolutionHappened, goldGain, oldStats, oldCreatureId);
+            this.showSummaryPanel("승리", expGained, true, oldLevel, evolutionHappened, goldGain, oldStats, oldCreatureId);
           }
         });
       }
@@ -695,9 +700,9 @@ export class BattleScene extends Phaser.Scene {
     // Persist HP (will be 0)
     this.registry.set("playerParty", this.playerParty);
 
-    this.updateLog(`${this.playerCat.name} fainted...`);
+    this.updateLog(`${this.playerCat.name}가 쓰러졌다...`);
     this.time.delayedCall(1500, () => {
-      this.showSummaryPanel("Defeat", 0, false, this.playerCat.level, false);
+      this.showSummaryPanel("패배", 0, false, this.playerCat.level, false);
     });
   }
 
@@ -734,7 +739,7 @@ export class BattleScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(width / 2, height / 2 - 170, `BATTLE ${result.toUpperCase()}`, {
+      .text(width / 2, height / 2 - 170, `배틀 ${result}`, {
         font: 'bold 40px "Press Start 2P", Courier, monospace',
         fill: "#f1c40f",
         shadow: { offsetX: 2, offsetY: 2, color: "#000", blur: 0, fill: true },
@@ -744,8 +749,8 @@ export class BattleScene extends Phaser.Scene {
     let yPos = height / 2 - 80;
 
     if (result === "Victory") {
-      let line = `EXP Gained: +${expGained}`;
-      if (goldGain > 0) line += ` | Gold: +${goldGain}`;
+      let line = `경험치 획득: +${expGained}`;
+      if (goldGain > 0) line += ` | 골드: +${goldGain}`;
 
       this.add
         .text(width / 2, yPos, line, { font: "24px Arial", fill: "#2ecc71" })
@@ -757,7 +762,7 @@ export class BattleScene extends Phaser.Scene {
         .text(
           width / 2,
           yPos,
-          `Total EXP: ${this.playerCat.exp} / ${expNeeded}`,
+          `총 경험치: ${this.playerCat.exp} / ${expNeeded}`,
           { font: "24px Arial", fill: "#ffffff" },
         )
         .setOrigin(0.5);
@@ -768,7 +773,7 @@ export class BattleScene extends Phaser.Scene {
           .text(
             width / 2,
             yPos,
-            `LEVEL UP! (${oldLevel} -> ${this.playerCat.level})`,
+            `레벨 업! (${oldLevel} -> ${this.playerCat.level})`,
             { font: "bold 28px Arial", fill: "#3498db" },
           )
           .setOrigin(0.5);
@@ -789,7 +794,7 @@ export class BattleScene extends Phaser.Scene {
       
       if (evolutionHappened) {
         this.add
-          .text(width / 2, yPos, `EVOLUTION IMMINENT!`, {
+          .text(width / 2, yPos, `진화 가능!`, {
             font: "bold 26px Arial",
             fill: "#9b59b6",
           })
@@ -798,7 +803,7 @@ export class BattleScene extends Phaser.Scene {
       }
     } else {
       this.add
-        .text(width / 2, yPos, `No EXP gained.`, {
+        .text(width / 2, yPos, `획득한 경험치가 없습니다.`, {
           font: "24px Arial",
           fill: "#95a5a6",
         })
@@ -806,7 +811,7 @@ export class BattleScene extends Phaser.Scene {
     }
 
     this.add
-      .text(width / 2, height / 2 + 150, "- Click anywhere to continue -", {
+      .text(width / 2, height / 2 + 150, "- 화면을 클릭하여 계속하기 -", {
         font: "20px Arial",
         fill: "#bdc3c7",
       })

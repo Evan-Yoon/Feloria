@@ -23,14 +23,14 @@ export class ShopScene extends Phaser.Scene {
     this.add.rectangle(width / 2, height / 2, mWidth, mHeight).setStrokeStyle(4, 0x3498db).setOrigin(0.5);
 
     // Header
-    this.add.text(width / 2 - 120, height / 2 - 230, "ITEM SHOP", { 
+    this.add.text(width / 2 - 120, height / 2 - 230, "아이템 상점", { 
         font: 'bold 36px "Press Start 2P", Courier, monospace', fill: '#f1c40f',
         shadow: { offsetX: 2, offsetY: 2, color: '#00', blur: 0, fill: true }
     }).setOrigin(0.5);
         
-    this.add.text(width / 2, height / 2 + 250, "Press ESC to close", { font: '20px Arial', fill: '#bdc3c7' }).setOrigin(0.5);
+    this.add.text(width / 2, height / 2 + 250, "ESC를 눌러 닫기", { font: '20px Arial', fill: '#bdc3c7' }).setOrigin(0.5);
 
-    this.goldText = this.add.text(width / 2 + mWidth/2 - 40, height / 2 - 230, `Gold: 0`, { font: 'bold 28px Arial', fill: '#f1c40f' }).setOrigin(1, 0.5);
+    this.goldText = this.add.text(width / 2 + mWidth/2 - 40, height / 2 - 230, `보유 골드: 0`, { font: 'bold 28px Arial', fill: '#f1c40f' }).setOrigin(1, 0.5);
 
     // Notification Text
     this.notifText = this.add.text(width / 2, height / 2 + 200, "", { font: 'bold 20px Arial', fill: '#e74c3c' }).setOrigin(0.5);
@@ -46,7 +46,7 @@ export class ShopScene extends Phaser.Scene {
 
   updateGoldText() {
       const gold = this.registry.get('playerGold') || 0;
-      this.goldText.setText(`Gold: ${gold}`);
+      this.goldText.setText(`보유 골드: ${gold}`);
   }
 
   renderItems(width, height) {
@@ -70,7 +70,7 @@ export class ShopScene extends Phaser.Scene {
 
         // Buy Button
         const buyBtn = this.add.rectangle(width / 2 + 250, itemY, 90, 40, 0x27ae60).setInteractive({ useHandCursor: true }).setStrokeStyle(2, 0xffffff);
-        const buyLabel = this.add.text(width / 2 + 250, itemY, 'BUY', { font: 'bold 18px Arial', fill: '#fff' }).setOrigin(0.5);
+        const buyLabel = this.add.text(width / 2 + 250, itemY, '구매', { font: 'bold 18px Arial', fill: '#fff' }).setOrigin(0.5);
 
         buyBtn.on('pointerout', () => buyBtn.setFillStyle(0x27ae60));
         buyBtn.on('pointerover', () => buyBtn.setFillStyle(0x2ecc71));

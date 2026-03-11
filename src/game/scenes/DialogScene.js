@@ -51,7 +51,7 @@ export class DialogScene extends Phaser.Scene {
 
     // Continue Hint
     this.hintText = this.add
-      .text(width - padding * 3, boxHeight - 30, "Press Space", {
+      .text(width - padding * 3, boxHeight - 30, "Space를 눌러 계속", {
         font: "italic 14px Arial",
         fill: "#bdc3c7",
       })

@@ -63,7 +63,7 @@ export class PartyScene extends Phaser.Scene {
     if (this.isTargetMode) {
       this.mainContainer.add(
         this.add
-          .text(width / 2, 40, `Select target for ${this.itemName}`, {
+          .text(width / 2, 40, `${this.itemName}를 사용할 대상을 선택하세요`, {
             font: "bold 36px Arial",
             fill: "#f1c40f",
           })
@@ -72,7 +72,7 @@ export class PartyScene extends Phaser.Scene {
     } else {
       this.mainContainer.add(
         this.add
-          .text(width * 0.25, 40, `Active Party (${this.party.length}/3)`, {
+          .text(width * 0.25, 40, `현재 파티 (${this.party.length}/3)`, {
             font: "bold 32px Arial",
             fill: "#f1c40f",
           })
@@ -80,7 +80,7 @@ export class PartyScene extends Phaser.Scene {
       );
       this.mainContainer.add(
         this.add
-          .text(width * 0.75, 40, `Collection`, {
+          .text(width * 0.75, 40, `보유 목록`, {
             font: "bold 32px Arial",
             fill: "#bdc3c7",
           })
@@ -90,7 +90,7 @@ export class PartyScene extends Phaser.Scene {
 
     this.mainContainer.add(
       this.add
-        .text(width / 2, height - 30, "Press ESC to return", {
+        .text(width / 2, height - 30, "ESC를 눌러 돌아가기", {
           font: "20px Arial",
           fill: "#95a5a6",
         })
@@ -191,7 +191,7 @@ export class PartyScene extends Phaser.Scene {
     const lvlText = this.add.text(
       -bgWidth / 2 + 100,
       -5,
-      `Lvl ${creature.level}`,
+      `레벨 ${creature.level}`,
       { font: "22px Arial", fill: "#f1c40f" },
     );
 
@@ -218,7 +218,7 @@ export class PartyScene extends Phaser.Scene {
     if (this.isTargetMode) {
       // In Target Mode, explicitly only show USE button for Party members
       if (isParty) {
-        const useBtn = this.createButton(0, 0, "Use Item", 0x27ae60, () =>
+        const useBtn = this.createButton(0, 0, "아이템 사용", 0x27ae60, () =>
           this.applyItem(creature),
         );
         btnContainer.add(useBtn);
@@ -230,7 +230,7 @@ export class PartyScene extends Phaser.Scene {
           const makeActiveBtn = this.createButton(
             0,
             -25,
-            "Set Leader",
+            "대표 설정",
             0xf39c12,
             () => this.makeActive(creature),
           );
@@ -239,7 +239,7 @@ export class PartyScene extends Phaser.Scene {
 
         // Remove Button (Only if party > 1)
         if (this.party.length > 1) {
-          const removeBtn = this.createButton(0, 25, "Remove", 0xc0392b, () =>
+          const removeBtn = this.createButton(0, 25, "파티 제외", 0xc0392b, () =>
             this.removeFromParty(creature),
           );
           btnContainer.add(removeBtn);
@@ -247,7 +247,7 @@ export class PartyScene extends Phaser.Scene {
       } else {
         // Add to Party Button (Only if party < 3)
         if (this.party.length < 3) {
-          const addBtn = this.createButton(0, 0, "Add Party", 0x27ae60, () =>
+          const addBtn = this.createButton(0, 0, "파티 추가", 0x27ae60, () =>
             this.addToParty(creature),
           );
           btnContainer.add(addBtn);

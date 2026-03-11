@@ -17,7 +17,7 @@ export class NameScene extends Phaser.Scene {
 
     // Prompt
     this.add
-      .text(width / 2, height / 3, "What is your name, Traveler?", {
+      .text(width / 2, height / 3, "당신의 이름은 무엇인가요, 여행자여?", {
         font: "32px Arial",
         fill: "#ffffff",
       })
@@ -53,7 +53,7 @@ export class NameScene extends Phaser.Scene {
         this.saveAndContinue();
       } else if (
         this.nameText.text.length < 12 &&
-        /^[a-zA-Z0-9 ]$/.test(event.key)
+        /^[a-zA-Z0-9 ㄱ-ㅎ|ㅏ-ㅣ|가-힣]$/.test(event.key)
       ) {
         // Alphanumeric
         this.nameText.text += event.key;
@@ -63,7 +63,7 @@ export class NameScene extends Phaser.Scene {
 
     // OK Button
     const okButton = this.add
-      .text(width / 2, height * 0.7, "OK", {
+      .text(width / 2, height * 0.7, "확인", {
         font: "32px Arial",
         fill: "#ffffff",
       })
@@ -78,7 +78,7 @@ export class NameScene extends Phaser.Scene {
 
     // Instructions
     this.add
-      .text(width / 2, height - 50, "Type your name and press Enter", {
+      .text(width / 2, height - 50, "이름을 입력하고 Enter를 누르세요", {
         font: "16px Arial",
         fill: "#bdc3c7",
       })
@@ -93,7 +93,7 @@ export class NameScene extends Phaser.Scene {
   }
 
   saveAndContinue() {
-    const playerName = this.nameText.text || "Hero";
+    const playerName = this.nameText.text || "영웅";
     console.log(`Setting player name to: ${playerName}`);
     this.registry.set("playerName", playerName);
     this.scene.start("StarterSelectScene");

@@ -23,12 +23,12 @@ export class SaveLoadScene extends Phaser.Scene {
     this.add.rectangle(width / 2, height / 2, mWidth, mHeight).setStrokeStyle(4, 0x3498db).setOrigin(0.5);
 
     // Header
-    const titleText = this.mode === 'save' ? 'SAVE GAME' : 'LOAD GAME';
+    const titleText = this.mode === 'save' ? '게임 저장' : '게임 불러오기';
     this.add.text(width / 2, height / 2 - 230, titleText, { 
         font: 'bold 36px "Press Start 2P", Courier, monospace', fill: '#f1c40f',
         shadow: { offsetX: 2, offsetY: 2, color: '#000', blur: 0, fill: true }
     }).setOrigin(0.5);
-    this.add.text(width / 2, height / 2 + 250, "Press ESC to close", { font: '20px Arial', fill: '#bdc3c7' }).setOrigin(0.5);
+    this.add.text(width / 2, height / 2 + 250, "ESC를 눌러 닫기", { font: '20px Arial', fill: '#bdc3c7' }).setOrigin(0.5);
 
     // Notification Text
     this.notifText = this.add.text(width / 2, height / 2 + 180, "", { font: '24px Arial', fill: '#2ecc71' }).setOrigin(0.5);
@@ -58,7 +58,7 @@ export class SaveLoadScene extends Phaser.Scene {
             .setStrokeStyle(2, 0x34495e)
             .setOrigin(0.5);
 
-        const slotName = saveObj.slot === 0 ? "Autosave" : `Slot ${saveObj.slot}`;
+        const slotName = saveObj.slot === 0 ? "자동 저장" : `슬롯 ${saveObj.slot}`;
         this.add.text(width / 2 - 310, rowY, slotName, { font: 'bold 24px Arial', fill: '#f1c40f' }).setOrigin(0, 0.5);
         
         let labelColor = saveObj.exists ? '#ffffff' : '#7f8c8d';
@@ -97,7 +97,7 @@ export class SaveLoadScene extends Phaser.Scene {
     const success = saveSystem.saveData(this.registry, mapId, spawnX, spawnY, slotNum);
     
     if (success) {
-        this.notifText.setText(`Saved to Slot ${slotNum}!`);
+        this.notifText.setText(`슬롯 ${slotNum}에 저장되었습니다!`);
         this.notifText.setFill('#2ecc71');
         
         // Refresh UI
@@ -105,7 +105,7 @@ export class SaveLoadScene extends Phaser.Scene {
             this.scene.restart({ mode: 'save' });
         });
     } else {
-        this.notifText.setText("Save failed.");
+        this.notifText.setText("저장 실패");
         this.notifText.setFill('#e74c3c');
     }
   }
@@ -113,7 +113,7 @@ export class SaveLoadScene extends Phaser.Scene {
   handleLoad(slotNum) {
     const sceneParams = saveSystem.loadData(this.registry, slotNum);
     if (sceneParams) {
-        this.notifText.setText(`Loaded Slot ${slotNum}!`);
+        this.notifText.setText(`슬롯 ${slotNum}을 불러왔습니다!`);
         this.notifText.setFill('#2ecc71');
         
         this.time.delayedCall(500, () => {
@@ -121,7 +121,7 @@ export class SaveLoadScene extends Phaser.Scene {
             this.scene.start("WorldScene", sceneParams);
         });
     } else {
-        this.notifText.setText("Load failed.");
+        this.notifText.setText("불러오기 실패");
         this.notifText.setFill('#e74c3c');
     }
   }

@@ -3,28 +3,28 @@
  */
 export const dialogueData = {
   mira: {
-    name: "Elder Mira",
+    name: "촌장 미라",
     pages: [
-      "Feloria has grown restless lately.",
+      "최근 펠로리아 대륙의 기운이 심상치 않구나.",
       "{playerName}, 지금은 마을 북쪽으로 가는 것만 구현되어 있단다.",
-      "Would you like me to heal your companions?",
+      "고양이들의 체력을 회복시켜 줄까?",
       "보유한 냥냥이들의 체력을 모두 회복합니다.",
       "[HEAL_PROMPT]",
     ],
   },
   shopkeeper: {
-    name: "Village Shopkeeper",
+    name: "마을 상점 상인",
     pages: [
-      "Welcome to my humble shop!",
+      "어서오세요! 무엇을 도와드릴까요?",
       "(돈은 필드의 고양이를 사냥하거나 트레이너와의 대결을 통해 얻을 수 있습니다.)",
       "[SHOP_PROMPT]",
     ],
   },
   explorer: {
-    name: "Forest Explorer",
+    name: "숲 탐험가",
     pages: [
-      "Wild cats hide in the tall grass.",
-      "Be careful when you step too far into the forest.",
+      "야생 고양이들은 주로 긴 풀숲에 숨어있단다.",
+      "숲 깊숙이 들어갈 때는 항상 조심하렴.",
     ],
   },
 };

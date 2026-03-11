@@ -21,7 +21,7 @@ export class QuestScene extends Phaser.Scene {
     this.add.rectangle(panelX, panelY, mWidth, mHeight, 0x1a252f).setOrigin(0.5);
     this.add.rectangle(panelX, panelY, mWidth, mHeight).setStrokeStyle(4, 0x3498db).setOrigin(0.5);
 
-    this.add.text(panelX, panelY - 230, 'QUESTS', { 
+    this.add.text(panelX, panelY - 230, '퀘스트', { 
         font: 'bold 36px "Press Start 2P", Courier, monospace', fill: '#f1c40f',
         shadow: { offsetX: 2, offsetY: 2, color: '#000', blur: 0, fill: true }
     }).setOrigin(0.5);
@@ -54,7 +54,7 @@ export class QuestScene extends Phaser.Scene {
       });
     }
 
-    this.add.text(panelX, panelY + 250, 'Press ESC to return', { font: '20px Arial', fill: '#95a5a6' }).setOrigin(0.5);
+    this.add.text(panelX, panelY + 250, 'ESC를 눌러 돌아가기', { font: '20px Arial', fill: '#95a5a6' }).setOrigin(0.5);
 
     this.input.keyboard.on('keydown-ESC', () => {
       this.scene.stop();

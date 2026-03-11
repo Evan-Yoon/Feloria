@@ -1,0 +1,385 @@
+const fs = require('fs');
+
+const creaturesFile = 'src/game/data/creatures.js';
+let text = fs.readFileSync(creaturesFile, 'utf8');
+
+const newCreaturesStr = `  RUSSIAN_BLUE: {
+    id: "RUSSIAN_BLUE",
+    name: "러시안 블루",
+    type: "얼음",
+    description: "차가운 기운을 머금은 은빛 고양이. 조용하지만 날카롭다.",
+    baseHp: 22,
+    baseAttack: 7,
+    baseDefense: 8,
+    catchRate: 0.55,
+    skills: ["ice_claw_g3", "silver_gaze_g3", "cold_step_g3"],
+    evolution: null
+  },
+  SIAMESE: {
+    id: "SIAMESE",
+    name: "샴",
+    type: "불",
+    description: "호기심이 강하고 뜨거운 성격의 고양이.",
+    baseHp: 20,
+    baseAttack: 9,
+    baseDefense: 5,
+    catchRate: 0.6,
+    skills: ["heat_bite_g3", "ember_tail_g3", "sun_stare_g3"],
+    evolution: null
+  },
+  PERSIAN: {
+    id: "PERSIAN",
+    name: "페르시안",
+    type: "빛",
+    description: "우아한 털을 휘날리며 빛의 기운을 품은 고양이.",
+    baseHp: 24,
+    baseAttack: 6,
+    baseDefense: 9,
+    catchRate: 0.6,
+    skills: ["light_paw_g3", "silk_guard_g3", "glow_breath_g3"],
+    evolution: null
+  },
+  MAINE_COON: {
+    id: "MAINE_COON",
+    name: "메인쿤",
+    type: "땅",
+    description: "거대한 체구와 강한 앞발을 지닌 수호형 고양이.",
+    baseHp: 30,
+    baseAttack: 8,
+    baseDefense: 10,
+    catchRate: 0.45,
+    skills: ["earth_paw_g3", "heavy_push_g3", "wild_roar_g3"],
+    evolution: null
+  },
+  BENGAL: {
+    id: "BENGAL",
+    name: "벵갈",
+    type: "번개",
+    description: "표범 같은 무늬를 가진 민첩한 고양이.",
+    baseHp: 21,
+    baseAttack: 10,
+    baseDefense: 5,
+    catchRate: 0.55,
+    skills: ["spark_claw_g3", "quick_pounce_g3", "flash_tail_g3"],
+    evolution: null
+  },
+  RAGDOLL: {
+    id: "RAGDOLL",
+    name: "랙돌",
+    type: "물",
+    description: "부드러운 털과 차분한 성격을 가진 치유형 고양이.",
+    baseHp: 26,
+    baseAttack: 5,
+    baseDefense: 9,
+    catchRate: 0.65,
+    skills: ["water_touch_g3", "soft_wave_g3", "mist_wrap_g3"],
+    evolution: null
+  },
+  SCOTTISH_FOLD: {
+    id: "SCOTTISH_FOLD",
+    name: "스코티시 폴드",
+    type: "숲",
+    description: "접힌 귀와 잔잔한 숲의 기운을 품은 고양이.",
+    baseHp: 23,
+    baseAttack: 6,
+    baseDefense: 8,
+    catchRate: 0.65,
+    skills: ["leaf_step_g3", "vine_bat_g3", "nature_hide_g3"],
+    evolution: null
+  },
+  NORWEGIAN_FOREST: {
+    id: "NORWEGIAN_FOREST",
+    name: "노르웨이 숲",
+    type: "얼음",
+    description: "두꺼운 털로 혹한을 견디는 북방의 고양이.",
+    baseHp: 28,
+    baseAttack: 8,
+    baseDefense: 11,
+    catchRate: 0.45,
+    skills: ["snow_claw_g3", "frost_tail_g3", "winter_guard_g3"],
+    evolution: null
+  },
+  SPHYNX: {
+    id: "SPHYNX",
+    name: "스핑크스",
+    type: "신비",
+    description: "매끈한 피부에 신비한 문양이 떠오르는 고양이.",
+    baseHp: 20,
+    baseAttack: 7,
+    baseDefense: 6,
+    catchRate: 0.5,
+    skills: ["mind_wave_g3", "arcane_touch_g3", "mystic_blink_g3"],
+    evolution: null
+  },
+  BRITISH_SHORTHAIR: {
+    id: "BRITISH_SHORTHAIR",
+    name: "브리티시 숏헤어",
+    type: "바위",
+    description: "묵직한 몸집과 단단한 방어를 자랑하는 고양이.",
+    baseHp: 28,
+    baseAttack: 7,
+    baseDefense: 12,
+    catchRate: 0.5,
+    skills: ["stone_paw_g3", "solid_stance_g3", "rock_nudge_g3"],
+    evolution: null
+  },
+  ABYSSINIAN: {
+    id: "ABYSSINIAN",
+    name: "아비시니안",
+    type: "불",
+    description: "사막의 태양 같은 열기를 품은 날렵한 고양이.",
+    baseHp: 19,
+    baseAttack: 9,
+    baseDefense: 5,
+    catchRate: 0.6,
+    skills: ["sand_heat_g3", "fire_dash_g3", "sun_bite_g3"],
+    evolution: null
+  },
+  TURKISH_ANGORA: {
+    id: "TURKISH_ANGORA",
+    name: "터키시 앙고라",
+    type: "빛",
+    description: "새하얀 털과 가벼운 몸놀림으로 빛을 다루는 고양이.",
+    baseHp: 21,
+    baseAttack: 7,
+    baseDefense: 7,
+    catchRate: 0.6,
+    skills: ["light_slash_g3", "gleam_tail_g3", "halo_step_g3"],
+    evolution: null
+  },
+  SAVANNAH: {
+    id: "SAVANNAH",
+    name: "사바나",
+    type: "폭풍",
+    description: "긴 다리와 거친 질주를 자랑하는 초원의 고양이.",
+    baseHp: 22,
+    baseAttack: 10,
+    baseDefense: 4,
+    catchRate: 0.5,
+    skills: ["gust_pounce_g3", "storm_step_g3", "claw_rush_g3"],
+    evolution: null
+  },
+  MUNCHKIN: {
+    id: "MUNCHKIN",
+    name: "먼치킨",
+    type: "신비",
+    description: "짧은 다리지만 믿기 힘든 속도로 움직이는 고양이.",
+    baseHp: 18,
+    baseAttack: 7,
+    baseDefense: 6,
+    catchRate: 0.7,
+    skills: ["tiny_dash_g3", "mana_nudge_g3", "lucky_paw_g3"],
+    evolution: null
+  },
+  BIRMAN: {
+    id: "BIRMAN",
+    name: "버만",
+    type: "빛",
+    description: "성스러운 발을 지녔다고 전해지는 고양이.",
+    baseHp: 24,
+    baseAttack: 6,
+    baseDefense: 8,
+    catchRate: 0.55,
+    skills: ["holy_paw_g3", "soft_glow_g3", "blessing_tail_g3"],
+    evolution: null
+  },
+  DEVON_REX: {
+    id: "DEVON_REX",
+    name: "데본 렉스",
+    type: "폭풍",
+    description: "곱슬 털과 장난기 많은 번개 같은 움직임의 고양이.",
+    baseHp: 18,
+    baseAttack: 8,
+    baseDefense: 5,
+    catchRate: 0.65,
+    skills: ["spark_roll_g3", "zigzag_claw_g3", "wind_nip_g3"],
+    evolution: null
+  },
+  CORNISH_REX: {
+    id: "CORNISH_REX",
+    name: "콘월 렉스",
+    type: "바람",
+    description: "날렵한 선과 빠른 회피가 특징인 고양이.",
+    baseHp: 19,
+    baseAttack: 8,
+    baseDefense: 5,
+    catchRate: 0.65,
+    skills: ["air_slice_g3", "quick_turn_g3", "whirl_step_g3"],
+    evolution: null
+  },
+  ORIENTAL_SHORTHAIR: {
+    id: "ORIENTAL_SHORTHAIR",
+    name: "오리엔탈 숏헤어",
+    type: "신비",
+    description: "예리한 귀와 지적인 눈빛을 가진 마력형 고양이.",
+    baseHp: 20,
+    baseAttack: 7,
+    baseDefense: 6,
+    catchRate: 0.6,
+    skills: ["focus_stare_g3", "mana_spike_g3", "mind_tap_g3"],
+    evolution: null
+  },
+  AMERICAN_SHORTHAIR: {
+    id: "AMERICAN_SHORTHAIR",
+    name: "아메리칸 숏헤어",
+    type: "땅",
+    description: "균형 잡힌 체격과 안정적인 전투 능력을 지닌 고양이.",
+    baseHp: 24,
+    baseAttack: 7,
+    baseDefense: 8,
+    catchRate: 0.65,
+    skills: ["steady_claw_g3", "earth_step_g3", "plain_strike_g3"],
+    evolution: null
+  },
+  EGYPTIAN_MAU: {
+    id: "EGYPTIAN_MAU",
+    name: "이집션 마우",
+    type: "빛",
+    description: "고대 유적의 비밀을 품고 있다는 전설의 고양이.",
+    baseHp: 20,
+    baseAttack: 9,
+    baseDefense: 5,
+    catchRate: 0.55,
+    skills: ["sun_mark_g3", "relic_claw_g3", "flash_dash_g3"],
+    evolution: null
+  },
+  TURKISH_VAN: {
+    id: "TURKISH_VAN",
+    name: "터키시 반",
+    type: "물",
+    description: "물을 두려워하지 않고 헤엄치는 호수의 고양이.",
+    baseHp: 23,
+    baseAttack: 7,
+    baseDefense: 7,
+    catchRate: 0.6,
+    skills: ["lake_splash_g3", "wet_claw_g3", "wave_turn_g3"],
+    evolution: null
+  },
+  MANX: {
+    id: "MANX",
+    name: "맹크스",
+    type: "바위",
+    description: "짧은 꼬리와 단단한 하체로 지면을 박차는 고양이.",
+    baseHp: 25,
+    baseAttack: 8,
+    baseDefense: 9,
+    catchRate: 0.55,
+    skills: ["tail_less_rush_g3", "stone_jump_g3", "hard_push_g3"],
+    evolution: null
+  },
+  NEBELUNG: {
+    id: "NEBELUNG",
+    name: "네벨룽",
+    type: "어둠",
+    description: "안개처럼 흐릿한 털빛을 가진 그림자 고양이.",
+    baseHp: 21,
+    baseAttack: 8,
+    baseDefense: 6,
+    catchRate: 0.55,
+    skills: ["mist_shadow_g3", "dark_swipe_g3", "night_step_g3"],
+    evolution: null
+  },
+  HAVANA_BROWN: {
+    id: "HAVANA_BROWN",
+    name: "하바나 브라운",
+    type: "불",
+    description: "짙은 갈색 털에 은근한 열기를 품은 고양이.",
+    baseHp: 21,
+    baseAttack: 8,
+    baseDefense: 6,
+    catchRate: 0.6,
+    skills: ["warm_bite_g3", "ember_swipe_g3", "brown_flare_g3"],
+    evolution: null
+  },
+  RAGAMUFFIN: {
+    id: "RAGAMUFFIN",
+    name: "라가머핀",
+    type: "물",
+    description: "온화한 성격과 넓은 품을 지닌 회복형 고양이.",
+    baseHp: 27,
+    baseAttack: 5,
+    baseDefense: 9,
+    catchRate: 0.65,
+    skills: ["healing_drop_g3", "soft_wave_g3", "calm_tail_g3"],
+    evolution: null
+  },
+  CHARTREUX: {
+    id: "CHARTREUX",
+    name: "차트뢰",
+    type: "바람",
+    description: "푸른 회색 털과 조용한 움직임이 특징인 고양이.",
+    baseHp: 23,
+    baseAttack: 7,
+    baseDefense: 8,
+    catchRate: 0.55,
+    skills: ["sky_claw_g3", "silent_step_g3", "blue_gust_g3"],
+    evolution: null
+  },
+  SINGAPURA: {
+    id: "SINGAPURA",
+    name: "싱가푸라",
+    type: "번개",
+    description: "작지만 엄청난 에너지를 품은 도시형 고양이.",
+    baseHp: 17,
+    baseAttack: 8,
+    baseDefense: 4,
+    catchRate: 0.75,
+    skills: ["tiny_spark_g3", "electric_nip_g3", "flash_step_g3"],
+    evolution: null
+  },
+  SOMALI: {
+    id: "SOMALI",
+    name: "소말리",
+    type: "불",
+    description: "붉은 털과 뜨거운 야성을 지닌 사냥꾼 고양이.",
+    baseHp: 20,
+    baseAttack: 9,
+    baseDefense: 5,
+    catchRate: 0.6,
+    skills: ["red_claw_g3", "fire_rush_g3", "ember_roar_g3"],
+    evolution: null
+  },
+  TOYGER: {
+    id: "TOYGER",
+    name: "토이거",
+    type: "땅",
+    description: "작은 호랑이처럼 보이는 줄무늬 고양이.",
+    baseHp: 24,
+    baseAttack: 9,
+    baseDefense: 7,
+    catchRate: 0.55,
+    skills: ["stripe_pounce_g3", "earth_roar_g3", "hunter_step_g3"],
+    evolution: null
+  },
+  BURMILLA: {
+    id: "BURMILLA",
+    name: "버밀라",
+    type: "빛",
+    description: "은은하게 반짝이는 털빛을 가진 우아한 고양이.",
+    baseHp: 22,
+    baseAttack: 7,
+    baseDefense: 7,
+    catchRate: 0.6,
+    skills: ["silver_flash_g3", "light_bite_g3", "mirror_tail_g3"],
+    evolution: null
+  },
+  SELKIRK_REX: {
+    id: "SELKIRK_REX",
+    name: "셀커크 렉스",
+    type: "바위",
+    description: "곱슬 털과 묵직한 체구를 동시에 지닌 독특한 고양이.",
+    baseHp: 26,
+    baseAttack: 7,
+    baseDefense: 10,
+    catchRate: 0.55,
+    skills: ["curl_guard_g3", "stone_roll_g3", "rough_paw_g3"],
+    evolution: null
+  }`;
+
+// remove last `};` from the file
+text = text.replace(/\s*};\s*$/, '');
+text += ",\n" + newCreaturesStr + "\n};\n";
+
+fs.writeFileSync(creaturesFile, text, 'utf8');
+
+console.log('Successfully appended 31 new creatures to creatures.js!');

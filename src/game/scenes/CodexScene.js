@@ -22,7 +22,7 @@ export class CodexScene extends Phaser.Scene {
     this.add.rectangle(panelX, panelY, mWidth, mHeight, 0x1a252f).setOrigin(0.5);
     this.add.rectangle(panelX, panelY, mWidth, mHeight).setStrokeStyle(4, 0x3498db).setOrigin(0.5);
 
-    this.add.text(panelX - 120, panelY - 230, 'CODEX', { 
+    this.add.text(panelX - 120, panelY - 230, '도감', { 
         font: 'bold 36px "Press Start 2P", Courier, monospace', fill: '#f1c40f',
         shadow: { offsetX: 2, offsetY: 2, color: '#000', blur: 0, fill: true }
     }).setOrigin(0.5);
@@ -65,11 +65,11 @@ export class CodexScene extends Phaser.Scene {
 
         // Display full info
         this.listContainer.add(this.add.text(140, yPos + 20, `${creature.name} (${creature.type})`, { font: 'bold 24px Arial', fill: isCaught ? '#2ecc71' : '#f1c40f' }).setOrigin(0, 0.5));
-        this.listContainer.add(this.add.text(140, yPos + 45, `Habitat: ${creature.habitat || 'Unknown'}`, { font: '18px Arial', fill: '#bdc3c7' }).setOrigin(0, 0.5));
+        this.listContainer.add(this.add.text(140, yPos + 45, `서식지: ${creature.habitat || '알 수 없음'}`, { font: '18px Arial', fill: '#bdc3c7' }).setOrigin(0, 0.5));
         this.listContainer.add(this.add.text(140, yPos + 75, creature.description, { font: '16px Arial', fill: '#ffffff' }).setOrigin(0, 0.5));
         
         if (isCaught) {
-           this.listContainer.add(this.add.text(580, yPos + 20, 'CAUGHT', { font: 'bold 20px Arial', fill: '#2ecc71' }).setOrigin(0.5));
+           this.listContainer.add(this.add.text(580, yPos + 20, '포획 완료', { font: 'bold 20px Arial', fill: '#2ecc71' }).setOrigin(0.5));
            this.listContainer.add(this.add.text(580, yPos + 50, `HP: ${creature.baseHp} | ATK: ${creature.baseAttack} | DEF: ${creature.baseDefense}`, { font: '16px Arial', fill: '#ecf0f1' }).setOrigin(0.5));
         }
       } else {
@@ -82,8 +82,8 @@ export class CodexScene extends Phaser.Scene {
 
     this.maxScroll = -Math.max(0, yPos - (mHeight - 110));
 
-    this.add.text(panelX + 160, panelY - 230, `Seen: ${seenCount} | Caught: ${caughtCount}`, { font: 'bold 24px Arial', fill: '#ffffff' }).setOrigin(0.5);
-    this.add.text(panelX, panelY + 250, 'Scroll to view \u2022 Press ESC to return', { font: '20px Arial', fill: '#95a5a6' }).setOrigin(0.5);
+    this.add.text(panelX + 160, panelY - 230, `발견: ${seenCount} | 포획: ${caughtCount}`, { font: 'bold 24px Arial', fill: '#ffffff' }).setOrigin(0.5);
+    this.add.text(panelX, panelY + 250, '휠을 굴려 스크롤 • ESC를 눌러 돌아가기', { font: '20px Arial', fill: '#95a5a6' }).setOrigin(0.5);
 
     // Scroll Logic
     this.input.on('wheel', (pointer, gameObjects, deltaX, deltaY, deltaZ) => {

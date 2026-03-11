@@ -31,13 +31,13 @@ export class InventoryScene extends Phaser.Scene {
     this.add.rectangle(this.panelX, this.panelY, mWidth, mHeight, 0x1a252f).setOrigin(0.5);
     this.add.rectangle(this.panelX, this.panelY, mWidth, mHeight).setStrokeStyle(4, 0x3498db).setOrigin(0.5);
 
-    this.add.text(this.panelX, this.panelY - 230, "INVENTORY", { 
+    this.add.text(this.panelX, this.panelY - 230, "가방", { 
         font: 'bold 36px "Press Start 2P", Courier, monospace', fill: '#f1c40f',
         shadow: { offsetX: 2, offsetY: 2, color: '#000', blur: 0, fill: true }
     }).setOrigin(0.5);
     
     this.notifText = this.add.text(this.panelX, this.panelY + 200, "", { font: 'bold 20px Arial', fill: '#e74c3c' }).setOrigin(0.5);
-    this.add.text(this.panelX, this.panelY + 250, "Press ESC to return", { font: '20px Arial', fill: '#bdc3c7' }).setOrigin(0.5);
+    this.add.text(this.panelX, this.panelY + 250, "ESC를 눌러 돌아가기", { font: '20px Arial', fill: '#bdc3c7' }).setOrigin(0.5);
 
     // Items Container
     this.itemsContainer = this.add.container(0, 0);
@@ -92,7 +92,7 @@ export class InventoryScene extends Phaser.Scene {
 
             if (itemDef.type === 'healing') {
                const useBtn = this.add.rectangle(this.panelX + 250, yPos, 90, 40, 0x27ae60).setInteractive({ useHandCursor: true }).setStrokeStyle(2, 0xffffff);
-               const useLbl = this.add.text(this.panelX + 250, yPos, 'USE', { font: 'bold 18px Arial', fill: '#ffffff' }).setOrigin(0.5);
+               const useLbl = this.add.text(this.panelX + 250, yPos, '사용', { font: 'bold 18px Arial', fill: '#ffffff' }).setOrigin(0.5);
                
                useBtn.on('pointerover', () => useBtn.setFillStyle(0x2ecc71));
                useBtn.on('pointerout', () => useBtn.setFillStyle(0x27ae60));
@@ -100,7 +100,7 @@ export class InventoryScene extends Phaser.Scene {
                
                this.itemsContainer.add([useBtn, useLbl]);
             } else {
-               const passiveLbl = this.add.text(this.panelX + 250, yPos, 'BATTLE', { font: 'bold 16px Arial', fill: '#95a5a6' }).setOrigin(0.5);
+               const passiveLbl = this.add.text(this.panelX + 250, yPos, '전투용', { font: 'bold 16px Arial', fill: '#95a5a6' }).setOrigin(0.5);
                this.itemsContainer.add(passiveLbl);
             }
             
@@ -109,7 +109,7 @@ export class InventoryScene extends Phaser.Scene {
         });
 
         if (itemsRendered === 0) {
-            this.add.text(this.panelX, this.panelY, "Your bag is empty.", { font: '24px Arial', fill: '#95a5a6', fontStyle: 'italic' }).setOrigin(0.5);
+            this.add.text(this.panelX, this.panelY, "가방이 비어 있습니다.", { font: '24px Arial', fill: '#95a5a6', fontStyle: 'italic' }).setOrigin(0.5);
         }
     });
   }

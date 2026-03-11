@@ -26,19 +26,19 @@ export class MenuScene extends Phaser.Scene {
     const border = this.add.rectangle(padX, padY, menuWidth, menuHeight).setStrokeStyle(4, 0x3498db).setOrigin(0);
 
     // Title
-    this.add.text(padX + menuWidth / 2, padY + 40, 'MENU', {
+    this.add.text(padX + menuWidth / 2, padY + 40, '메뉴', {
       font: 'bold 36px "Press Start 2P", Courier, monospace', fill: '#f1c40f',
       shadow: { offsetX: 2, offsetY: 2, color: '#000', blur: 0, fill: true }
     }).setOrigin(0.5);
 
     // Buttons
     const buttons = [
-      { text: 'Party', action: () => { this.scene.pause(); this.scene.launch('PartyScene'); } },
-      { text: 'Inventory', action: () => { this.scene.pause(); this.scene.launch('InventoryScene'); } },
-      { text: 'Codex', action: () => { this.scene.pause(); this.scene.launch('CodexScene'); } },
-      { text: 'Quests', action: () => { this.scene.pause(); this.scene.launch('QuestScene'); } },
-      { text: 'Save', action: () => { this.scene.pause(); this.scene.launch('SaveLoadScene', { mode: 'save' }); } },
-      { text: 'Close', action: () => { this.scene.resume('WorldScene'); this.scene.stop(); }, color: 0xc0392b }
+      { text: '파티', action: () => { this.scene.pause(); this.scene.launch('PartyScene'); } },
+      { text: '가방', action: () => { this.scene.pause(); this.scene.launch('InventoryScene'); } },
+      { text: '도감', action: () => { this.scene.pause(); this.scene.launch('CodexScene'); } },
+      { text: '퀘스트', action: () => { this.scene.pause(); this.scene.launch('QuestScene'); } },
+      { text: '저장', action: () => { this.scene.pause(); this.scene.launch('SaveLoadScene', { mode: 'save' }); } },
+      { text: '닫기', action: () => { this.scene.resume('WorldScene'); this.scene.stop(); }, color: 0xc0392b }
     ];
 
     let startY = padY + 110;

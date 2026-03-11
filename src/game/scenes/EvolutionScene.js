@@ -25,7 +25,7 @@ export class EvolutionScene extends Phaser.Scene {
     this.add.rectangle(0, 0, width, height, 0x000000, 0.9).setOrigin(0);
 
     // Initial Text
-    this.headerText = this.add.text(cx, height * 0.2, "What? " + this.creatureName + " is evolving!", {
+    this.headerText = this.add.text(cx, height * 0.2, "어라? " + this.creatureName + "의 상태가...!", {
         font: 'bold 36px "Malgun Gothic", Arial',
         fill: '#ffffff',
         shadow: { offsetX: 2, offsetY: 2, color: '#000', blur: 0, fill: true }
@@ -117,9 +117,9 @@ export class EvolutionScene extends Phaser.Scene {
     });
 
     // Change Text
-    this.headerText.setText("Congratulations! Your " + this.creatureName + " evolved into " + this.newName + "!");
+    this.headerText.setText("축하합니다! 당신의 " + this.creatureName + "가 " + this.newName + "(으)로 진화했습니다!");
     
-    this.hintText = this.add.text(this.cameras.main.width / 2, this.cameras.main.height * 0.85, "- Click to continue -", {
+    this.hintText = this.add.text(this.cameras.main.width / 2, this.cameras.main.height * 0.85, "- 계속하려면 클릭 -", {
         font: '20px Arial',
         fill: '#bdc3c7'
     }).setOrigin(0.5);
@@ -137,7 +137,7 @@ export class EvolutionScene extends Phaser.Scene {
         this.oldSprite.setAlpha(0);
         this.newSprite.setAlpha(1);
         this.newSprite.clearTint();
-        this.headerText.setText("Congratulations! Your " + this.creatureName + " evolved into " + this.newName + "!");
+        this.headerText.setText("축하합니다! 당신의 " + this.creatureName + "가 " + this.newName + "(으)로 진화했습니다!");
         this.headerText.setAlpha(1);
         this.isComplete = true;
         return; // Wait for one more click to actually exit
