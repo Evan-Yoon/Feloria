@@ -90,9 +90,9 @@
     { "type": "npc", "x": 15, "y": 15, "id": "item_potion", "name": "Hidden Potion" }
   ],
   "warps": [
-    { "x": 8, "y": 0, "targetMap": "greenpaw_forest", "targetX": 11, "targetY": 24 },
-    { "x": 9, "y": 0, "targetMap": "greenpaw_forest", "targetX": 12, "targetY": 24 },
-    { "x": 10, "y": 0, "targetMap": "greenpaw_forest", "targetX": 13, "targetY": 24 },
-    { "x": 11, "y": 0, "targetMap": "greenpaw_forest", "targetX": 14, "targetY": 24 }
+    { "x": 8, "y": 0, "targetMap": "greenpaw_forest", "targetX": 7, "targetY": 23 },
+    { "x": 9, "y": 0, "targetMap": "greenpaw_forest", "targetX": 8, "targetY": 23 },
+    { "x": 10, "y": 0, "targetMap": "greenpaw_forest", "targetX": 9, "targetY": 23 },
+    { "x": 11, "y": 0, "targetMap": "greenpaw_forest", "targetX": 10, "targetY": 23 }
   ]
 }

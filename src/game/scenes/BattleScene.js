@@ -159,7 +159,8 @@ export class BattleScene extends Phaser.Scene {
 
   playerSkill() {
     // Use the first specialized skill
-    const skillId = this.playerCat.skills.find(s => s !== 'scratch') || 'scratch';
+    const skillsList = this.playerCat.skills || [];
+    const skillId = skillsList.find(s => s !== 'scratch') || 'scratch';
     this.updateLog(`${this.playerCat.name} used ${skillId.replace('_', ' ')}!`);
     const damage = battleSystem.calculateDamage(this.playerCat, this.enemyCat, skillId);
 

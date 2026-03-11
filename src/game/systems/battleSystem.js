@@ -25,7 +25,8 @@ export const battleSystem = {
       stats: {
         attack: Math.floor(species.baseAttack * (1 + (level - 1) * 0.1)),
         defense: Math.floor(species.baseDefense * (1 + (level - 1) * 0.1))
-      }
+      },
+      skills: species.skills ? [...species.skills] : []
     };
   },
 
@@ -55,9 +56,9 @@ export const battleSystem = {
     creature.baseHp = evolvedSpecies.baseHp;
     creature.baseAttack = evolvedSpecies.baseAttack;
     creature.baseDefense = evolvedSpecies.baseDefense;
-    creature.baseExp = evolvedSpecies.baseExp;
-    creature.skills = [...evolvedSpecies.skills];
-    creature.description = evolvedSpecies.description;
+    creature.baseExp = evolvedSpecies.baseExp || 50;
+    creature.skills = evolvedSpecies.skills ? [...evolvedSpecies.skills] : [];
+    creature.description = evolvedSpecies.description || "";
     creature.habitat = evolvedSpecies.habitat;
     
     // Clear old evolution to prevent re-triggering (or assign next stage if it existed)

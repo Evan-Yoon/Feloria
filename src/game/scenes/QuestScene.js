@@ -26,20 +26,31 @@ export class QuestScene extends Phaser.Scene {
         shadow: { offsetX: 2, offsetY: 2, color: '#000', blur: 0, fill: true }
     }).setOrigin(0.5);
 
-    const firstSteps = questSystem.getQuest(this.registry, 'first_steps');
+    // Find the currently active quest
+    let questsObj = this.registry.get('activeQuests');
+    if (!questsObj) {
+        questSystem.getQuest(this.registry, 'first_steps'); // initialize
+        questsObj = this.registry.get('activeQuests');
+    }
+    
+    const questList = Object.values(questsObj);
+    let currentQuest = questList.find(q => !q.completed);
+    if (!currentQuest && questList.length > 0) {
+        currentQuest = questList[questList.length - 1]; // Show last completed if all done
+    }
 
-    if (firstSteps) {
-      this.add.text(panelX, panelY - 140, firstSteps.title, { font: 'bold 28px Arial', fill: firstSteps.completed ? '#2ecc71' : '#ffffff' }).setOrigin(0.5);
-      this.add.text(panelX, panelY - 100, firstSteps.description, { font: '18px Arial', fill: '#bdc3c7' }).setOrigin(0.5);
+    if (currentQuest) {
+      this.add.text(panelX, panelY - 170, currentQuest.title, { font: 'bold 28px Arial', fill: currentQuest.completed ? '#2ecc71' : '#ffffff' }).setOrigin(0.5);
+      this.add.text(panelX, panelY - 130, currentQuest.description, { font: '18px Arial', fill: '#bdc3c7' }).setOrigin(0.5);
 
-      let yPos = panelY - 20;
-      firstSteps.objectives.forEach(obj => {
+      let yPos = panelY - 60;
+      currentQuest.objectives.forEach(obj => {
         const color = obj.completed ? '#2ecc71' : '#ffffff';
         const checkbox = obj.completed ? '[\u2713]' : '[ ]';
         
-        const rowBg = this.add.rectangle(panelX, yPos, 500, 50, 0x2c3e50).setOrigin(0.5).setStrokeStyle(2, 0x34495e);
-        this.add.text(panelX - 220, yPos, `${checkbox} ${obj.text}`, { font: '22px Arial', fill: color }).setOrigin(0, 0.5);
-        yPos += 70;
+        const rowBg = this.add.rectangle(panelX, yPos, 600, 45, 0x2c3e50).setOrigin(0.5).setStrokeStyle(2, 0x34495e);
+        this.add.text(panelX - 280, yPos, `${checkbox} ${obj.text}`, { font: '20px Arial', fill: color }).setOrigin(0, 0.5);
+        yPos += 52;
       });
     }
 
