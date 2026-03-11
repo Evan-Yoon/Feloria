@@ -32,21 +32,21 @@ export class DialogScene extends Phaser.Scene {
 
     // Speaker Name Box
     const nameBg = this.add
-      .rectangle(0, -30, 200, 30, 0x000000, 0.9)
+      .rectangle(0, -40, 300, 40, 0x000000, 0.9)
       .setOrigin(0)
       .setStrokeStyle(2, 0xffffff);
 
-    this.speakerName = this.add.text(10, -25, this.dialogue.name, {
-      font: 'bold 18px "Malgun Gothic", "Apple SD Gothic Neo", sans-serif',
+    this.speakerName = this.add.text(10, -35, this.dialogue.name, {
+      font: 'bold 24px "Malgun Gothic", "Apple SD Gothic Neo", sans-serif',
       fill: "#f1c40f",
     });
 
     // Content Text
     this.contentText = this.add.text(20, 20, "", {
-      font: '28px "Malgun Gothic", "Apple SD Gothic Neo", sans-serif',
+      font: 'bold 34px "Malgun Gothic", "Apple SD Gothic Neo", sans-serif',
       fill: "#ffffff",
       wordWrap: { width: width - padding * 6 },
-      lineSpacing: 10, // Add some spacing for legibility
+      lineSpacing: 12, // Add some spacing for legibility
     });
 
     // Continue Hint

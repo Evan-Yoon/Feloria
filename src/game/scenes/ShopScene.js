@@ -24,13 +24,13 @@ export class ShopScene extends Phaser.Scene {
 
     // Header
     this.add.text(width / 2 - 120, height / 2 - 230, "아이템 상점", { 
-        font: 'bold 36px "Press Start 2P", Courier, monospace', fill: '#f1c40f',
-        shadow: { offsetX: 2, offsetY: 2, color: '#00', blur: 0, fill: true }
+        font: 'bold 44px "Press Start 2P", Courier, monospace', fill: '#f1c40f',
+        shadow: { offsetX: 3, offsetY: 3, color: '#000', blur: 0, fill: true }
     }).setOrigin(0.5);
         
     this.add.text(width / 2, height / 2 + 250, "ESC를 눌러 닫기", { font: '20px Arial', fill: '#bdc3c7' }).setOrigin(0.5);
 
-    this.goldText = this.add.text(width / 2 + mWidth/2 - 40, height / 2 - 230, `보유 골드: 0`, { font: 'bold 28px Arial', fill: '#f1c40f' }).setOrigin(1, 0.5);
+    this.goldText = this.add.text(width / 2 + mWidth/2 - 40, height / 2 - 230, `보유 골드: 0`, { font: 'bold 34px Arial', fill: '#f1c40f' }).setOrigin(1, 0.5);
 
     // Notification Text
     this.notifText = this.add.text(width / 2, height / 2 + 200, "", { font: 'bold 20px Arial', fill: '#e74c3c' }).setOrigin(0.5);
@@ -64,9 +64,9 @@ export class ShopScene extends Phaser.Scene {
         const iconBg = this.add.rectangle(width / 2 - 290, itemY, 40, 40, 0x34495e).setOrigin(0.5);
         
         // Text
-        this.add.text(width / 2 - 250, itemY, item.name, { font: 'bold 24px Arial', fill: '#ffffff' }).setOrigin(0, 0.5);
-        this.add.text(width / 2 - 50, itemY, item.description, { font: '18px Arial', fill: '#bdc3c7' }).setOrigin(0, 0.5);
-        this.add.text(width / 2 + 180, itemY, `${item.price} G`, { font: 'bold 24px Arial', fill: '#f1c40f' }).setOrigin(1, 0.5);
+        this.add.text(width / 2 - 250, itemY, item.name, { font: 'bold 30px Arial', fill: '#ffffff' }).setOrigin(0, 0.5);
+        this.add.text(width / 2 - 30, itemY, item.description, { font: '22px Arial', fill: '#bdc3c7' }).setOrigin(0, 0.5);
+        this.add.text(width / 2 + 180, itemY, `${item.price} G`, { font: 'bold 28px Arial', fill: '#f1c40f' }).setOrigin(1, 0.5);
 
         // Buy Button
         const buyBtn = this.add.rectangle(width / 2 + 250, itemY, 90, 40, 0x27ae60).setInteractive({ useHandCursor: true }).setStrokeStyle(2, 0xffffff);

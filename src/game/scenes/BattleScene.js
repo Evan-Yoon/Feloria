@@ -7,6 +7,7 @@ import { NPCS } from '../data/npcs.js';
 import { cutsceneSystem } from '../systems/cutsceneSystem.js';
 import { SKILLS } from '../data/skills.js';
 import { skillEffectSystem } from '../systems/skillEffectSystem.js';
+import { legendarySystem } from '../systems/legendarySystem.js';
 /**
  * BattleScene
  * Handles the turn-based combat, capture logic, and results.
@@ -180,7 +181,7 @@ export class BattleScene extends Phaser.Scene {
       .setStrokeStyle(4, 0x34495e);
     this.logText = this.add
       .text((width - 280) / 2, height - 70, "", {
-        font: "bold 24px Arial",
+        font: "bold 32px Arial",
         fill: "#ffffff",
         align: "center",
         wordWrap: { width: width - 380 },
@@ -308,7 +309,7 @@ export class BattleScene extends Phaser.Scene {
     this.canInput = false;
     this.updateLog(`${this.playerCat.name} used Scratch!`);
     skillEffectSystem.playEffect(this, this.enemySprite, "slash");
-    
+
     const damage = battleSystem.calculateDamage(
       this.playerCat,
       this.enemyCat,
@@ -394,7 +395,7 @@ export class BattleScene extends Phaser.Scene {
 
         // Check if legendary
         if (legendarySystem.LEGENDARIES.includes(this.enemyCat.id)) {
-            legendarySystem.markLegendaryCleared(this.registry, this.enemyCat.id);
+          legendarySystem.markLegendaryCleared(this.registry, this.enemyCat.id);
         }
 
         this.time.delayedCall(2000, () => {
@@ -454,7 +455,7 @@ export class BattleScene extends Phaser.Scene {
     const enemySkills = this.enemyCat.skills || [];
     // 20% basic attack, 80% skill
     const useSkill = Math.random() < 0.8 && enemySkills.length > 0;
-    
+
     if (useSkill) {
       const skillId = enemySkills[Math.floor(Math.random() * enemySkills.length)];
       const skill = SKILLS[skillId];
@@ -653,11 +654,11 @@ export class BattleScene extends Phaser.Scene {
 
   playLevelUpAnimation(expGained, oldLevel, oldStats, evolutionHappened, goldGain, oldCreatureId) {
     const { width, height } = this.cameras.main;
-    
+
     // Sparkle effect on player sprite
     const sparkle = this.add.circle(this.playerSprite.x, this.playerSprite.y, 10, 0xffffff, 0.8)
       .setBlendMode(Phaser.BlendModes.ADD);
-      
+
     this.tweens.add({
       targets: sparkle,
       radius: 150,
@@ -780,18 +781,18 @@ export class BattleScene extends Phaser.Scene {
         yPos += 30;
 
         if (oldStats) {
-           const hpDiff = this.playerCat.maxHp - oldStats.hp;
-           const atkDiff = this.playerCat.stats.attack - oldStats.atk;
-           const defDiff = this.playerCat.stats.defense - oldStats.def;
-           
-           this.add.text(width / 2, yPos, `HP +${hpDiff} | ATK +${atkDiff} | DEF +${defDiff}`, { 
-               font: 'bold 20px "Malgun Gothic", Arial', 
-               fill: "#f1c40f" 
-           }).setOrigin(0.5);
-           yPos += 35;
+          const hpDiff = this.playerCat.maxHp - oldStats.hp;
+          const atkDiff = this.playerCat.stats.attack - oldStats.atk;
+          const defDiff = this.playerCat.stats.defense - oldStats.def;
+
+          this.add.text(width / 2, yPos, `HP +${hpDiff} | ATK +${atkDiff} | DEF +${defDiff}`, {
+            font: 'bold 20px "Malgun Gothic", Arial',
+            fill: "#f1c40f"
+          }).setOrigin(0.5);
+          yPos += 35;
         }
       }
-      
+
       if (evolutionHappened) {
         this.add
           .text(width / 2, yPos, `진화 가능!`, {
@@ -836,32 +837,32 @@ export class BattleScene extends Phaser.Scene {
       saveSystem.saveData(this.registry, mapId, tx, ty);
 
       const onBattleCompletelyDone = () => {
-          // Chapter 1 Boss Twist Sequence
-          if (this.trainerId === "guardian_rowan" && !this.registry.get("chapter1_done")) {
-            this.runChapterCompleteSequence(mapId, tx, ty);
-            return;
-          }
+        // Chapter 1 Boss Twist Sequence
+        if (this.trainerId === "guardian_rowan" && !this.registry.get("chapter1_done")) {
+          this.runChapterCompleteSequence(mapId, tx, ty);
+          return;
+        }
 
-          this.scene.start("WorldScene", {
-            mapId,
-            spawnX: tx,
-            spawnY: ty,
-          });
+        this.scene.start("WorldScene", {
+          mapId,
+          spawnX: tx,
+          spawnY: ty,
+        });
       };
 
       if (this.evolutionHappened) {
-          // Launch EvolutionScene over instead of going straight to World
-          this.scene.start("EvolutionScene", {
-              oldId: this.oldCreatureId,
-              newId: this.playerCat.id,
-              name: this.oldCreatureId, // fallback name
-              newName: this.playerCat.name,
-              onComplete: () => {
-                  onBattleCompletelyDone();
-              }
-          });
+        // Launch EvolutionScene over instead of going straight to World
+        this.scene.start("EvolutionScene", {
+          oldId: this.oldCreatureId,
+          newId: this.playerCat.id,
+          name: this.oldCreatureId, // fallback name
+          newName: this.playerCat.name,
+          onComplete: () => {
+            onBattleCompletelyDone();
+          }
+        });
       } else {
-          onBattleCompletelyDone();
+        onBattleCompletelyDone();
       }
     });
   }
@@ -871,77 +872,77 @@ export class BattleScene extends Phaser.Scene {
 
     // 1. Rowan Defeat Visuals
     this.tweens.add({
-        targets: this.enemySprite,
-        y: this.enemySprite.y + 50,
-        alpha: 0.5,
-        duration: 2000,
-        ease: 'Quad.easeInOut'
+      targets: this.enemySprite,
+      y: this.enemySprite.y + 50,
+      alpha: 0.5,
+      duration: 2000,
+      ease: 'Quad.easeInOut'
     });
-    
+
     await cutsceneSystem.shakeCamera(this, 800, 0.015);
     await cutsceneSystem.delay(this, 1000);
 
     // 2. Rowan Defeat Dialogue
     const rowanData = NPCS['trainer_guardian_rowan'];
     await cutsceneSystem.playDialogue(this, rowanData.name, [
-        "크윽…",
-        "어리석은 녀석…",
-        "네가 무슨 짓을 했는지 아느냐?",
-        "네가 나를 쓰러뜨림으로써…",
-        "봉인을 지키던 마지막 결계가 깨져버렸다…"
+      "크윽…",
+      "어리석은 녀석…",
+      "네가 무슨 짓을 했는지 아느냐?",
+      "네가 나를 쓰러뜨림으로써…",
+      "봉인을 지키던 마지막 결계가 깨져버렸다…"
     ]);
 
     await cutsceneSystem.shakeCamera(this, 1000, 0.02);
     await cutsceneSystem.delay(this, 500);
 
     // 3. Hyunseok Appearance
-    const hyunseokSprite = this.add.sprite(width + 100, height/2, 'npc_mira').setScale(4).setDepth(20);
+    const hyunseokSprite = this.add.sprite(width + 100, height / 2, 'npc_mira').setScale(4).setDepth(20);
     this.tweens.add({
-        targets: hyunseokSprite,
-        x: width - 200,
-        duration: 1500,
-        ease: 'Power2'
+      targets: hyunseokSprite,
+      x: width - 200,
+      duration: 1500,
+      ease: 'Power2'
     });
-    
+
     // Pan camera slightly towards the right
-    await cutsceneSystem.panCameraTo(this, width/2 + 50, height/2, 1000);
-    
+    await cutsceneSystem.panCameraTo(this, width / 2 + 50, height / 2, 1000);
+
     // 4. Hyunseok Twist Dialogue
     await cutsceneSystem.playDialogue(this, "촌장 현석", [
-        "훌륭하구나.",
-        "로완, 이 고지식한 친구가 길을 비켜주지 않아 곤란하던 참이었단다.",
-        "역시 내가 선택한 아이답게 훌륭히 자라주었어.",
-        "그래… 이 순간을 위해 널 키운 것이지."
+      "훌륭하구나.",
+      "로완, 이 고지식한 친구가 길을 비켜주지 않아 곤란하던 참이었단다.",
+      "역시 내가 선택한 아이답게 훌륭히 자라주었어.",
+      "그래… 이 순간을 위해 널 키운 것이지."
     ]);
 
     // 5. Legendary Awakening Sequence
     // Light pulse
     const whiteFlash = this.add.rectangle(0, 0, width, height, 0xffffff, 0).setOrigin(0).setDepth(30).setBlendMode(Phaser.BlendModes.ADD);
-    
+
     this.tweens.add({
-        targets: whiteFlash,
-        alpha: { from: 0, to: 1 },
-        duration: 3000,
-        yoyo: true,
-        repeat: 1,
-        ease: 'Sine.easeInOut'
+      targets: whiteFlash,
+      alpha: { from: 0, to: 1 },
+      duration: 3000,
+      yoyo: true,
+      repeat: 1,
+      ease: 'Sine.easeInOut'
     });
 
     await cutsceneSystem.shakeCamera(this, 3000, 0.03);
 
     this.registry.set("chapter1_done", true);
-    
+
     // Launch Ending Cutscene 
     this.scene.start("CutsceneScene", {
-        messages: [
-            "고대 고양이의 봉인이 무너졌다.",
-            "전설 속 존재들이 펠로리아 대륙 곳곳으로 흩어지기 시작했다.",
-            "(화염의 솔라리온, 눈보라의 글라시아라, 폭풍의 템페스트클로...)",
-            "(어둠의 엄브라팽, 고목의 버던트링크스)",
-            "- 시즌 1 종료 -"
-        ],
-        nextScene: "WorldScene",
-        sceneData: { mapId, spawnX: tx, spawnY: ty }
+      messages: [
+        "고대 고양이의 봉인이 무너졌다.",
+        "전설 속 존재들이 펠로리아 대륙 곳곳으로 흩어지기 시작했다.",
+        "(화염의 솔라리온, 눈보라의 글라시아라, 폭풍의 템페스트클로...)",
+        "(어둠의 엄브라팽, 고목의 버던트링크스)",
+        "- 시즌 1 종료 -"
+      ],
+      nextScene: "WorldScene",
+      sceneData: { mapId, spawnX: tx, spawnY: ty }
     });
   }
 }

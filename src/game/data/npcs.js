@@ -29,7 +29,7 @@ export const NPCS = {
         // Starter not chosen yet
         return [
           "어서 오너라, 여행자야.",
-          "요즘 숲의 기운이 조금 이상하단다. 무언가 거대한 것이 꿈틀대는 것 같아...",
+          "요즘 숲의 기운이 조금 이상하단다. 모험을 도와줄 고양이 한마리를 입양하거라...",
         ];
       }
       if (firstSteps && !firstSteps.completed) {
@@ -126,7 +126,7 @@ export const NPCS = {
       const hasStrongCat = party.some((c) => c.level > 3);
       if (hasStrongCat) {
         return [
-          "전투에서 살아남았구나!",
+          "풀숲을 조심해 저기에서 야생 고양이들이 너를 노릴 수 있어.",
           "다음엔 더 강한 고양이도 만날 거야. 안쪽은 기운이 심상치 않거든.",
         ];
       }

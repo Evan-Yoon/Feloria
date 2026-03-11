@@ -189,8 +189,10 @@ export class WorldScene extends Phaser.Scene {
   createPlayer() {
     // If no specific spawn provided, use map default
     const spawn = this.mapData.spawns.find((s) => s.type === "player");
-    const tx = this.spawnX !== undefined ? this.spawnX : spawn ? spawn.x : 10;
-    const ty = this.spawnY !== undefined ? this.spawnY : spawn ? spawn.y : 10;
+    const isInitialSpawn = this.mapId === 'starwhisk_village' && !this.registry.get("intro_done");
+    
+    const tx = this.spawnX !== undefined ? this.spawnX : (isInitialSpawn ? 10 : (spawn ? spawn.x : 10));
+    const ty = this.spawnY !== undefined ? this.spawnY : (isInitialSpawn ? 9 : (spawn ? spawn.y : 10));
 
     // Phaser spritesheet index: 0:Down, 1:Up, 2:Left, 3:Right (Matching our Preload generation)
     this.player = this.add.sprite(tx * 32 + 16, ty * 32 + 16, "player", 0);
@@ -209,13 +211,13 @@ export class WorldScene extends Phaser.Scene {
     this.mapData.spawns.forEach((spawn) => {
       if (spawn.type === "npc") {
         let texture = "npc";
-        if (spawn.id === "mira" || spawn.id === "trainer_guardian_rowan") texture = "npc_mira";
+        if (spawn.id === "elder_hyunseok" || spawn.id === "mira" || spawn.id === "trainer_guardian_rowan") texture = "npc_mira";
         else if (spawn.id && spawn.id.startsWith("trainer")) texture = "npc_trainer";
 
         let nx = spawn.x;
         let ny = spawn.y;
 
-        if (spawn.id === "mira" && this.mapId === "starwhisk_village" && this.registry.get("chapter1_done")) {
+        if ((spawn.id === "elder_hyunseok" || spawn.id === "mira") && this.mapId === "starwhisk_village" && this.registry.get("chapter1_done")) {
           nx = 2;
           ny = 16;
 
@@ -424,7 +426,7 @@ export class WorldScene extends Phaser.Scene {
       let pages = npcData.getDialogue(this.registry);
 
       // Pre-dialogue objective triggers
-      if (npcData.id === "mira") {
+      if (npcData.id === "Chief Hyunseok" || npcData.id === "mira") {
         const quest = questSystem.getQuest(this.registry, "first_steps");
         if (quest && !quest.objectives.find((o) => o.id === "talk_mira").completed) {
           questSystem.completeObjective(this.registry, "first_steps", "talk_mira");

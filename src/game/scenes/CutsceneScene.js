@@ -48,14 +48,30 @@ export class CutsceneScene extends Phaser.Scene {
       strokeThickness: 2
     }).setOrigin(1).setAlpha(0);
 
+    // Skip Button
+    this.skipButton = this.add.text(width - 50, 50, "건너뛰기 [Skip]", {
+      font: 'bold 24px "Malgun Gothic", "Apple SD Gothic Neo", sans-serif',
+      fill: "#ffffff",
+      stroke: '#000000',
+      strokeThickness: 2
+    }).setOrigin(1, 0).setInteractive({ useHandCursor: true });
+
+    this.skipButton.on("pointerover", () => this.skipButton.setStyle({ fill: "#f1c40f" }));
+    this.skipButton.on("pointerout", () => this.skipButton.setStyle({ fill: "#ffffff" }));
+    this.skipButton.on("pointerdown", () => {
+      if (!this.isFading) {
+        this.finishCutscene();
+      }
+    });
+
     // Start Sequence
     this.time.delayedCall(500, () => this.showNextMessage());
 
     // Input to skip/advance
     this.input.on("pointerdown", () => {
-        if (!this.isFading) {
-            this.showNextMessage();
-        }
+      if (!this.isFading) {
+        this.showNextMessage();
+      }
     });
   }
 
@@ -88,7 +104,7 @@ export class CutsceneScene extends Phaser.Scene {
     // Update Background if provided and different
     if (currentImg && this.background.texture.key !== currentImg) {
       this.background.setTexture(currentImg);
-      
+
       // Scale to fill
       const { width, height } = this.cameras.main;
       const scale = Math.max(width / this.background.width, height / this.background.height);
