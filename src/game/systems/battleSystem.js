@@ -78,13 +78,23 @@ export const battleSystem = {
    * Calculates damage dealt from an attacker to a target using a skill.
    */
   calculateDamage: (attacker, target, skillId) => {
+    const atk = attacker.stats.attack;
+    const def = target.stats.defense;
+
+    if (!skillId || skillId === "attack" || skillId === "scratch") {
+      // Basic Attack is intentionally weak
+      return Math.max(1, Math.floor((atk * 0.5) - (def * 0.2)));
+    }
+
     const skill = SKILLS[skillId];
     if (!skill) return 0;
 
-    // Very simple formula: (Base Damage + Attack) - (Target Defense / 2)
-    let damage = (skill.damage + attacker.stats.attack) - (target.stats.defense / 2);
+    // Skill Damage
+    const power = skill.power || 1.0;
     
-    // Ensure at least 1 damage
+    // Damage = (Attack * PowerMultiplier) - (Defense * 0.5)
+    let damage = (atk * power) - (def * 0.5);
+    
     return Math.max(1, Math.floor(damage));
   },
 

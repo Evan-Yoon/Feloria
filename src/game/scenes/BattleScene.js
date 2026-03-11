@@ -5,7 +5,8 @@ import { questSystem } from '../systems/questSystem.js';
 import { TRAINers } from '../data/trainers.js';
 import { NPCS } from '../data/npcs.js';
 import { cutsceneSystem } from '../systems/cutsceneSystem.js';
-
+import { SKILLS } from '../data/skills.js';
+import { skillEffectSystem } from '../systems/skillEffectSystem.js';
 /**
  * BattleScene
  * Handles the turn-based combat, capture logic, and results.
@@ -219,6 +220,57 @@ export class BattleScene extends Phaser.Scene {
       this.menuUI.add([btnBg, btnText]);
       this.menuButtons.push(btnBg);
     });
+
+    // 5. Skill Submenu (Hidden initially)
+    this.skillMenuUI = this.add.container(width - 280, height - 140);
+    this.skillMenuUI.add(
+      this.add.rectangle(0, 0, 280, 140, 0x2c3e50).setOrigin(0).setStrokeStyle(4, 0x34495e)
+    );
+    this.skillButtons = [];
+
+    const skills = this.playerCat.skills || [];
+    const skillList = [
+      skills[0] ? SKILLS[skills[0]] : { name: "-", id: null },
+      skills[1] ? SKILLS[skills[1]] : { name: "-", id: null },
+      skills[2] ? SKILLS[skills[2]] : { name: "-", id: null },
+      { name: "Back", id: "back" }
+    ];
+
+    skillList.forEach((skillItem, i) => {
+      const col = i % 2;
+      const row = Math.floor(i / 2);
+
+      const btnBg = this.add
+        .rectangle(10 + col * 135, 10 + row * 65, 125, 55, 0x34495e)
+        .setOrigin(0)
+        .setInteractive({ useHandCursor: true });
+      const btnText = this.add
+        .text(10 + col * 135 + 62.5, 10 + row * 65 + 27.5, skillItem ? skillItem.name : "-", {
+          font: "bold 16px Arial",
+          fill: "#ffffff",
+        })
+        .setOrigin(0.5);
+
+      if (skillItem && skillItem.id === "back") {
+        btnBg.on("pointerdown", () => {
+          this.skillMenuUI.setVisible(false);
+          this.menuUI.setVisible(true);
+        });
+      } else if (skillItem && skillItem.id) {
+        btnBg.on("pointerdown", () => {
+          this.skillMenuUI.setVisible(false);
+          this.playerSkill(skillItem.id);
+        });
+      }
+
+      btnBg.on("pointerover", () => btnBg.setFillStyle(0xe74c3c));
+      btnBg.on("pointerout", () => btnBg.setFillStyle(0x34495e));
+
+      this.skillMenuUI.add([btnBg, btnText]);
+      this.skillButtons.push(btnBg);
+    });
+
+    this.skillMenuUI.setVisible(false);
   }
 
   handleAction(action) {
@@ -229,12 +281,16 @@ export class BattleScene extends Phaser.Scene {
 
     switch (action) {
       case "Attack":
+        this.menuUI.setVisible(false);
         this.playerAttack();
         break;
       case "Skill":
-        this.playerSkill();
+        this.menuUI.setVisible(false);
+        this.skillMenuUI.setVisible(true);
+        this.canInput = true; // Allow clicking on skill menu
         break;
       case "Capture":
+        this.menuUI.setVisible(false);
         this.playerCapture();
         break;
       case "Run":
@@ -244,7 +300,10 @@ export class BattleScene extends Phaser.Scene {
   }
 
   playerAttack() {
+    this.canInput = false;
     this.updateLog(`${this.playerCat.name} used Scratch!`);
+    skillEffectSystem.playEffect(this, this.enemySprite, "slash");
+    
     const damage = battleSystem.calculateDamage(
       this.playerCat,
       this.enemyCat,
@@ -261,11 +320,14 @@ export class BattleScene extends Phaser.Scene {
     });
   }
 
-  playerSkill() {
-    // Use the first specialized skill
-    const skillsList = this.playerCat.skills || [];
-    const skillId = skillsList.find((s) => s !== "scratch") || "scratch";
-    this.updateLog(`${this.playerCat.name} used ${skillId.replace("_", " ")}!`);
+  playerSkill(skillId) {
+    this.canInput = false;
+    const skill = SKILLS[skillId];
+    if (!skill) return;
+
+    this.updateLog(`${this.playerCat.name} used ${skill.name}!`);
+    skillEffectSystem.playEffect(this, this.enemySprite, skill.effectType);
+
     const damage = battleSystem.calculateDamage(
       this.playerCat,
       this.enemyCat,
@@ -384,7 +446,33 @@ export class BattleScene extends Phaser.Scene {
   }
 
   enemyTurn() {
+    const enemySkills = this.enemyCat.skills || [];
+    // 20% basic attack, 80% skill
+    const useSkill = Math.random() < 0.8 && enemySkills.length > 0;
+    
+    if (useSkill) {
+      const skillId = enemySkills[Math.floor(Math.random() * enemySkills.length)];
+      const skill = SKILLS[skillId];
+      if (skill) {
+        this.updateLog(`${this.enemyCat.name} used ${skill.name}!`);
+        skillEffectSystem.playEffect(this, this.playerSprite, skill.effectType);
+        const damage = battleSystem.calculateDamage(this.enemyCat, this.playerCat, skillId);
+
+        this.time.delayedCall(1000, () => {
+          this.applyDamage(this.playerCat, damage, "player");
+          if (this.playerCat.currentHp <= 0) {
+            this.defeat();
+          } else {
+            this.nextTurn();
+          }
+        });
+        return;
+      }
+    }
+
+    // Fallback to basic attack
     this.updateLog(`${this.enemyCat.name} used Scratch!`);
+    skillEffectSystem.playEffect(this, this.playerSprite, "slash");
     const damage = battleSystem.calculateDamage(
       this.enemyCat,
       this.playerCat,
