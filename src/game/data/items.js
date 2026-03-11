@@ -13,5 +13,12 @@ export const ITEMS = {
     description: 'Used to catch wild creatures.',
     price: 25,
     type: 'capture'
+  },
+  FOREST_BADGE: {
+    id: 'FOREST_BADGE',
+    name: 'Forest Badge',
+    description: 'A badge given to those who prove their strength to the Forest Guardian.',
+    price: 0,
+    type: 'key'
   }
 };

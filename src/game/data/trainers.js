@@ -27,4 +27,19 @@ export const TRAINers = {
       { creatureId: "SNAGPUSS", level: 5 },
     ],
   },
+  guardian_rowan: {
+    id: "guardian_rowan",
+    name: "Guardian Rowan",
+    dialogueBefore: "The Shrine is sacred. You must prove your strength to pass!",
+    dialogueAfter: "I haven't seen power like that in years. The Forest Badge is yours.",
+    rewards: {
+        gold: 500,
+        expMultiplier: 2.5,
+        item: "FOREST_BADGE"
+    },
+    party: [
+        { creatureId: "MOSSLYNX", level: 12 },
+        { creatureId: "THORNMANE", level: 14 }
+    ],
+  },
 };

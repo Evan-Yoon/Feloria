@@ -90,6 +90,10 @@
     { "x": 8, "y": 19, "targetMap": "greenpaw_forest", "targetX": 8, "targetY": 1 },
     { "x": 9, "y": 19, "targetMap": "greenpaw_forest", "targetX": 9, "targetY": 1 },
     { "x": 10, "y": 19, "targetMap": "greenpaw_forest", "targetX": 10, "targetY": 1 },
-    { "x": 11, "y": 19, "targetMap": "greenpaw_forest", "targetX": 11, "targetY": 1 }
+    { "x": 11, "y": 19, "targetMap": "greenpaw_forest", "targetX": 11, "targetY": 1 },
+    { "x": 8, "y": 0, "targetMap": "ancient_forest", "targetX": 8, "targetY": 18 },
+    { "x": 9, "y": 0, "targetMap": "ancient_forest", "targetX": 9, "targetY": 18 },
+    { "x": 10, "y": 0, "targetMap": "ancient_forest", "targetX": 10, "targetY": 18 },
+    { "x": 11, "y": 0, "targetMap": "ancient_forest", "targetX": 11, "targetY": 18 }
   ]
 }

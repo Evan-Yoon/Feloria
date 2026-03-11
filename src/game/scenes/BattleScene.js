@@ -340,6 +340,15 @@ export class BattleScene extends Phaser.Scene {
             defeatedTrainers.push(this.trainerId);
             this.registry.set('defeatedTrainers', defeatedTrainers);
         }
+
+        // Grant Item Reward if exists
+        if (trainerData.rewards.item) {
+            const inventory = this.registry.get('playerInventory') || {};
+            const itemId = trainerData.rewards.item;
+            inventory[itemId] = (inventory[itemId] || 0) + 1;
+            this.registry.set('playerInventory', inventory);
+            console.log(`BattleScene: Granted item reward ${itemId}`);
+        }
     } else {
         // Wild Gold Drop
         goldGain = battleSystem.calculateGold(false);

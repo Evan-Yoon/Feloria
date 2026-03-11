@@ -91,6 +91,13 @@ export class WorldScene extends Phaser.Scene {
     // We emit after a tiny delay so UIScene can initialize if this is the first boot
     this.time.delayedCall(10, () => {
         this.events.emit('displayMapName', this.mapData.name);
+        
+        // Quest Progression: Location Checks
+        if (this.mapId === 'mosslight_path') {
+            questSystem.completeObjective(this.registry, 'forest_awakening', 'explore_path');
+        } else if (this.mapId === 'ancient_forest') {
+            questSystem.completeObjective(this.registry, 'forest_awakening', 'enter_ancient_forest');
+        }
     });
   }
 
@@ -127,7 +134,7 @@ export class WorldScene extends Phaser.Scene {
     this.mapData.spawns.forEach((spawn) => {
       if (spawn.type === "npc") {
         let texture = "npc";
-        if (spawn.id === "mira") texture = "npc_mira";
+        if (spawn.id === "mira" || spawn.id === "trainer_guardian_rowan") texture = "npc_mira";
         else if (spawn.id && spawn.id.startsWith("trainer")) texture = "npc_trainer";
 
         const npc = this.add.sprite(
@@ -309,6 +316,9 @@ export class WorldScene extends Phaser.Scene {
             this.isDialogueActive = false;
             if (!isDefeated) {
               this.triggerTrainerBattle(trainerId);
+            } else if (trainerId === "guardian_rowan") {
+                // Secondary quest completion check
+                questSystem.completeObjective(this.registry, 'forest_awakening', 'defeat_rowan');
             }
           },
         });

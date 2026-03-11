@@ -95,14 +95,29 @@ export const CREATURES = {
     type: 'Forest',
     description: 'A quiet moss-covered wildcat that blends into the forest floor.',
     baseHp: 18, baseAttack: 6, baseDefense: 4, catchRate: 0.7,
-    evolution: { target: 'MOSSFANG', level: 14 }
+    evolution: { target: 'VERDANTLYNX', level: 14 }
   },
-  MOSSFANG: {
-    id: 'MOSSFANG',
-    name: 'Mossfang',
+  VERDANTLYNX: {
+    id: 'VERDANTLYNX',
+    name: 'Verdantlynx',
     type: 'Forest',
-    description: 'Its fangs constantly drip with a mild natural sedative.',
-    baseHp: 42, baseAttack: 15, baseDefense: 10, catchRate: 0.3, evolution: null
+    description: 'A mature lynx with branches growing from its shoulders.',
+    baseHp: 48, baseAttack: 16, baseDefense: 10, catchRate: 0.2, evolution: null
+  },
+  THORNKIT: {
+    id: 'THORNKIT',
+    name: 'Thornkit',
+    type: 'Grass',
+    description: 'A small kitten covered in soft thorns that harden when scared.',
+    baseHp: 15, baseAttack: 5, baseDefense: 3, catchRate: 0.8,
+    evolution: { target: 'THORNMANE', level: 12 }
+  },
+  THORNMANE: {
+    id: 'THORNMANE',
+    name: 'Thornmane',
+    type: 'Grass',
+    description: 'A fierce predator with a mane of razor-sharp brambles.',
+    baseHp: 42, baseAttack: 20, baseDefense: 8, catchRate: 0.2, evolution: null
   },
   FERNCLAW: {
     id: 'FERNCLAW',

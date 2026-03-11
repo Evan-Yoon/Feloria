@@ -17,6 +17,17 @@ export const QUEST_DATA = {
       { id: 'return_mira', text: 'Return to Elder Mira', completed: false }
     ],
     completed: false
+  },
+  forest_awakening: {
+    id: 'forest_awakening',
+    title: 'Forest Awakening',
+    description: 'Ancient shadows stir in the deep woods. Seek the Shrine.',
+    objectives: [
+      { id: 'explore_path', text: 'Explore Mosslight Path', completed: false },
+      { id: 'enter_ancient_forest', text: 'Enter Ancient Forest', completed: false },
+      { id: 'defeat_rowan', text: 'Defeat Guardian Rowan', completed: false }
+    ],
+    completed: false
   }
 };
 
