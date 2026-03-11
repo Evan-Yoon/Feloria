@@ -1,5 +1,6 @@
 import { battleSystem } from '../systems/battleSystem.js';
 import { codexSystem } from '../systems/codexSystem.js';
+import { saveSystem } from '../systems/saveSystem.js';
 import { questSystem } from '../systems/questSystem.js';
 import { TRAINers } from '../data/trainers.js';
 
@@ -428,8 +429,11 @@ export class BattleScene extends Phaser.Scene {
     this.cameras.main.once('camerafadeoutcomplete', () => {
       // Return to world using saved position
       const mapId = this.registry.get('world_mapId') || 'starwhisk_village';
-      const tx = this.registry.get('world_spawnX');
-      const ty = this.registry.get('world_spawnY');
+      const tx = this.registry.get('world_spawnX') || 10;
+      const ty = this.registry.get('world_spawnY') || 10;
+
+      // Autosave after battle (captures, exp, gold, codex)
+      saveSystem.saveData(this.registry, mapId, tx, ty);
 
       this.scene.start('WorldScene', {
         mapId, spawnX: tx, spawnY: ty

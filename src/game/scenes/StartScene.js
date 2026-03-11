@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { saveSystem } from "../systems/saveSystem.js";
 
 /**
  * StartScene
@@ -35,10 +36,24 @@ export class StartScene extends Phaser.Scene {
       this.scene.start("NameScene");
     });
 
-    this.createMenuItem(width / 2, height * 0.7, "Continue", () => {
-      console.log("Continue: Not implemented yet");
-      // For now, treat it like New Game or show a message
+    // Check if Save Data Exists
+    const saves = saveSystem.getAllSaves();
+    const hasSave = saves.some(s => s.exists);
+
+    const continueBtn = this.createMenuItem(width / 2, height * 0.7, "Continue", () => {
+      if (hasSave) {
+        this.scene.pause();
+        this.scene.launch("SaveLoadScene", { mode: 'load' });
+      } else {
+        // Simple flicker feedback if empty
+        this.cameras.main.shake(100, 0.005);
+      }
     });
+
+    if (!hasSave) {
+      continueBtn.setAlpha(0.5);
+      continueBtn.removeInteractive();
+    }
 
     // Instructions
     this.add

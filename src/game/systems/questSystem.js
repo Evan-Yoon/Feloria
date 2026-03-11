@@ -1,6 +1,8 @@
 /**
  * quests.js - Quest data and progression logic.
  */
+import { saveSystem } from './saveSystem.js';
+
 export const QUEST_DATA = {
   first_steps: {
     id: 'first_steps',
@@ -41,6 +43,13 @@ export const questSystem = {
       }
 
       registry.set('activeQuests', activeQuests);
+
+      // Autosave quest progress
+      const mapId = registry.get('world_mapId') || 'starwhisk_village';
+      const tx = registry.get('world_spawnX') || 10;
+      const ty = registry.get('world_spawnY') || 10;
+      saveSystem.saveData(registry, mapId, tx, ty);
+
       return true;
     }
     return false;

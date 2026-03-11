@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { saveSystem } from '../systems/saveSystem.js';
 
 /**
  * MenuScene
@@ -32,17 +33,18 @@ export class MenuScene extends Phaser.Scene {
       { text: 'Inventory', action: () => { this.scene.pause(); this.scene.launch('InventoryScene'); } },
       { text: 'Codex', action: () => { this.scene.pause(); this.scene.launch('CodexScene'); } },
       { text: 'Quests', action: () => { this.scene.pause(); this.scene.launch('QuestScene'); } },
+      { text: 'Save', action: () => { this.scene.pause(); this.scene.launch('SaveLoadScene', { mode: 'save' }); } },
       { text: 'Close', action: () => { this.scene.resume('WorldScene'); this.scene.stop(); } }
     ];
 
-    // Adjust container start Y slightly higher for 5 buttons
-    let startY = 100;
+    // Adjust container start Y higher for 6 buttons
+    let startY = 80;
 
     buttons.forEach((btn, i) => {
-      const buttonBg = this.add.rectangle(width - menuWidth / 2 - 20, startY + (i * 60), 200, 45, 0x34495e)
+      const buttonBg = this.add.rectangle(width - menuWidth / 2 - 20, startY + (i * 55), 200, 45, 0x34495e)
         .setInteractive({ useHandCursor: true });
         
-      const buttonText = this.add.text(width - menuWidth / 2 - 20, startY + (i * 60), btn.text, {
+      const buttonText = this.add.text(width - menuWidth / 2 - 20, startY + (i * 55), btn.text, {
         font: '24px Arial', fill: '#ffffff'
       }).setOrigin(0.5);
 

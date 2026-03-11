@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { mapLoader } from "../systems/mapLoader.js";
+import { saveSystem } from "../systems/saveSystem.js";
 import { encounterSystem } from "../systems/encounterSystem.js";
 import { dialogueSystem } from "../systems/dialogueSystem.js";
 import { questSystem } from "../systems/questSystem.js";
@@ -111,8 +112,12 @@ export class WorldScene extends Phaser.Scene {
     this.mapNameText.setScrollFactor(0);
     this.mapNameText.setDepth(100);
 
-    // Counter the camera zoom by scaling down the text
+    // Counter the camera zoom by making the text smaller physically,
+    // because setScrollFactor(0) on a zoomed camera scales UI up.
     this.mapNameText.setScale(1 / this.cameras.main.zoom);
+
+    // Explicitly set origin so position starts at the exact top-left
+    this.mapNameText.setOrigin(0, 0);
   }
 
   openMenu() {
@@ -248,6 +253,14 @@ export class WorldScene extends Phaser.Scene {
       this.isMoving = true;
       this.cameras.main.fadeOut(300, 0, 0, 0);
       this.cameras.main.once("camerafadeoutcomplete", () => {
+        // Autosave upon map transition securely
+        saveSystem.saveData(
+          this.registry,
+          warp.targetMap,
+          warp.targetX,
+          warp.targetY,
+        );
+
         this.scene.start("WorldScene", {
           mapId: warp.targetMap,
           spawnX: warp.targetX,
@@ -374,6 +387,14 @@ export class WorldScene extends Phaser.Scene {
 
     // Flash completely heals, log internally
     console.log("WorldScene: Party fully healed via Elder Mira.");
+
+    // Autosave after healing
+    saveSystem.saveData(
+      this.registry,
+      this.mapId,
+      this.player.tileX,
+      this.player.tileY,
+    );
   }
 
   triggerTrainerBattle(trainerId) {

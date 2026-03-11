@@ -15,6 +15,7 @@ import { QuestScene } from '../scenes/QuestScene.js';
 import { EvolutionScene } from '../scenes/EvolutionScene.js';
 import { ShopScene } from '../scenes/ShopScene.js';
 import { InventoryScene } from '../scenes/InventoryScene.js';
+import { SaveLoadScene } from '../scenes/SaveLoadScene.js';
 
 /**
  * Centralized Phaser game configuration.
@@ -42,7 +43,8 @@ export const gameConfig = {
     QuestScene,
     EvolutionScene,
     ShopScene,
-    InventoryScene
+    InventoryScene,
+    SaveLoadScene
   ],
   physics: {
     default: 'arcade',

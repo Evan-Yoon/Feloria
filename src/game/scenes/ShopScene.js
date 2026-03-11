@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { shopSystem } from '../systems/shopSystem.js';
+import { saveSystem } from '../systems/saveSystem.js';
 
 /**
  * ShopScene
@@ -75,6 +76,13 @@ export class ShopScene extends Phaser.Scene {
       this.notifText.setFill(result.success ? '#2ecc71' : '#e74c3c');
       
       this.updateGoldText();
+
+      if (result.success) {
+        const mapId = this.registry.get('world_mapId') || 'starwhisk_village';
+        const spawnX = this.registry.get('world_spawnX') || 10;
+        const spawnY = this.registry.get('world_spawnY') || 10;
+        saveSystem.saveData(this.registry, mapId, spawnX, spawnY);
+      }
 
       // Clear notif after 2s
       this.time.delayedCall(2000, () => {
