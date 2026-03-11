@@ -71,6 +71,7 @@ export const mapLoader = {
     return {
       map,
       layers,
+      name: mapData.name || mapId,
       spawns: mapData.spawns || [],
       warps: mapData.warps || [],
       widthInPixels: mapData.width * mapData.tilewidth,

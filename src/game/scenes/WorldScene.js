@@ -71,6 +71,35 @@ export class WorldScene extends Phaser.Scene {
     // 6. Camera Follow
     this.cameras.main.startFollow(this.player, true);
     this.cameras.main.setZoom(2); // Zoom in for the pixel RPG feel
+
+    // 7. Map Name UI
+    this.createMapNameUI();
+  }
+
+  createMapNameUI() {
+    const mapName = this.mapData.name;
+    const padding = 10;
+    
+    // We add text to the scene
+    this.mapNameText = this.add.text(padding, padding, mapName, {
+      fontFamily: '"Press Start 2P", Courier, monospace',
+      fontSize: '16px',
+      color: '#ffffff',
+      stroke: '#000000',
+      strokeThickness: 4,
+      shadow: {
+        offsetX: 2,
+        offsetY: 2,
+        color: '#000000',
+        blur: 0,
+        stroke: true,
+        fill: true
+      }
+    });
+
+    // Fix position to camera so it doesn't move when walking
+    this.mapNameText.setScrollFactor(0);
+    this.mapNameText.setDepth(100);
   }
 
   openMenu() {
