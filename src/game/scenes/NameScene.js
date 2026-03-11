@@ -43,22 +43,36 @@ export class NameScene extends Phaser.Scene {
       loop: -1,
     });
 
-    // Keyboard Input
-    this.input.keyboard.on("keydown", (event) => {
-      if (event.keyCode === 8 && this.nameText.text.length > 0) {
-        // Backspace
-        this.nameText.text = this.nameText.text.slice(0, -1);
-      } else if (event.keyCode === 13 && this.nameText.text.length > 0) {
-        // Enter
-        this.saveAndContinue();
-      } else if (
-        this.nameText.text.length < 12 &&
-        /^[a-zA-Z0-9 ㄱ-ㅎ|ㅏ-ㅣ|가-힣]$/.test(event.key)
-      ) {
-        // Alphanumeric
-        this.nameText.text += event.key;
-      }
+    // Keyboard Input - Create a hidden HTML input for IME support
+    const inputElement = document.createElement("input");
+    inputElement.type = "text";
+    inputElement.style.position = "absolute";
+    inputElement.style.top = "-1000px"; // Hide it off-screen
+    inputElement.maxLength = 12;
+    document.body.appendChild(inputElement);
+
+    const domElement = this.add.dom(0, 0, inputElement);
+    
+    // Focus the hidden input when the scene starts
+    this.time.delayedCall(100, () => inputElement.focus());
+    
+    // Clicking anywhere on the screen refocuses the input
+    this.input.on('pointerdown', () => inputElement.focus());
+
+    inputElement.addEventListener("input", () => {
+      this.nameText.setText(inputElement.value);
       this.updateCursorPosition();
+    });
+
+    inputElement.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && inputElement.value.length > 0) {
+        inputElement.remove();
+        this.saveAndContinue();
+      }
+    });
+
+    this.events.on('shutdown', () => {
+      inputElement.remove();
     });
 
     // OK Button
@@ -96,6 +110,6 @@ export class NameScene extends Phaser.Scene {
     const playerName = this.nameText.text || "영웅";
     console.log(`Setting player name to: ${playerName}`);
     this.registry.set("playerName", playerName);
-    this.scene.start("StarterSelectScene");
+    this.scene.start("WorldScene", { mapId: "starwhisk_village" });
   }
 }

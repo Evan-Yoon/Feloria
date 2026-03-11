@@ -2,7 +2,7 @@ import { battleSystem } from "../systems/battleSystem.js";
 import { codexSystem } from "../systems/codexSystem.js";
 import { saveSystem } from "../systems/saveSystem.js";
 import { questSystem } from '../systems/questSystem.js';
-import { TRAINers } from '../data/trainers.js';
+import { TRAINERS } from '../data/trainers.js';
 import { NPCS } from '../data/npcs.js';
 import { cutsceneSystem } from '../systems/cutsceneSystem.js';
 import { SKILLS } from '../data/skills.js';
@@ -34,7 +34,7 @@ export class BattleScene extends Phaser.Scene {
     this.enemyParty = [];
 
     if (this.isTrainer && this.trainerId) {
-      const trainerData = TRAINers[this.trainerId];
+      const trainerData = TRAINERS[this.trainerId];
       trainerData.party.forEach((member) => {
         this.enemyParty.push(
           battleSystem.createInstance(member.creatureId, member.level),
@@ -561,7 +561,7 @@ export class BattleScene extends Phaser.Scene {
     let goldGain = 0;
 
     if (this.isTrainer) {
-      const trainerData = TRAINers[this.trainerId];
+      const trainerData = TRAINERS[this.trainerId];
       expGain = Math.floor(
         expGain * (trainerData.rewards.expMultiplier || 1.5),
       );

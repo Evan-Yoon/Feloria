@@ -20,7 +20,7 @@ export class DialogScene extends Phaser.Scene {
   create() {
     const { width, height } = this.cameras.main;
     const padding = 20;
-    const boxHeight = 150;
+    const boxHeight = 180;
 
     // UI Box (Gray with white border)
     const box = this.add.container(padding, height - boxHeight - padding);
@@ -43,10 +43,10 @@ export class DialogScene extends Phaser.Scene {
 
     // Content Text
     this.contentText = this.add.text(20, 20, "", {
-      font: '20px "Malgun Gothic", "Apple SD Gothic Neo", sans-serif',
+      font: '28px "Malgun Gothic", "Apple SD Gothic Neo", sans-serif',
       fill: "#ffffff",
-      wordWrap: { width: width - padding * 4 },
-      lineSpacing: 8, // Add some spacing for legibility
+      wordWrap: { width: width - padding * 6 },
+      lineSpacing: 10, // Add some spacing for legibility
     });
 
     // Continue Hint

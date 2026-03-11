@@ -13,25 +13,35 @@ export class StartScene extends Phaser.Scene {
   create() {
     const { width, height } = this.cameras.main;
 
-    // Background
-    this.add.rectangle(0, 0, width, height, 0x1a252f).setOrigin(0);
+    // Background Image
+    const background = this.add.image(width / 2, height / 2, 'bg_title_screen');
+    const scale = Math.max(width / background.width, height / background.height);
+    background.setScale(scale);
 
-    // Title
-    this.add.text(width / 2, height / 3 - 40, "FELORIA", {
-        font: 'bold 72px "Press Start 2P", Courier, monospace',
-        fill: "#f1c40f",
-        shadow: { offsetX: 4, offsetY: 4, color: '#000000', blur: 0, fill: true }
-      })
-      .setOrigin(0.5);
+    // Dimming overlay for readability (initially transparent)
+    this.overlay = this.add.rectangle(0, 0, width, height, 0x000000, 0.4).setOrigin(0).setAlpha(0);
 
-    this.add.text(width / 2, height / 3 + 40, "고양이 정령 육성 RPG", {
-        font: "italic 28px Arial",
-        fill: "#bdc3c7",
-      })
-      .setOrigin(0.5);
+    // Initial Press Start Text
+    this.pressStartText = this.add.text(width / 2, height * 0.7, "화면을 클릭하여 시작", {
+      font: 'bold 36px "Malgun Gothic", "Apple SD Gothic Neo", sans-serif',
+      fill: "#ffffff",
+      shadow: { offsetX: 2, offsetY: 2, color: '#000', blur: 4, fill: true }
+    }).setOrigin(0.5);
 
-    // Menu Options
-    this.createMenuItem(width / 2, height * 0.6, "새 게임", () => {
+    // Add a pulsing effect to the press start text
+    this.tweens.add({
+      targets: this.pressStartText,
+      alpha: 0.3,
+      duration: 800,
+      yoyo: true,
+      loop: -1
+    });
+
+    // Menu Container (initially hidden)
+    this.menuContainer = this.add.container(0, 0).setAlpha(0).setVisible(false);
+
+    // Menu Options (inside container)
+    const newGameBtn = this.createMenuItem(width / 2, height * 0.6, "새 게임", () => {
       this.scene.start("CutsceneScene", {
         messages: [
           "펠로리아 대륙.",
@@ -39,6 +49,13 @@ export class StartScene extends Phaser.Scene {
           "사람들은 그들을 '고대 고양이'라 불렀다.",
           "하지만 지금… 숲의 기운이 뒤틀리기 시작했다.",
           "그리고 그 힘을 노리는 누군가가 움직이고 있다."
+        ],
+        images: [
+          "bg_continent",
+          "bg_ancient_cats",
+          "bg_ancient_cats",
+          "bg_twisted_forest",
+          "bg_shadow"
         ],
         nextScene: "NameScene"
       });
@@ -53,7 +70,6 @@ export class StartScene extends Phaser.Scene {
         this.scene.pause();
         this.scene.launch("SaveLoadScene", { mode: 'load' });
       } else {
-        // Simple flicker feedback if empty
         this.cameras.main.shake(100, 0.005);
       }
     });
@@ -63,13 +79,31 @@ export class StartScene extends Phaser.Scene {
       continueBtn.removeInteractive();
     }
 
+    this.menuContainer.add([newGameBtn, continueBtn]);
+
+    // Click anywhere to show menu
+    this.input.once("pointerdown", () => {
+      this.pressStartText.setVisible(false);
+      this.menuContainer.setVisible(true);
+
+      // Darken screen and show menu
+      this.tweens.add({
+        targets: [this.menuContainer, this.overlay],
+        alpha: { from: 0, to: (t) => t === this.menuContainer ? 1 : 0.4 },
+        duration: 500
+      });
+    });
+
     // Instructions
-    this.add
+    this.instructions = this.add
       .text(width / 2, height - 50, "마우스를 사용하여 선택", {
         font: "16px Arial",
         fill: "#bdc3c7",
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5)
+      .setAlpha(0); // Also hide instructions initially
+
+    this.menuContainer.add(this.instructions);
   }
 
   createMenuItem(x, y, text, callback) {

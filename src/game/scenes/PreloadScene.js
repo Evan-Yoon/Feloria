@@ -2,6 +2,11 @@ import Phaser from 'phaser';
 import { ASSETS } from '../config/assetPaths.js';
 import { CREATURES } from '../data/creatures.js';
 import { pixelArtGenerator } from '../systems/pixelArtGenerator.js';
+import bgContinent from '../data/graphics/startscene/펠로리아 대륙.png';
+import bgAncientCats from '../data/graphics/startscene/고대 고양이.png';
+import bgTwistedForest from '../data/graphics/startscene/뒤틀린 숲.png';
+import bgShadow from '../data/graphics/startscene/흑막.png';
+import bgTitleScreen from '../data/graphics/startscene/Feloria_title_screen.png';
 
 /**
  * PreloadScene
@@ -26,6 +31,13 @@ export class PreloadScene extends Phaser.Scene {
     // In a real scenario, we would do:
     // this.load.image(ASSETS.UI.FRAME.KEY, ASSETS.UI.FRAME.PATH);
     // this.load.spritesheet(ASSETS.SPRITES.PLAYER.KEY, ASSETS.SPRITES.PLAYER.PATH, ASSETS.SPRITES.PLAYER.FRAME_CONFIG);
+
+    // Load Start Scene Cutscene Backgrounds
+    this.load.image('bg_continent', bgContinent);
+    this.load.image('bg_ancient_cats', bgAncientCats);
+    this.load.image('bg_twisted_forest', bgTwistedForest);
+    this.load.image('bg_shadow', bgShadow);
+    this.load.image('bg_title_screen', bgTitleScreen);
   }
 
   create() {

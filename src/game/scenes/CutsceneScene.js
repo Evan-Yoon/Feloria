@@ -11,6 +11,7 @@ export class CutsceneScene extends Phaser.Scene {
 
   init(data) {
     this.messages = data.messages || [];
+    this.images = data.images || [];
     this.nextScene = data.nextScene || "StartScene";
     this.sceneData = data.sceneData || {};
     this.currentMessageIndex = 0;
@@ -19,21 +20,32 @@ export class CutsceneScene extends Phaser.Scene {
   create() {
     const { width, height } = this.cameras.main;
 
-    // Black background
+    // Base black background
     this.add.rectangle(0, 0, width, height, 0x000000).setOrigin(0);
 
-    // Text Display
+    // Background Image
+    this.background = this.add.image(width / 2, height / 2, "").setOrigin(0.5).setAlpha(0);
+
+    // Dimming overlay for readability
+    this.overlay = this.add.rectangle(0, 0, width, height, 0x000000, 0.4).setOrigin(0).setAlpha(0);
+
+    // Text Display - Increased font size and added shadow/stroke for readability
     this.textDisplay = this.add.text(width / 2, height / 2, "", {
-      font: '32px "Malgun Gothic", "Apple SD Gothic Neo", sans-serif',
+      font: 'bold 48px "Malgun Gothic", "Apple SD Gothic Neo", sans-serif',
       fill: "#ffffff",
       align: "center",
-      wordWrap: { width: width - 200 }
+      wordWrap: { width: width - 200 },
+      shadow: { offsetX: 3, offsetY: 3, color: '#000000', blur: 4, fill: true },
+      stroke: '#000000',
+      strokeThickness: 6
     }).setOrigin(0.5).setAlpha(0);
 
     // Continue Hint
     this.hintText = this.add.text(width - 50, height - 50, "진행하려면 클릭하세요", {
-      font: '18px "Malgun Gothic", "Apple SD Gothic Neo", sans-serif',
-      fill: "#bdc3c7",
+      font: '24px "Malgun Gothic", "Apple SD Gothic Neo", sans-serif',
+      fill: "#ffffff",
+      stroke: '#000000',
+      strokeThickness: 2
     }).setOrigin(1).setAlpha(0);
 
     // Start Sequence
@@ -52,7 +64,7 @@ export class CutsceneScene extends Phaser.Scene {
       this.isFading = true;
       this.hintText.setAlpha(0);
 
-      // Fade out current
+      // Fade out current text
       if (this.currentMessageIndex > 0) {
         this.tweens.add({
           targets: this.textDisplay,
@@ -70,7 +82,29 @@ export class CutsceneScene extends Phaser.Scene {
   }
 
   fadeInNewMessage() {
-    this.textDisplay.setText(this.messages[this.currentMessageIndex]);
+    const currentMsg = this.messages[this.currentMessageIndex];
+    const currentImg = this.images[this.currentMessageIndex];
+
+    // Update Background if provided and different
+    if (currentImg && this.background.texture.key !== currentImg) {
+      this.background.setTexture(currentImg);
+      
+      // Scale to fill
+      const { width, height } = this.cameras.main;
+      const scale = Math.max(width / this.background.width, height / this.background.height);
+      this.background.setScale(scale);
+
+      // Fade background in if not already visible
+      if (this.background.alpha < 1) {
+        this.tweens.add({
+          targets: [this.background, this.overlay],
+          alpha: { from: 0, to: (t) => t === this.background ? 1 : 0.4 },
+          duration: 1000
+        });
+      }
+    }
+
+    this.textDisplay.setText(currentMsg);
     this.currentMessageIndex++;
 
     this.tweens.add({
@@ -93,9 +127,9 @@ export class CutsceneScene extends Phaser.Scene {
   finishCutscene() {
     this.isFading = true;
     this.tweens.add({
-      targets: [this.textDisplay, this.hintText],
+      targets: [this.textDisplay, this.hintText, this.background, this.overlay],
       alpha: 0,
-      duration: 1000,
+      duration: 1500,
       onComplete: () => {
         this.scene.start(this.nextScene, this.sceneData);
       }

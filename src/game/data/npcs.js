@@ -6,7 +6,7 @@
 
 export const NPCS = {
   // --- STARWHISK VILLAGE ---
-  mira: {
+  elder_hyunseok: {
     id: "Chief Hyunseok",
     name: "촌장 현석",
     role: "healer_quest",

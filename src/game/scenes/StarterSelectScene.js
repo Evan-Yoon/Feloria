@@ -104,7 +104,10 @@ export class StarterSelectScene extends Phaser.Scene {
 
     this.cameras.main.fadeOut(500, 0, 0, 0);
     this.cameras.main.once('camerafadeoutcomplete', () => {
-      this.scene.start('WorldScene', { mapId: 'starwhisk_village' });
+      this.scene.start('WorldScene', { 
+        mapId: 'starwhisk_village', 
+        intro_phase: 'received_starter' 
+      });
     });
   }
 }

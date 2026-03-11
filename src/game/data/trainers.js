@@ -1,6 +1,6 @@
 import { CREATURES } from "./creatures.js";
 
-export const TRAINers = {
+export const TRAINERS = {
   kyle: {
     id: "kyle",
     name: "초보 트레이너 카일",
