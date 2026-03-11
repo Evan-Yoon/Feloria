@@ -24,15 +24,33 @@ export class PreloadScene extends Phaser.Scene {
     // Create loading UI
     this.createLoadingUI();
 
-    // Load assets defined in ASSETS config
-    // For Phase 1, we might not have all files yet, so we handle missing files gracefully
-    // Or we use placeholder textures created at runtime
-    
-    // In a real scenario, we would do:
-    // this.load.image(ASSETS.UI.FRAME.KEY, ASSETS.UI.FRAME.PATH);
-    // this.load.spritesheet(ASSETS.SPRITES.PLAYER.KEY, ASSETS.SPRITES.PLAYER.PATH, ASSETS.SPRITES.PLAYER.FRAME_CONFIG);
+    // 1. Generic Image Assets (Faces, Battlebacks, Parallaxes, Tilesets)
+    const imageCats = ['BATTLEBACKS1', 'BATTLEBACKS2', 'PARALLAXES', 'TILESETS'];
+    imageCats.forEach(cat => {
+      Object.values(ASSETS[cat]).forEach(asset => {
+        this.load.image(asset.KEY, asset.PATH);
+      });
+    });
 
-    // Load Start Scene Cutscene Backgrounds
+
+    // 2. Spritesheets (Characters, Animations, Faces, Monster Fallbacks)
+    const sheetCats = ['CHARACTERS', 'ANIMATIONS', 'FACES', 'SPRITES'];
+    sheetCats.forEach(cat => {
+      Object.values(ASSETS[cat]).forEach(asset => {
+        if (asset.FRAME_CONFIG) {
+          this.load.spritesheet(asset.KEY, asset.PATH, asset.FRAME_CONFIG);
+        } else {
+          this.load.image(asset.KEY, asset.PATH);
+        }
+      });
+    });
+
+    // Error handling: if an asset fails to load, it won't crash the scene
+    this.load.on('loaderror', (file) => {
+      console.warn(`Failed to load asset: ${file.key} at ${file.src}`);
+    });
+
+    // Load Start Scene Cutscene Backgrounds (Legacy/Fallback)
     this.load.image('bg_continent', bgContinent);
     this.load.image('bg_ancient_cats', bgAncientCats);
     this.load.image('bg_twisted_forest', bgTwistedForest);

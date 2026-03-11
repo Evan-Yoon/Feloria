@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { ASSETS } from "../config/assetPaths.js";
 import { mapLoader } from "../systems/mapLoader.js";
 import { saveSystem } from "../systems/saveSystem.js";
 import { encounterSystem } from "../systems/encounterSystem.js";
@@ -44,6 +45,8 @@ export class WorldScene extends Phaser.Scene {
 
   create(data = {}) {
     console.log(`WorldScene: Entering ${this.mapId}`);
+    console.log(`WorldScene: NPCS keys = ${Object.keys(NPCS).join(', ')}`);
+    console.log(`WorldScene: elder_hyunseok data =`, NPCS.elder_hyunseok);
 
     // 1. Load Map
     this.mapData = mapLoader.createMap(this, this.mapId);
@@ -145,12 +148,14 @@ export class WorldScene extends Phaser.Scene {
 
     this.isDialogueActive = true;
     this.playerDir = "up";
-    this.player.setFrame(1);
+    this.player.setFrame(ASSETS.CHARACTERS.PLAYER.UP_FRAME || 1);
 
     this.scene.launch("DialogScene", {
       dialogue: {
         name: npcData.name,
-        pages: customDialogue || npcData.getDialogue(this.registry)
+        pages: customDialogue || npcData.getDialogue(this.registry),
+        faceKey: npcData.faceKey,
+        faceIndex: npcData.faceIndex || 0
       },
       onComplete: () => {
         this.isDialogueActive = false;
@@ -187,6 +192,7 @@ export class WorldScene extends Phaser.Scene {
    * Spawns the player at the correct tile position.
    */
   createPlayer() {
+    const config = ASSETS.CHARACTERS.PLAYER;
     // If no specific spawn provided, use map default
     const spawn = this.mapData.spawns.find((s) => s.type === "player");
     const isInitialSpawn = this.mapId === 'starwhisk_village' && !this.registry.get("intro_done");
@@ -194,13 +200,68 @@ export class WorldScene extends Phaser.Scene {
     const tx = this.spawnX !== undefined ? this.spawnX : (isInitialSpawn ? 10 : (spawn ? spawn.x : 10));
     const ty = this.spawnY !== undefined ? this.spawnY : (isInitialSpawn ? 9 : (spawn ? spawn.y : 10));
 
-    // Phaser spritesheet index: 0:Down, 1:Up, 2:Left, 3:Right (Matching our Preload generation)
-    this.player = this.add.sprite(tx * 32 + 16, ty * 32 + 16, "player", 0);
-    this.player.setDepth(10);
+    // Get frames for the specific character block
+    const frames = this.getCharacterFrames(config.KEY, config.CHARACTER_INDEX);
+    const startFrame = frames.down[1]; // Middle frame, down facing
 
-    // Store tile position
+    this.player = this.add.sprite(tx * 32 + 16, (ty + 1) * 32, config.KEY, startFrame);
+    this.player.setOrigin(0.5, 1);
+    this.player.setDepth(10);
     this.player.tileX = tx;
     this.player.tileY = ty;
+    this.player.animFrames = frames;
+
+    // Create animations for this specific player block
+    this.createCharacterAnims(this.player, "player", frames);
+  }
+
+  /**
+   * RPG Maker character sheet helper
+   * Sheet usually 4x2 blocks of 3x4 frames
+   */
+  getCharacterFrames(textureKey, charIndex) {
+    const texture = this.textures.get(textureKey);
+    // Find how many frames per row in the actual texture
+    // Each character block is 3 frames wide.
+    const frameCount = texture.getFrameNames().length;
+    // For spritesheets loaded via load.spritesheet, we can check the number of frames
+    // Standard RPG Maker MV Actor sheet is 12 frames wide, 8 frames high (total 96 frames)
+    // If it's a 4x2 block sheet, it has 12 columns.
+    const image = texture.getSourceImage();
+    const frameWidth = 32; // DEFINITIVE: 384 / 12 = 32. 256 / 8 = 32.
+    const sheetCols = 12; // 12 columns in a standard 4x2 RPG Maker sheet
+    console.log(`WorldScene: getCharacterFrames for ${textureKey}, index ${charIndex}, sheet size: ${image.width}x${image.height}, cols: ${sheetCols}`);
+
+    const blocksPerRow = 4; 
+    const blockX = charIndex % blocksPerRow;
+    const blockY = Math.floor(charIndex / blocksPerRow);
+
+    const startX = blockX * 3;
+    const startY = blockY * 4;
+    
+    const frames = {
+      down:  [ (startY + 0) * sheetCols + startX, (startY + 0) * sheetCols + startX + 1, (startY + 0) * sheetCols + startX + 2 ],
+      left:  [ (startY + 1) * sheetCols + startX, (startY + 1) * sheetCols + startX + 1, (startY + 1) * sheetCols + startX + 2 ],
+      right: [ (startY + 2) * sheetCols + startX, (startY + 2) * sheetCols + startX + 1, (startY + 2) * sheetCols + startX + 2 ],
+      up:    [ (startY + 3) * sheetCols + startX, (startY + 3) * sheetCols + startX + 1, (startY + 3) * sheetCols + startX + 2 ]
+    };
+    console.log(`WorldScene: calculated frames for ${textureKey}:`, frames);
+    return frames;
+  }
+
+  createCharacterAnims(sprite, prefix, frames) {
+    const directions = ['down', 'left', 'right', 'up'];
+    directions.forEach(dir => {
+      const key = `${prefix}_walk_${dir}`;
+      if (!this.anims.exists(key)) {
+        this.anims.create({
+          key: key,
+          frames: this.anims.generateFrameNumbers(sprite.texture.key, { frames: frames[dir] }),
+          frameRate: 8,
+          repeat: -1
+        });
+      }
+    });
   }
 
   /**
@@ -210,9 +271,17 @@ export class WorldScene extends Phaser.Scene {
     this.npcs = this.add.group();
     this.mapData.spawns.forEach((spawn) => {
       if (spawn.type === "npc") {
-        let texture = "npc";
-        if (spawn.id === "elder_hyunseok" || spawn.id === "mira" || spawn.id === "trainer_guardian_rowan") texture = "npc_mira";
-        else if (spawn.id && spawn.id.startsWith("trainer")) texture = "npc_trainer";
+        let config = ASSETS.CHARACTERS.NPC_PEOPLE1; // Default
+        if (spawn.id === "elder_hyunseok" || spawn.id === "mira") {
+          config = ASSETS.CHARACTERS.NPC_ELDER;
+        } else if (spawn.id === "trainer_guardian_rowan") {
+          config = ASSETS.CHARACTERS.NPC_PEOPLE2;
+        } else if (spawn.id && spawn.id.startsWith("trainer")) {
+          config = ASSETS.CHARACTERS.NPC_PEOPLE1;
+        }
+
+        const frames = this.getCharacterFrames(config.KEY, config.CHARACTER_INDEX);
+        const startFrame = frames.down[1];
 
         let nx = spawn.x;
         let ny = spawn.y;
@@ -239,9 +308,11 @@ export class WorldScene extends Phaser.Scene {
 
         const npc = this.add.sprite(
           nx * 32 + 16,
-          ny * 32 + 16,
-          texture,
+          (ny + 1) * 32,
+          config.KEY,
+          startFrame
         );
+        npc.setOrigin(0.5, 1);
         npc.npcId = spawn.id;
         npc.tileX = nx;
         npc.tileY = ny;
@@ -277,6 +348,12 @@ export class WorldScene extends Phaser.Scene {
 
     if (dx !== 0 || dy !== 0) {
       this.movePlayer(dx, dy);
+    } else {
+      // Idle - stop animation and set to middle frame
+      if (this.player.anims.isPlaying) {
+        this.player.stop();
+        this.player.setFrame(this.player.animFrames[this.playerDir][1]);
+      }
     }
   }
 
@@ -287,20 +364,13 @@ export class WorldScene extends Phaser.Scene {
     const nextX = this.player.tileX + dx;
     const nextY = this.player.tileY + dy;
 
-    // Update direction/sprite frame
-    if (dx > 0) {
-      this.playerDir = "right";
-      this.player.setFrame(3);
-    } else if (dx < 0) {
-      this.playerDir = "left";
-      this.player.setFrame(2);
-    } else if (dy > 0) {
-      this.playerDir = "down";
-      this.player.setFrame(0);
-    } else if (dy < 0) {
-      this.playerDir = "up";
-      this.player.setFrame(1);
-    }
+    // Update direction and play animation
+    if (dx > 0) this.playerDir = "right";
+    else if (dx < 0) this.playerDir = "left";
+    else if (dy > 0) this.playerDir = "down";
+    else if (dy < 0) this.playerDir = "up";
+
+    this.player.play(`player_walk_${this.playerDir}`, true);
 
     // 1. Check Bounds
     if (
@@ -329,7 +399,7 @@ export class WorldScene extends Phaser.Scene {
     this.tweens.add({
       targets: this.player,
       x: nextX * 32 + 16,
-      y: nextY * 32 + 16,
+      y: (nextY + 1) * 32,
       duration: this.movementDuration,
       onComplete: () => {
         this.isMoving = false;
@@ -435,10 +505,13 @@ export class WorldScene extends Phaser.Scene {
         }
       }
 
+      console.log(`WorldScene: Interacting with ${npcSprite.npcId}`, npcData);
       this.scene.launch("DialogScene", {
         dialogue: {
           name: npcData.name,
-          pages: pages
+          pages: pages,
+          faceKey: npcData.faceKey,
+          faceIndex: npcData.faceIndex || 0
         },
         onComplete: () => {
           this.isDialogueActive = false;

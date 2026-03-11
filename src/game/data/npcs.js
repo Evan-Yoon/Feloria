@@ -11,6 +11,8 @@ export const NPCS = {
     name: "촌장 현석",
     role: "healer_quest",
     sprite: "npc_mira",
+    faceKey: "face_elder",
+    faceIndex: 0,
     getDialogue: (registry) => {
       // Post-Seal Dialogue (Prison)
       if (registry.get("chapter1_done")) {
@@ -51,6 +53,7 @@ export const NPCS = {
     name: "상인 토비",
     role: "shopkeeper",
     sprite: "npc",
+    faceKey: "face_people1",
     getDialogue: (registry) => {
       return [
         "어서 와! 필요한 물건이 있나?",
@@ -63,6 +66,7 @@ export const NPCS = {
     name: "마을 주민 리나",
     role: "hint_npc",
     sprite: "npc",
+    faceKey: "face_people1",
     getDialogue: (registry) => {
       if (registry.get("chapter1_done")) {
         return [
@@ -89,6 +93,7 @@ export const NPCS = {
     name: "고양이 연구가 유진",
     role: "lore_npc",
     sprite: "npc",
+    faceKey: "face_people1",
     getDialogue: (registry) => {
       // Emergency Healer Role
       if (registry.get("chapter1_done")) {
@@ -120,6 +125,7 @@ export const NPCS = {
     name: "숲 탐험가 다린",
     role: "hint_npc",
     sprite: "npc",
+    faceKey: "face_people1",
     getDialogue: (registry) => {
       // Very simple reactive check: if their highest level cat is > 3
       const party = registry.get("playerParty") || [];
@@ -142,6 +148,7 @@ export const NPCS = {
     role: "trainer",
     trainerId: "kyle",
     sprite: "npc",
+    faceKey: "face_people1",
     getDialogue: (registry) => {
       const defeated = registry.get("defeatedTrainers") || [];
       if (defeated.includes("kyle")) {
@@ -157,6 +164,7 @@ export const NPCS = {
     name: "여행자 노아",
     role: "hint_npc",
     sprite: "npc",
+    faceKey: "face_people1",
     getDialogue: (registry) => {
       if (registry.get("chapter1_done")) {
         return [
@@ -176,6 +184,7 @@ export const NPCS = {
     role: "trainer",
     trainerId: "sera",
     sprite: "npc",
+    faceKey: "face_people1",
     getDialogue: (registry) => {
       const defeated = registry.get("defeatedTrainers") || [];
       if (defeated.includes("sera")) {
@@ -191,6 +200,7 @@ export const NPCS = {
     name: "신비한 여행자 에반",
     role: "lore_npc",
     sprite: "npc",
+    faceKey: "face_people1",
     getDialogue: (registry) => {
       if (registry.get("chapter1_done")) {
         return [
@@ -212,6 +222,7 @@ export const NPCS = {
     role: "trainer",
     trainerId: "luke",
     sprite: "npc",
+    faceKey: "face_people1",
     getDialogue: (registry) => {
       const defeated = registry.get("defeatedTrainers") || [];
       if (defeated.includes("luke")) {
@@ -227,6 +238,7 @@ export const NPCS = {
     name: "순례자 엘리",
     role: "hint_npc",
     sprite: "npc",
+    faceKey: "face_people1",
     getDialogue: (registry) => {
       return [
         "신전에 들어가기 전에 준비를 단단히 해.",
@@ -240,6 +252,8 @@ export const NPCS = {
     role: "boss_trainer",
     trainerId: "guardian_rowan",
     sprite: "npc_mira", // Uses unique sprite
+    faceKey: "face_evil",
+    faceIndex: 0,
     getDialogue: (registry) => {
       const defeated = registry.get("defeatedTrainers") || [];
       if (defeated.includes("guardian_rowan")) {

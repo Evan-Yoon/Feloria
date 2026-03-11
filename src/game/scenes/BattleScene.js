@@ -1,3 +1,4 @@
+import { ASSETS } from "../config/assetPaths.js";
 import { battleSystem } from "../systems/battleSystem.js";
 import { codexSystem } from "../systems/codexSystem.js";
 import { saveSystem } from "../systems/saveSystem.js";
@@ -81,8 +82,27 @@ export class BattleScene extends Phaser.Scene {
   create() {
     const { width, height } = this.cameras.main;
 
-    // Background
-    this.add.rectangle(0, 0, width, height, 0x1a1a1a).setOrigin(0);
+    // Background (Layered)
+    const bgMap = {
+      'starwhisk_village': { back1: ASSETS.BATTLEBACKS1.GRASSLAND.KEY, back2: ASSETS.BATTLEBACKS2.FOREST.KEY },
+      'greenpaw_forest': { back1: ASSETS.BATTLEBACKS1.GRASSLAND.KEY, back2: ASSETS.BATTLEBACKS2.FOREST.KEY },
+      'mosslight_path': { back1: ASSETS.BATTLEBACKS1.GRASSLAND.KEY, back2: ASSETS.BATTLEBACKS2.FOREST.KEY },
+      'ancient_forest': { back1: ASSETS.BATTLEBACKS1.GRASSLAND.KEY, back2: ASSETS.BATTLEBACKS2.FOREST.KEY },
+      'mosslight_shrine': { back1: ASSETS.BATTLEBACKS1.RUINS.KEY, back2: ASSETS.BATTLEBACKS2.TEMPLE.KEY },
+    };
+
+    const mapId = this.registry.get("world_mapId") || "starwhisk_village";
+    const bgs = bgMap[mapId] || bgMap['starwhisk_village'];
+
+    // Sky/Environment layer
+    const back2 = this.add.image(width / 2, height / 2, bgs.back2);
+    const scale2 = Math.max(width / back2.width, height / back2.height);
+    back2.setScale(scale2);
+
+    // Ground layer
+    const back1 = this.add.image(width / 2, height / 2, bgs.back1);
+    const scale1 = Math.max(width / back1.width, height / back1.height);
+    back1.setScale(scale1);
 
     // --- UI SETUP ---
     this.createBattleUI(width, height);
@@ -96,7 +116,7 @@ export class BattleScene extends Phaser.Scene {
     this.playerUI = this.add.container(width * 0.7, height * 0.55);
     // Draw the generated placeholder sprite
     this.playerSprite = this.add
-      .sprite(0, -100, this.playerCat.id.toLowerCase())
+      .sprite(0, -100, ASSETS.SPRITES.MONSTER_FALLBACK.KEY)
       .setScale(3);
 
     // UI Panel for Player
@@ -137,7 +157,7 @@ export class BattleScene extends Phaser.Scene {
     // 2. Enemy UI (Top Left)
     this.enemyUI = this.add.container(width * 0.3, height * 0.25);
     this.enemySprite = this.add
-      .sprite(0, 0, this.enemyCat.id.toLowerCase())
+      .sprite(0, 0, ASSETS.SPRITES.MONSTER_FALLBACK.KEY)
       .setScale(3);
 
     this.enemyBg = this.add

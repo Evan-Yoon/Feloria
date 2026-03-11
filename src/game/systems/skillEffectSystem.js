@@ -1,7 +1,4 @@
-/**
- * skillEffectSystem.js
- * Handles visual effects (VFX) when a creature uses a skill in battle.
- */
+import { ASSETS } from "../config/assetPaths.js";
 
 export const skillEffectSystem = {
   /**
@@ -18,40 +15,54 @@ export const skillEffectSystem = {
 
     switch (effectType) {
       case 'slash':
-        this.playSlash(scene, tx, ty);
-        break;
-      case 'impact':
-        this.playImpact(scene, tx, ty);
+        this.playAnimEffect(scene, tx, ty, ASSETS.ANIMATIONS.SLASH.KEY);
+        this.playSlash(scene, tx, ty); // Keep juice
         break;
       case 'fire':
+        this.playAnimEffect(scene, tx, ty, ASSETS.ANIMATIONS.FIRE.KEY);
         this.playFire(scene, tx, ty);
         break;
-      case 'water':
-        this.playWater(scene, tx, ty);
-        break;
-      case 'forest':
-        this.playForest(scene, tx, ty);
-        break;
-      case 'spark':
-        this.playSpark(scene, tx, ty);
-        break;
       case 'ice':
+        this.playAnimEffect(scene, tx, ty, ASSETS.ANIMATIONS.ICE.KEY);
         this.playIce(scene, tx, ty);
         break;
-      case 'rock':
-        this.playRock(scene, tx, ty);
+      case 'spark':
+      case 'thunder':
+        this.playAnimEffect(scene, tx, ty, ASSETS.ANIMATIONS.THUNDER.KEY);
+        this.playSpark(scene, tx, ty);
         break;
-      case 'shadow':
-        this.playShadow(scene, tx, ty);
+      case 'wind':
+        this.playAnimEffect(scene, tx, ty, ASSETS.ANIMATIONS.WIND.KEY);
         break;
-      case 'mystic':
-        this.playMystic(scene, tx, ty);
+      case 'heal':
+        this.playAnimEffect(scene, tx, ty, ASSETS.ANIMATIONS.HEAL.KEY);
         break;
       default:
-        // Fallback simple flash
+        this.playAnimEffect(scene, tx, ty, ASSETS.ANIMATIONS.SLASH.KEY);
         this.playImpact(scene, tx, ty);
         break;
     }
+  },
+
+  /**
+   * Plays a sprite-based animation from our asset pack.
+   */
+  playAnimEffect(scene, x, y, animKey) {
+    if (!scene.textures.exists(animKey)) return;
+
+    const animName = `${animKey}_play`;
+    if (!scene.anims.exists(animName)) {
+      scene.anims.create({
+        key: animName,
+        frames: scene.anims.generateFrameNumbers(animKey),
+        frameRate: 15,
+        hideOnComplete: true
+      });
+    }
+
+    const sprite = scene.add.sprite(x, y, animKey).setScale(2).setDepth(50);
+    sprite.play(animName);
+    sprite.on('animationcomplete', () => sprite.destroy());
   },
 
   playSlash(scene, x, y) {
