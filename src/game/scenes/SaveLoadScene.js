@@ -15,17 +15,20 @@ export class SaveLoadScene extends Phaser.Scene {
     const { width, height } = this.cameras.main;
 
     // Dim background
-    this.add.rectangle(0, 0, width, height, 0x000000, 0.8).setOrigin(0);
+    this.add.rectangle(0, 0, width, height, 0x000000, 0.85).setOrigin(0);
 
-    const mWidth = 700;
-    const mHeight = 500;
-    this.add.rectangle(width / 2, height / 2, mWidth, mHeight, 0x2c3e50).setOrigin(0.5);
-    this.add.rectangle(width / 2, height / 2, mWidth, mHeight).setStrokeStyle(4, 0xecf0f1).setOrigin(0.5);
+    const mWidth = 760;
+    const mHeight = 560;
+    this.add.rectangle(width / 2, height / 2, mWidth, mHeight, 0x1a252f).setOrigin(0.5);
+    this.add.rectangle(width / 2, height / 2, mWidth, mHeight).setStrokeStyle(4, 0x3498db).setOrigin(0.5);
 
     // Header
-    const titleText = this.mode === 'save' ? 'Save Game' : 'Load Game';
-    this.add.text(width / 2, height / 2 - 210, titleText, { font: 'bold 36px Arial', fill: '#f1c40f' }).setOrigin(0.5);
-    this.add.text(width / 2, height / 2 + 220, "Press ESC to close", { font: '20px Arial', fill: '#bdc3c7' }).setOrigin(0.5);
+    const titleText = this.mode === 'save' ? 'SAVE GAME' : 'LOAD GAME';
+    this.add.text(width / 2, height / 2 - 230, titleText, { 
+        font: 'bold 36px "Press Start 2P", Courier, monospace', fill: '#f1c40f',
+        shadow: { offsetX: 2, offsetY: 2, color: '#000', blur: 0, fill: true }
+    }).setOrigin(0.5);
+    this.add.text(width / 2, height / 2 + 250, "Press ESC to close", { font: '20px Arial', fill: '#bdc3c7' }).setOrigin(0.5);
 
     // Notification Text
     this.notifText = this.add.text(width / 2, height / 2 + 180, "", { font: '24px Arial', fill: '#2ecc71' }).setOrigin(0.5);
@@ -50,12 +53,13 @@ export class SaveLoadScene extends Phaser.Scene {
         const drawIndex = this.mode === 'save' ? saveObj.slot - 1 : saveObj.slot; 
         const rowY = startY + (drawIndex * spacing);
 
-        const rowBg = this.add.rectangle(width / 2, rowY, 600, 50, 0x34495e)
+        const rowBg = this.add.rectangle(width / 2, rowY, 660, 50, 0x2c3e50)
             .setInteractive({ useHandCursor: true })
+            .setStrokeStyle(2, 0x34495e)
             .setOrigin(0.5);
 
         const slotName = saveObj.slot === 0 ? "Autosave" : `Slot ${saveObj.slot}`;
-        this.add.text(width / 2 - 280, rowY, slotName, { font: 'bold 24px Arial', fill: '#f1c40f' }).setOrigin(0, 0.5);
+        this.add.text(width / 2 - 310, rowY, slotName, { font: 'bold 24px Arial', fill: '#f1c40f' }).setOrigin(0, 0.5);
         
         let labelColor = saveObj.exists ? '#ffffff' : '#7f8c8d';
         let dateString = "";
@@ -65,12 +69,12 @@ export class SaveLoadScene extends Phaser.Scene {
             dateString = `${d.toLocaleDateString()} ${d.toLocaleTimeString()}`;
         }
 
-        this.add.text(width / 2 - 120, rowY, saveObj.label, { font: '20px Arial', fill: labelColor }).setOrigin(0, 0.5);
-        this.add.text(width / 2 + 280, rowY, dateString, { font: '16px Arial', fill: '#bdc3c7' }).setOrigin(1, 0.5);
+        this.add.text(width / 2 - 140, rowY, saveObj.label, { font: '20px Arial', fill: labelColor }).setOrigin(0, 0.5);
+        this.add.text(width / 2 + 310, rowY, dateString, { font: '16px Arial', fill: '#bdc3c7' }).setOrigin(1, 0.5);
 
         // Hover Effects
-        rowBg.on('pointerover', () => rowBg.setFillStyle(0x2980b9));
-        rowBg.on('pointerout', () => rowBg.setFillStyle(0x34495e));
+        rowBg.on('pointerover', () => rowBg.setFillStyle(0xe74c3c));
+        rowBg.on('pointerout', () => rowBg.setFillStyle(0x2c3e50));
 
         rowBg.on('pointerdown', () => {
             if (this.mode === 'save') {

@@ -13,21 +13,20 @@ export class StartScene extends Phaser.Scene {
   create() {
     const { width, height } = this.cameras.main;
 
-    // Background (simple dark gradient placeholder)
-    this.add.rectangle(0, 0, width, height, 0x2c3e50).setOrigin(0);
+    // Background
+    this.add.rectangle(0, 0, width, height, 0x1a252f).setOrigin(0);
 
     // Title
-    this.add
-      .text(width / 2, height / 3, "FELORIA", {
-        font: "bold 64px Arial",
+    this.add.text(width / 2, height / 3 - 40, "FELORIA", {
+        font: 'bold 72px "Press Start 2P", Courier, monospace',
         fill: "#f1c40f",
+        shadow: { offsetX: 4, offsetY: 4, color: '#000000', blur: 0, fill: true }
       })
       .setOrigin(0.5);
 
-    this.add
-      .text(width / 2, height / 3 + 60, "A Cat-Mon Taming RPG", {
-        font: "24px Arial",
-        fill: "#ecf0f1",
+    this.add.text(width / 2, height / 3 + 40, "A Cat-Mon Taming RPG", {
+        font: "italic 28px Arial",
+        fill: "#bdc3c7",
       })
       .setOrigin(0.5);
 
@@ -67,13 +66,14 @@ export class StartScene extends Phaser.Scene {
   createMenuItem(x, y, text, callback) {
     const item = this.add
       .text(x, y, text, {
-        font: "32px Arial",
+        font: "bold 32px Arial",
         fill: "#ffffff",
+        shadow: { offsetX: 2, offsetY: 2, color: '#000', blur: 0, fill: true }
       })
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
 
-    item.on("pointerover", () => item.setStyle({ fill: "#f39c12" }));
+    item.on("pointerover", () => item.setStyle({ fill: "#e74c3c" }));
     item.on("pointerout", () => item.setStyle({ fill: "#ffffff" }));
     item.on("pointerdown", callback);
 

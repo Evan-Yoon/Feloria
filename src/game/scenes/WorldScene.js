@@ -83,45 +83,20 @@ export class WorldScene extends Phaser.Scene {
     this.cameras.main.setZoom(2); // Zoom in for the pixel RPG feel
 
     // 7. Map Name UI
-    this.createMapNameUI();
-  }
-
-  createMapNameUI() {
-    const mapName = this.mapData.name;
-    const padding = 10;
-
-    // We add text to the scene
-    this.mapNameText = this.add.text(padding, padding, mapName, {
-      fontFamily: '"Press Start 2P", Courier, monospace',
-      fontSize: "24px", // base size
-      color: "#ffffff",
-      stroke: "#000000",
-      strokeThickness: 4,
-      shadow: {
-        offsetX: 2,
-        offsetY: 2,
-        color: "#000000",
-        blur: 0,
-        stroke: true,
-        fill: true,
-      },
+    // Launching the UI scene prevents the 2.0x zoomed camera from dithering text
+    if (!this.scene.isActive('UIScene')) {
+        this.scene.launch('UIScene');
+    }
+    
+    // We emit after a tiny delay so UIScene can initialize if this is the first boot
+    this.time.delayedCall(10, () => {
+        this.events.emit('displayMapName', this.mapData.name);
     });
-
-    // To fix it properly to the camera screen while using zoom,
-    // we use setScrollFactor(0) so it ignores world movement
-    this.mapNameText.setScrollFactor(0);
-    this.mapNameText.setDepth(100);
-
-    // Counter the camera zoom by making the text smaller physically,
-    // because setScrollFactor(0) on a zoomed camera scales UI up.
-    this.mapNameText.setScale(1 / this.cameras.main.zoom);
-
-    // Explicitly set origin so position starts at the exact top-left
-    this.mapNameText.setOrigin(0, 0);
   }
 
   openMenu() {
     if (this.isDialogueActive || this.isMoving) return;
+    this.events.emit('hideMapName');
     this.scene.pause();
     this.scene.launch("MenuScene");
   }
@@ -151,10 +126,14 @@ export class WorldScene extends Phaser.Scene {
     this.npcs = this.add.group();
     this.mapData.spawns.forEach((spawn) => {
       if (spawn.type === "npc") {
+        let texture = "npc";
+        if (spawn.id === "mira") texture = "npc_mira";
+        else if (spawn.id && spawn.id.startsWith("trainer")) texture = "npc_trainer";
+
         const npc = this.add.sprite(
           spawn.x * 32 + 16,
           spawn.y * 32 + 16,
-          "npc",
+          texture,
         );
         npc.npcId = spawn.id;
         npc.tileX = spawn.x;
@@ -251,6 +230,7 @@ export class WorldScene extends Phaser.Scene {
     if (warp) {
       // Add a slight delay to prevent warp loop jitter
       this.isMoving = true;
+      this.events.emit('hideMapName');
       this.cameras.main.fadeOut(300, 0, 0, 0);
       this.cameras.main.once("camerafadeoutcomplete", () => {
         // Autosave upon map transition securely
@@ -403,6 +383,7 @@ export class WorldScene extends Phaser.Scene {
     this.registry.set("world_spawnX", this.player.tileX);
     this.registry.set("world_spawnY", this.player.tileY);
 
+    this.events.emit('hideMapName');
     this.cameras.main.flash(500, 255, 0, 0); // Red flash
 
     this.time.delayedCall(600, () => {
@@ -425,6 +406,7 @@ export class WorldScene extends Phaser.Scene {
     this.registry.set("world_spawnX", this.player.tileX);
     this.registry.set("world_spawnY", this.player.tileY);
 
+    this.events.emit('hideMapName');
     this.cameras.main.flash(500, 255, 255, 255);
 
     this.time.delayedCall(600, () => {

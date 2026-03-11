@@ -117,23 +117,29 @@ export class PartyScene extends Phaser.Scene {
 
   createCreatureCard(creature, x, y, isParty, isActive) {
     const card = this.add.container(x, y);
-    const bgWidth = 500;
-    const bgHeight = 110;
+    const bgWidth = 520;
+    const bgHeight = 120;
 
     const bgColor = isActive ? 0x27ae60 : (isParty ? 0x2980b9 : 0x34495e);
-    const bg = this.add.rectangle(0, 0, bgWidth, bgHeight, bgColor).setInteractive({ useHandCursor: true });
+    const bg = this.add.rectangle(0, 0, bgWidth, bgHeight, bgColor).setInteractive({ useHandCursor: true }).setStrokeStyle(3, 0xecf0f1);
     
-    // Details
-    const nameText = this.add.text(-bgWidth/2 + 20, -35, creature.name, { font: 'bold 24px Arial', fill: '#ffffff' });
-    const lvlText = this.add.text(-bgWidth/2 + 20, -5, `Lvl ${creature.level}`, { font: '20px Arial', fill: '#ecf0f1' });
-    const hpText = this.add.text(-bgWidth/2 + 20, 20, `HP: ${creature.currentHp}/${creature.maxHp}`, { font: '18px Arial', fill: '#e74c3c' });
+    // Creature Sprite
+    const spriteKey = creature.speciesId.toLowerCase();
+    const creatureSprite = this.add.sprite(-bgWidth/2 + 50, 0, spriteKey).setScale(1.2);
+
+    // Details Text
+    const nameText = this.add.text(-bgWidth/2 + 100, -35, creature.name, { font: 'bold 26px Arial', fill: '#ffffff' });
+    const lvlText = this.add.text(-bgWidth/2 + 100, -5, `Lvl ${creature.level}`, { font: '22px Arial', fill: '#f1c40f' });
     
-    // Exact EXP Ratio
+    // HP Bar / Text
+    const hpText = this.add.text(-bgWidth/2 + 200, -5, `HP: ${creature.currentHp}/${creature.maxHp}`, { font: '20px Arial', fill: '#ff7979' });
+    
+    // Exact EXP Text
     const expNeeded = creature.level * 50;
-    const expText = this.add.text(-bgWidth/2 + 150, 20, `EXP: ${creature.exp}/${expNeeded}`, { font: '18px Arial', fill: '#3498db' });
+    const expText = this.add.text(-bgWidth/2 + 200, 20, `EXP: ${creature.exp}/${expNeeded}`, { font: '18px Arial', fill: '#81ecec' });
     
     // Action Buttons
-    const btnContainer = this.add.container(bgWidth/2 - 120, 0);
+    const btnContainer = this.add.container(bgWidth/2 - 90, 0);
 
     if (this.isTargetMode) {
       // In Target Mode, explicitly only show USE button for Party members
@@ -145,32 +151,32 @@ export class PartyScene extends Phaser.Scene {
       if (isParty) {
         if (!isActive) {
           // Make Active Button
-          const makeActiveBtn = this.createButton(0, -20, 'Make Active', 0xf39c12, () => this.makeActive(creature));
+          const makeActiveBtn = this.createButton(0, -25, 'Set Leader', 0xf39c12, () => this.makeActive(creature));
           btnContainer.add(makeActiveBtn);
         }
         
         // Remove Button (Only if party > 1)
         if (this.party.length > 1) {
-          const removeBtn = this.createButton(0, 20, 'Remove', 0xc0392b, () => this.removeFromParty(creature));
+          const removeBtn = this.createButton(0, 25, 'Remove', 0xc0392b, () => this.removeFromParty(creature));
           btnContainer.add(removeBtn);
         }
       } else {
         // Add to Party Button (Only if party < 3)
         if (this.party.length < 3) {
-          const addBtn = this.createButton(0, 0, 'Add to Party', 0x27ae60, () => this.addToParty(creature));
+          const addBtn = this.createButton(0, 0, 'Add Party', 0x27ae60, () => this.addToParty(creature));
           btnContainer.add(addBtn);
         }
       }
     }
 
-    card.add([bg, nameText, lvlText, hpText, btnContainer]);
+    card.add([bg, creatureSprite, nameText, lvlText, hpText, expText, btnContainer]);
     return card;
   }
 
   createButton(x, y, text, color, callback) {
     const container = this.add.container(x, y);
-    const bg = this.add.rectangle(0, 0, 150, 35, color).setInteractive({ useHandCursor: true });
-    const label = this.add.text(0, 0, text, { font: '18px Arial', fill: '#ffffff' }).setOrigin(0.5);
+    const bg = this.add.rectangle(0, 0, 140, 40, color).setInteractive({ useHandCursor: true }).setStrokeStyle(2, 0xffffff);
+    const label = this.add.text(0, 0, text, { font: 'bold 16px Arial', fill: '#ffffff' }).setOrigin(0.5);
 
     bg.on('pointerdown', callback);
     bg.on('pointerover', () => bg.setAlpha(0.8));

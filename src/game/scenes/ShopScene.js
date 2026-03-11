@@ -15,21 +15,25 @@ export class ShopScene extends Phaser.Scene {
     const { width, height } = this.cameras.main;
 
     // Dim background
-    this.add.rectangle(0, 0, width, height, 0x000000, 0.8).setOrigin(0);
+    this.add.rectangle(0, 0, width, height, 0x000000, 0.85).setOrigin(0);
 
-    const mWidth = 700;
-    const mHeight = 500;
-    const bg = this.add.rectangle(width / 2, height / 2, mWidth, mHeight, 0x34495e).setOrigin(0.5);
-    this.add.rectangle(width / 2, height / 2, mWidth, mHeight).setStrokeStyle(4, 0xecf0f1).setOrigin(0.5);
+    const mWidth = 760;
+    const mHeight = 560;
+    const bg = this.add.rectangle(width / 2, height / 2, mWidth, mHeight, 0x1a252f).setOrigin(0.5);
+    this.add.rectangle(width / 2, height / 2, mWidth, mHeight).setStrokeStyle(4, 0x3498db).setOrigin(0.5);
 
     // Header
-    this.add.text(width / 2, height / 2 - 210, "Village Shop", { font: 'bold 36px Arial', fill: '#f1c40f' }).setOrigin(0.5);
-    this.add.text(width / 2, height / 2 + 220, "Press ESC to close", { font: '20px Arial', fill: '#bdc3c7' }).setOrigin(0.5);
+    this.add.text(width / 2 - 120, height / 2 - 230, "ITEM SHOP", { 
+        font: 'bold 36px "Press Start 2P", Courier, monospace', fill: '#f1c40f',
+        shadow: { offsetX: 2, offsetY: 2, color: '#00', blur: 0, fill: true }
+    }).setOrigin(0.5);
+        
+    this.add.text(width / 2, height / 2 + 250, "Press ESC to close", { font: '20px Arial', fill: '#bdc3c7' }).setOrigin(0.5);
 
-    this.goldText = this.add.text(width / 2 + mWidth/2 - 20, height / 2 - 210, `Gold: 0`, { font: '24px Arial', fill: '#f1c40f' }).setOrigin(1, 0.5);
+    this.goldText = this.add.text(width / 2 + mWidth/2 - 40, height / 2 - 230, `Gold: 0`, { font: 'bold 28px Arial', fill: '#f1c40f' }).setOrigin(1, 0.5);
 
     // Notification Text
-    this.notifText = this.add.text(width / 2, height / 2 + 180, "", { font: '20px Arial', fill: '#e74c3c' }).setOrigin(0.5);
+    this.notifText = this.add.text(width / 2, height / 2 + 200, "", { font: 'bold 20px Arial', fill: '#e74c3c' }).setOrigin(0.5);
 
     this.updateGoldText();
     this.renderItems(width, height);
@@ -49,18 +53,23 @@ export class ShopScene extends Phaser.Scene {
     const inventory = shopSystem.getShopInventory();
     
     inventory.forEach((item, index) => {
-        const itemY = height / 2 - 120 + (index * 80);
+        const itemY = height / 2 - 130 + (index * 85);
         
         // Item Backing
-        const rowBg = this.add.rectangle(width / 2, itemY, 600, 60, 0x2c3e50).setOrigin(0.5);
+        const rowBg = this.add.rectangle(width / 2, itemY, 660, 65, 0x2c3e50)
+            .setOrigin(0.5)
+            .setStrokeStyle(2, 0x34495e);
+            
+        // Icon Placeholder
+        const iconBg = this.add.rectangle(width / 2 - 290, itemY, 40, 40, 0x34495e).setOrigin(0.5);
         
         // Text
-        this.add.text(width / 2 - 280, itemY, item.name, { font: 'bold 24px Arial', fill: '#ffffff' }).setOrigin(0, 0.5);
+        this.add.text(width / 2 - 250, itemY, item.name, { font: 'bold 24px Arial', fill: '#ffffff' }).setOrigin(0, 0.5);
         this.add.text(width / 2 - 50, itemY, item.description, { font: '18px Arial', fill: '#bdc3c7' }).setOrigin(0, 0.5);
-        this.add.text(width / 2 + 200, itemY, `${item.price} G`, { font: '24px Arial', fill: '#f1c40f' }).setOrigin(1, 0.5);
+        this.add.text(width / 2 + 180, itemY, `${item.price} G`, { font: 'bold 24px Arial', fill: '#f1c40f' }).setOrigin(1, 0.5);
 
         // Buy Button
-        const buyBtn = this.add.rectangle(width / 2 + 250, itemY, 80, 40, 0x27ae60).setInteractive({ useHandCursor: true });
+        const buyBtn = this.add.rectangle(width / 2 + 250, itemY, 90, 40, 0x27ae60).setInteractive({ useHandCursor: true }).setStrokeStyle(2, 0xffffff);
         const buyLabel = this.add.text(width / 2 + 250, itemY, 'BUY', { font: 'bold 18px Arial', fill: '#fff' }).setOrigin(0.5);
 
         buyBtn.on('pointerout', () => buyBtn.setFillStyle(0x27ae60));

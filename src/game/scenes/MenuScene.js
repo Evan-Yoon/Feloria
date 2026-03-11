@@ -13,18 +13,22 @@ export class MenuScene extends Phaser.Scene {
   create() {
     const { width, height } = this.cameras.main;
 
-    // Dim background
-    this.add.rectangle(0, 0, width, height, 0x000000, 0.7).setOrigin(0);
+    // Elegant Dim background
+    this.add.rectangle(0, 0, width, height, 0x000000, 0.85).setOrigin(0);
 
-    // Menu Container
-    const menuWidth = 300;
-    const menuHeight = 400;
-    const menuBg = this.add.rectangle(width - menuWidth - 20, 20, menuWidth, menuHeight, 0xecf0f1).setOrigin(0);
-    const border = this.add.rectangle(width - menuWidth - 20, 20, menuWidth, menuHeight).setStrokeStyle(4, 0x2c3e50).setOrigin(0);
+    // Menu Container - Centered better on the right
+    const menuWidth = 320;
+    const menuHeight = 500;
+    const padX = width - menuWidth - 40;
+    const padY = (height - menuHeight) / 2;
+
+    const menuBg = this.add.rectangle(padX, padY, menuWidth, menuHeight, 0x1a252f).setOrigin(0);
+    const border = this.add.rectangle(padX, padY, menuWidth, menuHeight).setStrokeStyle(4, 0x3498db).setOrigin(0);
 
     // Title
-    this.add.text(width - menuWidth / 2 - 20, 50, 'Menu', {
-      font: 'bold 32px Arial', fill: '#2c3e50'
+    this.add.text(padX + menuWidth / 2, padY + 40, 'MENU', {
+      font: 'bold 36px "Press Start 2P", Courier, monospace', fill: '#f1c40f',
+      shadow: { offsetX: 2, offsetY: 2, color: '#000', blur: 0, fill: true }
     }).setOrigin(0.5);
 
     // Buttons
@@ -34,23 +38,26 @@ export class MenuScene extends Phaser.Scene {
       { text: 'Codex', action: () => { this.scene.pause(); this.scene.launch('CodexScene'); } },
       { text: 'Quests', action: () => { this.scene.pause(); this.scene.launch('QuestScene'); } },
       { text: 'Save', action: () => { this.scene.pause(); this.scene.launch('SaveLoadScene', { mode: 'save' }); } },
-      { text: 'Close', action: () => { this.scene.resume('WorldScene'); this.scene.stop(); } }
+      { text: 'Close', action: () => { this.scene.resume('WorldScene'); this.scene.stop(); }, color: 0xc0392b }
     ];
 
-    // Adjust container start Y higher for 6 buttons
-    let startY = 80;
+    let startY = padY + 110;
 
     buttons.forEach((btn, i) => {
-      const buttonBg = this.add.rectangle(width - menuWidth / 2 - 20, startY + (i * 55), 200, 45, 0x34495e)
-        .setInteractive({ useHandCursor: true });
+      const baseColor = btn.color || 0x2c3e50;
+      const hoverColor = btn.color ? 0xe74c3c : 0x34495e;
+
+      const buttonBg = this.add.rectangle(padX + menuWidth / 2, startY + (i * 65), 240, 50, baseColor)
+        .setInteractive({ useHandCursor: true })
+        .setStrokeStyle(2, 0xecf0f1);
         
-      const buttonText = this.add.text(width - menuWidth / 2 - 20, startY + (i * 55), btn.text, {
-        font: '24px Arial', fill: '#ffffff'
+      const buttonText = this.add.text(padX + menuWidth / 2, startY + (i * 65), btn.text, {
+        font: 'bold 22px Arial', fill: '#ffffff'
       }).setOrigin(0.5);
 
       buttonBg.on('pointerdown', btn.action);
-      buttonBg.on('pointerover', () => buttonBg.setFillStyle(0x2c3e50));
-      buttonBg.on('pointerout', () => buttonBg.setFillStyle(0x34495e));
+      buttonBg.on('pointerover', () => buttonBg.setFillStyle(hoverColor));
+      buttonBg.on('pointerout', () => buttonBg.setFillStyle(baseColor));
     });
 
     // Handle Escape to close

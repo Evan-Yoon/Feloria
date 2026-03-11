@@ -10,25 +10,40 @@ export class QuestScene extends Phaser.Scene {
     const { width, height } = this.cameras.main;
     const padding = 40;
 
-    this.add.rectangle(0, 0, width, height, 0x2c3e50).setOrigin(0);
-    this.add.text(width / 2, padding, 'Quests', { font: 'bold 32px Arial', fill: '#ffffff' }).setOrigin(0.5);
+    // Elegant Dim background
+    this.add.rectangle(0, 0, width, height, 0x000000, 0.85).setOrigin(0);
+
+    const mWidth = 760;
+    const mHeight = 560;
+    const panelX = width / 2;
+    const panelY = height / 2;
+
+    this.add.rectangle(panelX, panelY, mWidth, mHeight, 0x1a252f).setOrigin(0.5);
+    this.add.rectangle(panelX, panelY, mWidth, mHeight).setStrokeStyle(4, 0x3498db).setOrigin(0.5);
+
+    this.add.text(panelX, panelY - 230, 'QUESTS', { 
+        font: 'bold 36px "Press Start 2P", Courier, monospace', fill: '#f1c40f',
+        shadow: { offsetX: 2, offsetY: 2, color: '#000', blur: 0, fill: true }
+    }).setOrigin(0.5);
 
     const firstSteps = questSystem.getQuest(this.registry, 'first_steps');
 
     if (firstSteps) {
-      this.add.text(width / 2, 120, firstSteps.title, { font: 'bold 28px Arial', fill: firstSteps.completed ? '#2ecc71' : '#f1c40f' }).setOrigin(0.5);
-      this.add.text(width / 2, 160, firstSteps.description, { font: '18px Arial', fill: '#bdc3c7' }).setOrigin(0.5);
+      this.add.text(panelX, panelY - 140, firstSteps.title, { font: 'bold 28px Arial', fill: firstSteps.completed ? '#2ecc71' : '#ffffff' }).setOrigin(0.5);
+      this.add.text(panelX, panelY - 100, firstSteps.description, { font: '18px Arial', fill: '#bdc3c7' }).setOrigin(0.5);
 
-      let yPos = 220;
+      let yPos = panelY - 20;
       firstSteps.objectives.forEach(obj => {
         const color = obj.completed ? '#2ecc71' : '#ffffff';
-        const checkbox = obj.completed ? '[X]' : '[ ]';
-        this.add.text(width / 2 - 150, yPos, `${checkbox} ${obj.text}`, { font: '22px Arial', fill: color }).setOrigin(0, 0.5);
-        yPos += 40;
+        const checkbox = obj.completed ? '[\u2713]' : '[ ]';
+        
+        const rowBg = this.add.rectangle(panelX, yPos, 500, 50, 0x2c3e50).setOrigin(0.5).setStrokeStyle(2, 0x34495e);
+        this.add.text(panelX - 220, yPos, `${checkbox} ${obj.text}`, { font: '22px Arial', fill: color }).setOrigin(0, 0.5);
+        yPos += 70;
       });
     }
 
-    this.add.text(width / 2, height - padding, 'Press ESC to return', { font: '20px Arial', fill: '#95a5a6' }).setOrigin(0.5);
+    this.add.text(panelX, panelY + 250, 'Press ESC to return', { font: '20px Arial', fill: '#95a5a6' }).setOrigin(0.5);
 
     this.input.keyboard.on('keydown-ESC', () => {
       this.scene.stop();

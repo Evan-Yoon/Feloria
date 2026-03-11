@@ -21,19 +21,23 @@ export class InventoryScene extends Phaser.Scene {
     const { width, height } = this.cameras.main;
 
     // Dim background
-    this.add.rectangle(0, 0, width, height, 0x000000, 0.8).setOrigin(0);
+    this.add.rectangle(0, 0, width, height, 0x000000, 0.85).setOrigin(0);
 
-    const mWidth = 700;
-    const mHeight = 500;
+    const mWidth = 760;
+    const mHeight = 560;
     this.panelX = width / 2;
     this.panelY = height / 2;
 
-    this.add.rectangle(this.panelX, this.panelY, mWidth, mHeight, 0x2c3e50).setOrigin(0.5);
-    this.add.rectangle(this.panelX, this.panelY, mWidth, mHeight).setStrokeStyle(4, 0xecf0f1).setOrigin(0.5);
+    this.add.rectangle(this.panelX, this.panelY, mWidth, mHeight, 0x1a252f).setOrigin(0.5);
+    this.add.rectangle(this.panelX, this.panelY, mWidth, mHeight).setStrokeStyle(4, 0x3498db).setOrigin(0.5);
 
-    this.add.text(this.panelX, this.panelY - 210, "Bag", { font: 'bold 36px Arial', fill: '#ecf0f1' }).setOrigin(0.5);
-    this.notifText = this.add.text(this.panelX, this.panelY + 180, "", { font: '20px Arial', fill: '#e74c3c' }).setOrigin(0.5);
-    this.add.text(this.panelX, this.panelY + 220, "Press ESC to return", { font: '20px Arial', fill: '#bdc3c7' }).setOrigin(0.5);
+    this.add.text(this.panelX, this.panelY - 230, "INVENTORY", { 
+        font: 'bold 36px "Press Start 2P", Courier, monospace', fill: '#f1c40f',
+        shadow: { offsetX: 2, offsetY: 2, color: '#000', blur: 0, fill: true }
+    }).setOrigin(0.5);
+    
+    this.notifText = this.add.text(this.panelX, this.panelY + 200, "", { font: 'bold 20px Arial', fill: '#e74c3c' }).setOrigin(0.5);
+    this.add.text(this.panelX, this.panelY + 250, "Press ESC to return", { font: '20px Arial', fill: '#bdc3c7' }).setOrigin(0.5);
 
     // Items Container
     this.itemsContainer = this.add.container(0, 0);
@@ -73,17 +77,27 @@ export class InventoryScene extends Phaser.Scene {
             const quantity = inventory[itemDef.id] || 0;
             if (quantity <= 0) return; // Only show owned items
 
-            const rowBg = this.add.rectangle(this.panelX, yPos, 600, 60, 0x34495e).setOrigin(0.5);
+            const rowBg = this.add.rectangle(this.panelX, yPos, 660, 60, 0x2c3e50)
+                .setOrigin(0.5)
+                .setStrokeStyle(2, 0x34495e);
             this.itemsContainer.add(rowBg);
             
-            this.itemsContainer.add(this.add.text(this.panelX - 280, yPos, itemDef.name, { font: 'bold 24px Arial', fill: '#ffffff' }).setOrigin(0, 0.5));
-            this.itemsContainer.add(this.add.text(this.panelX - 280 + 200, yPos, itemDef.description, { font: '18px Arial', fill: '#bdc3c7' }).setOrigin(0, 0.5));
-            this.itemsContainer.add(this.add.text(this.panelX + 200, yPos, `x${quantity}`, { font: 'bold 24px Arial', fill: '#f1c40f' }).setOrigin(1, 0.5));
+            // Icon Placeholder
+            const iconBg = this.add.rectangle(this.panelX - 290, yPos, 40, 40, 0x34495e).setOrigin(0.5);
+            this.itemsContainer.add(iconBg);
+
+            this.itemsContainer.add(this.add.text(this.panelX - 250, yPos, itemDef.name, { font: 'bold 24px Arial', fill: '#ffffff' }).setOrigin(0, 0.5));
+            this.itemsContainer.add(this.add.text(this.panelX - 80, yPos, itemDef.description, { font: '18px Arial', fill: '#bdc3c7' }).setOrigin(0, 0.5));
+            this.itemsContainer.add(this.add.text(this.panelX + 180, yPos, `x${quantity}`, { font: 'bold 24px Arial', fill: '#f1c40f' }).setOrigin(1, 0.5));
 
             if (itemDef.type === 'healing') {
-               const useBtn = this.add.rectangle(this.panelX + 250, yPos, 80, 40, 0x27ae60).setInteractive({ useHandCursor: true });
+               const useBtn = this.add.rectangle(this.panelX + 250, yPos, 90, 40, 0x27ae60).setInteractive({ useHandCursor: true }).setStrokeStyle(2, 0xffffff);
                const useLbl = this.add.text(this.panelX + 250, yPos, 'USE', { font: 'bold 18px Arial', fill: '#ffffff' }).setOrigin(0.5);
+               
+               useBtn.on('pointerover', () => useBtn.setFillStyle(0x2ecc71));
+               useBtn.on('pointerout', () => useBtn.setFillStyle(0x27ae60));
                useBtn.on('pointerdown', () => this.handleUseItem(itemDef, quantity));
+               
                this.itemsContainer.add([useBtn, useLbl]);
             } else {
                const passiveLbl = this.add.text(this.panelX + 250, yPos, 'BATTLE', { font: 'bold 16px Arial', fill: '#95a5a6' }).setOrigin(0.5);

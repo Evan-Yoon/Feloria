@@ -72,46 +72,60 @@ export class BattleScene extends Phaser.Scene {
 
   createBattleUI(width, height) {
     // 1. Player UI (Bottom Right)
-    this.playerUI = this.add.container(width * 0.7, height * 0.5);
-    this.playerSprite = this.add.sprite(0, -60, this.playerCat.id.toLowerCase()).setScale(3);
-    this.playerName = this.add.text(0, 0, `${this.playerCat.name} Lvl ${this.playerCat.level}`, { font: '24px Arial', fill: '#ffffff' }).setOrigin(0.5, 0);
-    this.playerHpText = this.add.text(0, 30, `HP: ${this.playerCat.currentHp}/${this.playerCat.maxHp}`, { font: '20px Arial', fill: '#2ecc71' }).setOrigin(0.5, 0);
+    this.playerUI = this.add.container(width * 0.7, height * 0.55);
+    // Draw the generated placeholder sprite
+    this.playerSprite = this.add.sprite(0, -100, this.playerCat.id.toLowerCase()).setScale(3);
+    
+    // UI Panel for Player
+    this.playerBg = this.add.rectangle(0, 40, 300, 100, 0x1a252f).setStrokeStyle(3, 0x3498db).setOrigin(0.5);
+    this.playerName = this.add.text(0, 10, `${this.playerCat.name} Lvl ${this.playerCat.level}`, { font: 'bold 22px Arial', fill: '#ffffff' }).setOrigin(0.5);
+    this.playerHpText = this.add.text(0, 40, `HP: ${this.playerCat.currentHp}/${this.playerCat.maxHp}`, { font: 'bold 18px Arial', fill: '#2ecc71' }).setOrigin(0.5);
 
     // Player HP Bar
-    this.playerHpBg = this.add.rectangle(0, 60, 150, 15, 0x000000).setOrigin(0.5, 0);
-    this.playerHpBar = this.add.rectangle(-75, 60, 150, 15, 0x27ae60).setOrigin(0, 0);
+    this.playerHpBg = this.add.rectangle(0, 70, 260, 15, 0x000000).setOrigin(0.5);
+    this.playerHpBar = this.add.rectangle(-130, 62.5, 260, 15, 0x27ae60).setOrigin(0);
 
-    this.playerUI.add([this.playerSprite, this.playerName, this.playerHpText, this.playerHpBg, this.playerHpBar]);
+    this.playerUI.add([this.playerSprite, this.playerBg, this.playerName, this.playerHpText, this.playerHpBg, this.playerHpBar]);
 
     // 2. Enemy UI (Top Left)
-    this.enemyUI = this.add.container(width * 0.3, height * 0.3);
-    this.enemySprite = this.add.sprite(0, -60, 'npc').setScale(3); // Placeholder NPC sprite for wild cats for now
-    this.enemyName = this.add.text(0, 0, `${this.enemyCat.name} Lvl ${this.enemyCat.level}`, { font: '24px Arial', fill: '#ffffff' }).setOrigin(0.5, 0);
-    this.enemyHpText = this.add.text(0, 30, `HP: ${this.enemyCat.currentHp}/${this.enemyCat.maxHp}`, { font: '20px Arial', fill: '#e74c3c' }).setOrigin(0.5, 0);
+    this.enemyUI = this.add.container(width * 0.3, height * 0.25);
+    this.enemySprite = this.add.sprite(0, 0, this.enemyCat.id.toLowerCase()).setScale(3); 
+    
+    this.enemyBg = this.add.rectangle(0, 120, 300, 100, 0x1a252f).setStrokeStyle(3, 0xe74c3c).setOrigin(0.5);
+    this.enemyName = this.add.text(0, 90, `${this.enemyCat.name} Lvl ${this.enemyCat.level}`, { font: 'bold 22px Arial', fill: '#ffffff' }).setOrigin(0.5);
+    this.enemyHpText = this.add.text(0, 120, `HP: ${this.enemyCat.currentHp}/${this.enemyCat.maxHp}`, { font: 'bold 18px Arial', fill: '#e74c3c' }).setOrigin(0.5);
 
     // Enemy HP Bar
-    this.enemyHpBg = this.add.rectangle(0, 60, 150, 15, 0x000000).setOrigin(0.5, 0);
-    this.enemyHpBar = this.add.rectangle(-75, 60, 150, 15, 0xc0392b).setOrigin(0, 0);
+    this.enemyHpBg = this.add.rectangle(0, 150, 260, 15, 0x000000).setOrigin(0.5);
+    this.enemyHpBar = this.add.rectangle(-130, 142.5, 260, 15, 0xc0392b).setOrigin(0);
 
-    this.enemyUI.add([this.enemySprite, this.enemyName, this.enemyHpText, this.enemyHpBg, this.enemyHpBar]);
+    this.enemyUI.add([this.enemySprite, this.enemyBg, this.enemyName, this.enemyHpText, this.enemyHpBg, this.enemyHpBar]);
 
     // 3. Battle Log (Bottom)
-    this.logBg = this.add.rectangle(0, height - 150, width, 150, 0x000000, 0.8).setOrigin(0);
-    this.logText = this.add.text(width / 2, height - 75, '', { font: '24px Arial', fill: '#ffffff', align: 'center', wordWrap: { width: width - 100 } }).setOrigin(0.5);
+    this.logBg = this.add.rectangle(0, height - 140, width - 280, 140, 0x1a252f).setOrigin(0).setStrokeStyle(4, 0x34495e);
+    this.logText = this.add.text((width - 280) / 2, height - 70, '', { font: 'bold 24px Arial', fill: '#ffffff', align: 'center', wordWrap: { width: width - 380 } }).setOrigin(0.5);
 
     // 4. Action Menu (Right Side)
-    this.menuUI = this.add.container(width - 250, height - 350);
+    this.menuUI = this.add.container(width - 280, height - 140);
+    this.menuBg = this.add.rectangle(0, 0, 280, 140, 0x2c3e50).setOrigin(0).setStrokeStyle(4, 0x34495e);
+    this.menuUI.add(this.menuBg);
+    
     const menuItems = ['Attack', 'Skill', 'Capture', 'Run'];
     this.menuButtons = [];
 
     menuItems.forEach((text, i) => {
-      const btn = this.add.text(0, i * 60, text, { font: '28px Arial', fill: '#ffffff', backgroundColor: '#34495e', padding: { x: 20, y: 10 } })
-        .setOrigin(0)
-        .setInteractive({ useHandCursor: true });
+      const col = i % 2;
+      const row = Math.floor(i / 2);
+      
+      const btnBg = this.add.rectangle(10 + col * 135, 10 + row * 65, 125, 55, 0x34495e).setOrigin(0).setInteractive({ useHandCursor: true });
+      const btnText = this.add.text(10 + col * 135 + 62.5, 10 + row * 65 + 27.5, text, { font: 'bold 20px Arial', fill: '#ffffff' }).setOrigin(0.5);
 
-      btn.on('pointerdown', () => this.handleAction(text));
-      this.menuUI.add(btn);
-      this.menuButtons.push(btn);
+      btnBg.on('pointerdown', () => this.handleAction(text));
+      btnBg.on('pointerover', () => btnBg.setFillStyle(0xe74c3c));
+      btnBg.on('pointerout', () => btnBg.setFillStyle(0x34495e));
+      
+      this.menuUI.add([btnBg, btnText]);
+      this.menuButtons.push(btnBg);
     });
   }
 
@@ -260,11 +274,11 @@ export class BattleScene extends Phaser.Scene {
     const ratio = target.currentHp / target.maxHp;
     if (targetType === 'player') {
       this.playerHpText.setText(`HP: ${target.currentHp}/${target.maxHp}`);
-      this.playerHpBar.width = 150 * ratio;
+      this.playerHpBar.width = 260 * ratio;
       this.cameras.main.shake(200, 0.01);
     } else {
       this.enemyHpText.setText(`HP: ${target.currentHp}/${target.maxHp}`);
-      this.enemyHpBar.width = 150 * ratio;
+      this.enemyHpBar.width = 260 * ratio;
       this.enemySprite.setTint(0xff0000);
       this.time.delayedCall(100, () => this.enemySprite.clearTint());
     }
@@ -296,10 +310,10 @@ export class BattleScene extends Phaser.Scene {
         this.updateLog(`Trainer sent out ${this.enemyCat.name}!`);
         
         // Refresh UI
-        this.enemySprite.setTexture(this.enemyCat.id.toLowerCase()); // Temp placeholder, using IDs assuming we add sprites soon
+        this.enemySprite.setTexture(this.enemyCat.id.toLowerCase());
         this.enemyName.setText(`${this.enemyCat.name} Lvl ${this.enemyCat.level}`);
         this.enemyHpText.setText(`HP: ${this.enemyCat.currentHp}/${this.enemyCat.maxHp}`);
-        this.enemyHpBar.width = 150;
+        this.enemyHpBar.width = 260;
 
         this.time.delayedCall(1500, () => {
             this.canInput = true;
@@ -383,12 +397,15 @@ export class BattleScene extends Phaser.Scene {
     // Dim background
     this.add.rectangle(0, 0, width, height, 0x000000, 0.8).setOrigin(0);
 
-    const panelWidth = 600;
-    const panelHeight = 400;
-    const panelBg = this.add.rectangle(width / 2, height / 2, panelWidth, panelHeight, 0x2c3e50).setInteractive({ useHandCursor: true });
-    this.add.rectangle(width / 2, height / 2, panelWidth, panelHeight).setStrokeStyle(4, 0xecf0f1);
+    const panelWidth = 660;
+    const panelHeight = 460;
+    const panelBg = this.add.rectangle(width / 2, height / 2, panelWidth, panelHeight, 0x1a252f).setInteractive({ useHandCursor: true });
+    this.add.rectangle(width / 2, height / 2, panelWidth, panelHeight).setStrokeStyle(4, 0x34db98).setOrigin(0.5);
 
-    this.add.text(width / 2, height / 2 - 150, `Battle Result: ${result}`, { font: 'bold 36px Arial', fill: '#f1c40f' }).setOrigin(0.5);
+    this.add.text(width / 2, height / 2 - 170, `BATTLE ${result.toUpperCase()}`, { 
+        font: 'bold 40px "Press Start 2P", Courier, monospace', fill: '#f1c40f',
+        shadow: { offsetX: 2, offsetY: 2, color: '#000', blur: 0, fill: true }
+    }).setOrigin(0.5);
 
     let yPos = height / 2 - 80;
 
