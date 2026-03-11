@@ -14,7 +14,7 @@ export const shopSystem = {
     if (!item) return { success: false, message: "Item not found." };
 
     const cost = item.price * quantity;
-    let currentGold = registry.get("playerGold") || 50;
+    let currentGold = registry.get("playerGold") || 0;
 
     if (currentGold < cost) {
       return { success: false, message: "Not enough gold." };

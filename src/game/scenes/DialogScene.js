@@ -1,4 +1,4 @@
-import Phaser from 'phaser';
+import Phaser from "phaser";
 
 /**
  * DialogScene
@@ -6,11 +6,13 @@ import Phaser from 'phaser';
  */
 export class DialogScene extends Phaser.Scene {
   constructor() {
-    super({ key: 'DialogScene' });
+    super({ key: "DialogScene" });
   }
 
   init(data) {
     this.dialogue = data.dialogue;
+    // Filter out special tags like [SHOP_PROMPT] from display
+    this.displayPages = this.dialogue.pages.filter((p) => !p.startsWith("["));
     this.currentPage = 0;
     this.onComplete = data.onComplete;
   }
@@ -19,36 +21,40 @@ export class DialogScene extends Phaser.Scene {
     const { width, height } = this.cameras.main;
     const padding = 20;
     const boxHeight = 150;
-    
+
     // UI Box (Gray with white border)
     const box = this.add.container(padding, height - boxHeight - padding);
-    
-    const bg = this.add.rectangle(0, 0, width - padding * 2, boxHeight, 0x000000, 0.9)
+
+    const bg = this.add
+      .rectangle(0, 0, width - padding * 2, boxHeight, 0x000000, 0.9)
       .setOrigin(0)
       .setStrokeStyle(4, 0xffffff);
-    
+
     // Speaker Name Box
-    const nameBg = this.add.rectangle(0, -30, 200, 30, 0x000000, 0.9)
+    const nameBg = this.add
+      .rectangle(0, -30, 200, 30, 0x000000, 0.9)
       .setOrigin(0)
       .setStrokeStyle(2, 0xffffff);
-    
+
     this.speakerName = this.add.text(10, -25, this.dialogue.name, {
-      font: 'bold 18px Arial',
-      fill: '#f1c40f'
+      font: "bold 18px Arial",
+      fill: "#f1c40f",
     });
 
     // Content Text
-    this.contentText = this.add.text(20, 20, '', {
-      font: '20px Arial',
-      fill: '#ffffff',
-      wordWrap: { width: width - padding * 4 }
+    this.contentText = this.add.text(20, 20, "", {
+      font: "20px Arial",
+      fill: "#ffffff",
+      wordWrap: { width: width - padding * 4 },
     });
 
     // Continue Hint
-    this.hintText = this.add.text(width - padding * 3, boxHeight - 30, 'Press Space', {
-      font: 'italic 14px Arial',
-      fill: '#bdc3c7'
-    }).setOrigin(1, 0);
+    this.hintText = this.add
+      .text(width - padding * 3, boxHeight - 30, "Press Space", {
+        font: "italic 14px Arial",
+        fill: "#bdc3c7",
+      })
+      .setOrigin(1, 0);
 
     box.add([bg, nameBg, this.speakerName, this.contentText, this.hintText]);
 
@@ -56,17 +62,20 @@ export class DialogScene extends Phaser.Scene {
     this.displayPage();
 
     // Input to progress
-    this.input.keyboard.on('keydown-SPACE', () => this.nextPage());
-    this.input.keyboard.on('keydown-ENTER', () => this.nextPage());
+    this.input.keyboard.on("keydown-SPACE", () => this.nextPage());
+    this.input.keyboard.on("keydown-ENTER", () => this.nextPage());
   }
 
   displayPage() {
-    this.contentText.setText(this.dialogue.pages[this.currentPage]);
+    const rawText = this.displayPages[this.currentPage];
+    const playerName = this.registry.get("playerName") || "Hero";
+    const formattedText = rawText.replace(/{playerName}/g, playerName);
+    this.contentText.setText(formattedText);
   }
 
   nextPage() {
     this.currentPage++;
-    if (this.currentPage < this.dialogue.pages.length) {
+    if (this.currentPage < this.displayPages.length) {
       this.displayPage();
     } else {
       this.finish();
