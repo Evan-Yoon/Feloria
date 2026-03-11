@@ -104,10 +104,10 @@ export class PreloadScene extends Phaser.Scene {
       '1111111111111111', '3331333333313333', '3331333333313333', '3331333333313333'
     ];
     const tTallGrass = [
-      'EEEEEEEEEEEEEEEE', 'EEGGEEEEEEEGGEEE', 'EEGGEEEEGEEGGEEE', 'GGEGEEEEEEEEGGEE',
-      'EGEEEEEGGEEEGEEE', 'EEEEEEEGGEEEEEEE', 'EEGGEEEEEEEEGGEE', 'EEGGEEEEGGEEGGEE',
-      'EGEEEEEEGGEEEEEG', 'EEEEEGGEEEEEGGEE', 'EEGGEGGEEEEEEEGE', 'EEGGEEGEEEEEGGEE',
-      'EEEEEEEEGGEEGGEE', 'EEGGEEEEGGEEEEEE', 'EEGEEEEEGGEEEGEE', 'EEEEGEEEEEEEEEEE'
+      'EEEEEEEEEEEEEEEE', 'EEEGGGEEEEEGGGEE', 'EEGGgGGEEEEGGgGE', 'EGgGGGEEEEEGGgGE',
+      'GGGGGGGEEEGGGGGG', 'GgGGgGGEEEGgGGgG', 'GGGGGGGGEEGGGGGG', 'EEGGGGGEEEEGGGGG',
+      'EGGgGGEEEEEGGgGE', 'GGGGGGGEEEGGGGGG', 'GgGGgGGEEEGgGGgG', 'GGGGGGGGEEGGGGGG',
+      'EEEGGGEEEEEGGGEE', 'EEGGGGGEEEEGGGGG', 'EGGgGGEEEEEGGgGE', 'EEEEEEEEEEEEEEEE'
     ];
     const tTree = [
       '......GGGG......', '....GGGGGGGG....', '...GGGGGGGGGG...', '..GGGGGGGGGGGG..',
@@ -134,16 +134,16 @@ export class PreloadScene extends Phaser.Scene {
       '....KK....KK....', '....KK....KK....', '....00....00....', '....00....00....'
     ];
     const pLeft = [
-      '......HHHHH.....', '.....HHHHHHH....', '.....HHffffH....', '.....HHf0ffH....',
-      '.....HHffffH....', '......fffff.....', '.....bbbbbbb....', '....bbbbbbbbb...',
-      '....bbbbbbbbb...', '....bbbbbbbbb...', '.....KKKKKKK....', '.....KKKKKKK....',
-      '.....KK...KK....', '.....KK...KK....', '.....00...00....', '.....00...00....'
-    ];
-    const pRight = [
       '.....HHHHH......', '....HHHHHHH.....', '....HffffHH.....', '....Hff0fHH.....',
       '....HffffHH.....', '.....fffff......', '....bbbbbbb.....', '...bbbbbbbbb....',
       '...bbbbbbbbb....', '...bbbbbbbbb....', '....KKKKKKK.....', '....KKKKKKK.....',
       '....KK...KK.....', '....KK...KK.....', '....00...00.....', '....00...00.....'
+    ];
+    const pRight = [
+      '......HHHHH.....', '.....HHHHHHH....', '.....HHffffH....', '.....HHf0ffH....',
+      '.....HHffffH....', '......fffff.....', '.....bbbbbbb....', '....bbbbbbbbb...',
+      '....bbbbbbbbb...', '....bbbbbbbbb...', '.....KKKKKKK....', '.....KKKKKKK....',
+      '.....KK...KK....', '.....KK...KK....', '.....00...00....', '.....00...00....'
     ];
     pixelArtGenerator.createSpritesheet(this, 'player', [pDown, pUp, pLeft, pRight], 16, 16, 2);
 
