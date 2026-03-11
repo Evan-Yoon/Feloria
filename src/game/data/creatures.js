@@ -508,15 +508,71 @@ export const CREATURES = {
   SOLARION: {
     id: 'SOLARION',
     name: 'Solarion',
-    type: 'Fire/Mystic',
+    type: 'Fire',
     description: 'A legendary feline said to embody the sun itself. Blindingly radiant.',
-    baseHp: 100, baseAttack: 30, baseDefense: 20, catchRate: 0.01, evolution: null
+    baseHp: 100, baseAttack: 35, baseDefense: 25, catchRate: 0.01, evolution: null
   },
-  LUNARIS: {
-    id: 'LUNARIS',
-    name: 'Lunaris',
-    type: 'Spirit/Shadow',
-    description: 'A mythical cat that commands the tides and shadows of the moon.',
-    baseHp: 90, baseAttack: 25, baseDefense: 30, catchRate: 0.01, evolution: null
+  GLACIARA: {
+    id: 'GLACIARA',
+    name: 'Glaciara',
+    type: 'Ice',
+    description: 'A mythical cat that freezes the air around it. Its fur resembles absolute zero.',
+    baseHp: 110, baseAttack: 25, baseDefense: 35, catchRate: 0.01, evolution: null
+  },
+  TEMPESTCLAW: {
+    id: 'TEMPESTCLAW',
+    name: 'Tempestclaw',
+    type: 'Storm',
+    description: 'A roiling storm cloud in feline form. Its roar is pure thunder.',
+    baseHp: 90, baseAttack: 40, baseDefense: 20, catchRate: 0.01, evolution: null
+  },
+  VERDANTLYNX: {
+    id: 'VERDANTLYNX',
+    name: 'Verdantlynx',
+    type: 'Forest',
+    description: 'The ancient guardian of the deep woods. Flowers bloom wherever it steps.',
+    baseHp: 120, baseAttack: 28, baseDefense: 30, catchRate: 0.01, evolution: null
+  },
+  UMBRAFANG: {
+    id: 'UMBRAFANG',
+    name: 'Umbrafang',
+    type: 'Shadow',
+    description: 'A creature of pure shadow. It is said to consume the light around it.',
+    baseHp: 85, baseAttack: 38, baseDefense: 22, catchRate: 0.01, evolution: null
+  },
+  AQUARION: {
+    id: 'AQUARION',
+    name: 'Aquarion',
+    type: 'Water',
+    description: 'Master of the ocean depths. Its movements are as fluid as a rushing river.',
+    baseHp: 105, baseAttack: 30, baseDefense: 28, catchRate: 0.01, evolution: null
+  },
+  TERRACLAW: {
+    id: 'TERRACLAW',
+    name: 'Terraclaw',
+    type: 'Rock',
+    description: 'Forged from the earth itself. Its hide is impenetrable bedrock.',
+    baseHp: 130, baseAttack: 25, baseDefense: 45, catchRate: 0.01, evolution: null
+  },
+  LUMINA: {
+    id: 'LUMINA',
+    name: 'Lumina',
+    type: 'Light',
+    description: 'A glowing entity of pure hope and light. It blinds those with dark intentions.',
+    baseHp: 95, baseAttack: 32, baseDefense: 25, catchRate: 0.01, evolution: null
+  },
+  AETHERION: {
+    id: 'AETHERION',
+    name: 'Aetherion',
+    type: 'Mystic',
+    description: 'A celestial cat that drifts through the cosmic winds of Aether.',
+    baseHp: 90, baseAttack: 35, baseDefense: 35, catchRate: 0.01, evolution: null
+  },
+  NOCTYRA: {
+    id: 'NOCTYRA',
+    name: 'Noctyra',
+    type: 'Spirit',
+    description: 'A ghost-like feline that shepherds lost souls through the night forest.',
+    baseHp: 100, baseAttack: 30, baseDefense: 30, catchRate: 0.01, evolution: null
   }
 };

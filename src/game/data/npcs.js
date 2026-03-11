@@ -12,6 +12,15 @@ export const NPCS = {
     role: "healer_quest",
     sprite: "npc_mira",
     getDialogue: (registry) => {
+      // Post-Seal Dialogue (Prison)
+      if (registry.get("chapter1_done")) {
+        return [
+          "흥... 내가 이렇게 갇히게 될 줄이야.",
+          "하지만 이미 전설의 고양이들이 깨어났다. 내 계획은 멈출 수 없어!",
+          "대륙은 본래의 야성을 되찾을 것이다...",
+        ];
+      }
+
       const activeQuests = registry.get("activeQuests") || {};
       const firstSteps = activeQuests["first_steps"];
 
@@ -55,6 +64,12 @@ export const NPCS = {
     role: "hint_npc",
     sprite: "npc",
     getDialogue: (registry) => {
+      if (registry.get("chapter1_done")) {
+        return [
+          "하늘이 이상해! 멀리 산등성이에서 번쩍이는 걸 봤어!",
+          "정말로 책에 나오는 전설의 고양이들이 깨어난 걸까?",
+        ];
+      }
       const collection = registry.get("playerCollection") || [];
       if (collection.length > 1) {
         // Has captured at least one cat (since starter is 1)
@@ -75,6 +90,16 @@ export const NPCS = {
     role: "lore_npc",
     sprite: "npc",
     getDialogue: (registry) => {
+      // Emergency Healer Role
+      if (registry.get("chapter1_done")) {
+        return [
+          "세상에... 정말로 고대봉인이 무너졌단 말이냐.",
+          "이건 단순한 우연이 아니야. 대륙 곳곳에서 전설적인 고양이들의 목소리가 들린다더구나.",
+          "촌장님이 그런 끔찍한 계획을 꾸미고 계셨을 줄이야...",
+          "당분간 마을의 치료소는 내가 맡도록 할게. 다치면 언제든 치료해줄 테니 찾아와!",
+        ];
+      }
+
       const caughtIds = registry.get("caughtCreatureIds") || [];
       if (caughtIds.length >= 3) {
         return [
@@ -133,6 +158,12 @@ export const NPCS = {
     role: "hint_npc",
     sprite: "npc",
     getDialogue: (registry) => {
+      if (registry.get("chapter1_done")) {
+        return [
+          "방금 그 굉음 들었어? 고대 숲 안쪽에서부터 땅이 흔들렸어!",
+          "너무 무서워서 더는 숲 안쪽으로 못 들어가겠단다.",
+        ];
+      }
       return [
         "이 길은 고대 숲으로 이어진단다.",
         "하지만 조심해. 숲을 지키려는 자들이 예민해져 있어.",
@@ -161,6 +192,13 @@ export const NPCS = {
     role: "lore_npc",
     sprite: "npc",
     getDialogue: (registry) => {
+      if (registry.get("chapter1_done")) {
+        return [
+          "결국 올 것이 오고야 말았군...",
+          "봉인에서 거대한 숲의 정령이 풀려난 게 느껴지느냐?",
+          "저 안쪽, 가장 어두운 덤불 속을 조심해라.",
+        ];
+      }
       return [
         "이 숲은 아주 오래된 곳이야.",
         "고대 고양이들이 잠들어 있다는 이야기가 있지.",

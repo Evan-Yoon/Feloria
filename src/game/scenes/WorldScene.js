@@ -6,6 +6,8 @@ import { dialogueSystem } from "../systems/dialogueSystem.js";
 import { questSystem } from "../systems/questSystem.js";
 import { TRAINers } from "../data/trainers.js";
 import { NPCS } from "../data/npcs.js";
+import { cutsceneSystem } from "../systems/cutsceneSystem.js";
+import { legendarySystem } from "../systems/legendarySystem.js";
 
 /**
  * WorldScene
@@ -106,6 +108,9 @@ export class WorldScene extends Phaser.Scene {
                 this.triggerForcedDialogue("mira");
             });
         }
+
+        // Apply World Effects (Tints/Weather)
+        legendarySystem.applyWorldEffects(this);
     });
   }
 
@@ -174,17 +179,54 @@ export class WorldScene extends Phaser.Scene {
         if (spawn.id === "mira" || spawn.id === "trainer_guardian_rowan") texture = "npc_mira";
         else if (spawn.id && spawn.id.startsWith("trainer")) texture = "npc_trainer";
 
+        let nx = spawn.x;
+        let ny = spawn.y;
+        
+        if (spawn.id === "mira" && this.mapId === "starwhisk_village" && this.registry.get("chapter1_done")) {
+            nx = 2;
+            ny = 16;
+            
+            // Build temporary prison
+            const ground = this.mapData.layers.groundLayer;
+            const collision = this.mapData.layers.collisionLayer;
+            
+            const rocks = [
+                {x: 1, y: 15}, {x: 2, y: 15}, {x: 3, y: 15},
+                {x: 1, y: 16}, {x: 3, y: 16},
+                {x: 1, y: 17}, {x: 3, y: 17} // Leave (2,17) open for player to talk
+            ];
+            
+            rocks.forEach(pos => {
+                if (ground) this.mapData.map.putTileAt(4, pos.x, pos.y, true, ground);
+                if (collision) this.mapData.map.putTileAt(4, pos.x, pos.y, true, collision);
+            });
+        }
+
         const npc = this.add.sprite(
-          spawn.x * 32 + 16,
-          spawn.y * 32 + 16,
+          nx * 32 + 16,
+          ny * 32 + 16,
           texture,
         );
         npc.npcId = spawn.id;
-        npc.tileX = spawn.x;
-        npc.tileY = spawn.y;
+        npc.tileX = nx;
+        npc.tileY = ny;
         this.npcs.add(npc);
       }
     });
+
+    // Dynamically inject Legendary Spawns
+    if (this.mapId === 'ancient_forest' && legendarySystem.canSpawnLegendary(this.registry, 'VERDANTLYNX')) {
+        const lx = 20; // Deep in the forest
+        const ly = 12;
+
+        const legSprite = this.add.sprite(lx * 32 + 16, ly * 32 + 16, 'verdantlynx');
+        // Tint the sprite so we don't have to load a separate overworld atlas right now
+        legSprite.setTintFill(0x2ecc71); 
+        legSprite.npcId = 'legendary_verdantlynx';
+        legSprite.tileX = lx;
+        legSprite.tileY = ly;
+        this.npcs.add(legSprite);
+    }
   }
 
   update(time, delta) {
@@ -267,6 +309,9 @@ export class WorldScene extends Phaser.Scene {
    * Checks for warps or encounters after finishing a move.
    */
   onMoveComplete() {
+    // 0. Check Event Triggers
+    if (this.checkEventTriggers()) return;
+
     // 1. Check Warps
     const warp = this.mapData.warps.find(
       (w) => w.x === this.player.tileX && w.y === this.player.tileY,
@@ -329,6 +374,12 @@ export class WorldScene extends Phaser.Scene {
       
     if (npcSprite) {
       // Find NPC Data
+      // Special check for dynamic legendaries
+      if (npcSprite.npcId && npcSprite.npcId.startsWith("legendary_")) {
+          this.triggerLegendaryEncounter(npcSprite);
+          return;
+      }
+
       const npcData = NPCS[npcSprite.npcId];
       
       if (!npcData) {
@@ -357,8 +408,15 @@ export class WorldScene extends Phaser.Scene {
         onComplete: () => {
           this.isDialogueActive = false;
           
+          let currentRole = npcData.role;
+          if (npcSprite.npcId === "eugene" && this.registry.get("chapter1_done")) {
+              currentRole = "healer_quest";
+          } else if (npcSprite.npcId === "mira" && this.registry.get("chapter1_done")) {
+              currentRole = "prison";
+          }
+
           // Role-based post-dialogue actions
-          switch (npcData.role) {
+          switch (currentRole) {
             case 'healer_quest':
               this.healParty();
               break;
@@ -384,6 +442,94 @@ export class WorldScene extends Phaser.Scene {
         },
       });
     }
+  }
+
+  checkEventTriggers() {
+    // Mosslight Shrine Boss Intro
+    if (this.mapId === 'mosslight_shrine') {
+        if (this.player.tileY <= 6 && !this.registry.get('boss_rowan_intro')) {
+            this.runMosslightBossIntro();
+            return true;
+        }
+    }
+    return false;
+  }
+
+  async runMosslightBossIntro() {
+      // Find Rowan
+      const rowan = this.npcs.getChildren().find(n => n.npcId === 'trainer_guardian_rowan');
+      if (!rowan) return;
+
+      cutsceneSystem.lockInput(this);
+      
+      // Pan camera to Rowan
+      await cutsceneSystem.panCameraTo(this, rowan.x, rowan.y * 32, 1500);
+      
+      await cutsceneSystem.delay(this, 500);
+      
+      const npcData = NPCS['trainer_guardian_rowan'];
+      await cutsceneSystem.playDialogue(this, npcData.name, [
+          "여기까지 온 것을 보니 실력은 인정하겠다.",
+          "하지만 이곳은 신성한 신전이다.",
+          "세계의 균형을 지키기 위해…",
+          "나는 너를 막아야 한다."
+      ]);
+      
+      // Pan back to player
+      await cutsceneSystem.restoreCameraToPlayer(this, 1500);
+      
+      this.registry.set('boss_rowan_intro', true);
+      cutsceneSystem.unlockInput(this);
+      
+      // Force trigger battle
+      this.triggerTrainerBattle('guardian_rowan');
+  }
+
+  async triggerLegendaryEncounter(sprite) {
+      if (this.isDialogueActive) return;
+      this.isDialogueActive = true;
+
+      const legendaryId = sprite.npcId.split("_")[1].toUpperCase();
+
+      cutsceneSystem.lockInput(this);
+      
+      // Dramatic pan smoothly
+      await cutsceneSystem.panCameraTo(this, sprite.x, sprite.y, 1500);
+      
+      // Pulse animation
+      this.tweens.add({
+          targets: sprite,
+          scale: 1.2,
+          yoyo: true,
+          duration: 300,
+          repeat: 2
+      });
+      
+      await cutsceneSystem.shakeCamera(this, 1000, 0.02);
+      
+      const roarText = this.add.text(sprite.x, sprite.y - 40, "GROOOOAAAR!", {
+          font: 'bold 24px "Press Start 2P", Courier',
+          fill: '#e74c3c',
+          stroke: '#000',
+          strokeThickness: 4
+      }).setOrigin(0.5);
+
+      await cutsceneSystem.delay(this, 1500);
+      roarText.destroy();
+      
+      await cutsceneSystem.restoreCameraToPlayer(this, 1000);
+      
+      this.isDialogueActive = false;
+      cutsceneSystem.unlockInput(this);
+
+      // Force battle with legendary stats
+      this.events.emit('hideMapName');
+      this.scene.pause();
+      this.scene.launch("BattleScene", {
+          isWild: true,
+          enemyPool: [{ creatureId: legendaryId, level: 50 }], // Forced Lv 50 Boss
+          background: this.mapId
+      });
   }
 
   healParty() {

@@ -90,11 +90,18 @@ export const battleSystem = {
 
   /**
    * Checks if a capture attempt is successful.
-   * Higher chance when enemy HP is low.
+   * Higher chance when enemy HP is low, heavily influenced by species catchRate.
    */
   checkCapture: (enemy) => {
     const hpRatio = enemy.currentHp / enemy.maxHp;
-    const successProbability = 0.2 + (1.0 - hpRatio) * 0.6;
+    // Base formula: catchRate * (1 - hpRatio) + small flat bonus
+    // A legendary with catchRate 0.01 at 10% HP = 0.01 * 0.9 + 0.05 = ~0.059 (6% catch chance)
+    // A regular with catchRate 0.8 at 10% HP = 0.8 * 0.9 + 0.05 = ~0.77 (77% catch chance)
+    
+    // Default to 0.5 if not found
+    const baseRate = enemy.catchRate !== undefined ? enemy.catchRate : 0.5;
+    
+    const successProbability = (baseRate * (1.0 - hpRatio)) + (baseRate * 0.2); 
     return Math.random() < successProbability;
   },
 
