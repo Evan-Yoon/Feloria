@@ -15,30 +15,30 @@ export const skillEffectSystem = {
 
     switch (effectType) {
       case 'slash':
-        this.playAnimEffect(scene, tx, ty, ASSETS.ANIMATIONS.SLASH.KEY);
-        this.playSlash(scene, tx, ty); // Keep juice
+        this.playAnimEffect(scene, tx, ty, ASSETS.ANIMATIONS.ATTACK1.KEY);
+        this.playSlash(scene, tx, ty);
         break;
       case 'fire':
-        this.playAnimEffect(scene, tx, ty, ASSETS.ANIMATIONS.FIRE.KEY);
+        this.playAnimEffect(scene, tx, ty, ASSETS.ANIMATIONS.FIRE1.KEY);
         this.playFire(scene, tx, ty);
         break;
       case 'ice':
-        this.playAnimEffect(scene, tx, ty, ASSETS.ANIMATIONS.ICE.KEY);
+        this.playAnimEffect(scene, tx, ty, ASSETS.ANIMATIONS.ICE1.KEY);
         this.playIce(scene, tx, ty);
         break;
       case 'spark':
       case 'thunder':
-        this.playAnimEffect(scene, tx, ty, ASSETS.ANIMATIONS.THUNDER.KEY);
+        this.playAnimEffect(scene, tx, ty, ASSETS.ANIMATIONS.LIGHT1.KEY);
         this.playSpark(scene, tx, ty);
         break;
       case 'wind':
-        this.playAnimEffect(scene, tx, ty, ASSETS.ANIMATIONS.WIND.KEY);
+        this.playAnimEffect(scene, tx, ty, ASSETS.ANIMATIONS.ATTACK12.KEY); // Windy look
         break;
       case 'heal':
-        this.playAnimEffect(scene, tx, ty, ASSETS.ANIMATIONS.HEAL.KEY);
+        this.playAnimEffect(scene, tx, ty, ASSETS.ANIMATIONS.HEAL1.KEY);
         break;
       default:
-        this.playAnimEffect(scene, tx, ty, ASSETS.ANIMATIONS.SLASH.KEY);
+        this.playAnimEffect(scene, tx, ty, ASSETS.ANIMATIONS.ATTACK1.KEY);
         this.playImpact(scene, tx, ty);
         break;
     }

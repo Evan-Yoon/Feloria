@@ -44,19 +44,40 @@ export class DialogScene extends Phaser.Scene {
     // Portrait (Below Name)
     const facePadding = 20;
     const portraitY = 55; // Below name
-    const faceSize = 120; // Consistent size
 
     console.log(`DialogScene: faceKey=${this.faceKey}, exists=${this.textures.exists(this.faceKey)}`);
     if (this.faceKey && this.textures.exists(this.faceKey)) {
-      // Faces are 4x2 sheets in RPG Maker (total 8 faces). Each face is 144x144.
-      this.faceSprite = this.add.sprite(
-        facePadding,
-        portraitY,
-        this.faceKey,
-        this.faceIndex
-      )
-      this.faceSprite.setOrigin(0, 0);
-      // Removed setDisplaySize to keep pixel perfect 144x144 native size
+
+      // --- 수정된 부분: 원본 이미지(__BASE)를 불러와 수학적으로 정확히 자르기 ---
+      // 외부에서 스프라이트 시트 규격이 어떻게 잘못 설정되었든 무시하고 무조건 원본을 가져옵니다.
+      this.faceSprite = this.add.image(0, 0, this.faceKey, '__BASE');
+
+      const cols = 4;
+      const rows = 2;
+      const fullWidth = this.faceSprite.width;   // 원본 전체 가로 크기 (예: 576)
+      const fullHeight = this.faceSprite.height; // 원본 전체 세로 크기 (예: 288)
+
+      const faceW = fullWidth / cols;  // 얼굴 1개 가로 넓이 (정확히 1/4)
+      const faceH = fullHeight / rows; // 얼굴 1개 세로 넓이 (정확히 1/2)
+
+      // 인덱스를 바탕으로 몇 번째 열/행인지 구합니다.
+      const col = this.faceIndex % cols;
+      const row = Math.floor(this.faceIndex / cols);
+
+      // 잘라낼 시작 좌표
+      const cropX = col * faceW;
+      const cropY = row * faceH;
+
+      // 1. 필요한 얼굴 한 칸(144x144)만 보이도록 크롭 마스크를 씌웁니다.
+      this.faceSprite.setCrop(cropX, cropY, faceW, faceH);
+
+      // 2. 크롭된 얼굴이 화면의 엉뚱한 곳에 그려지지 않도록 기준점(Origin)을 당겨줍니다.
+      this.faceSprite.setOrigin(cropX / fullWidth, cropY / fullHeight);
+
+      // 3. 최종적으로 UI 컨테이너 안의 목표 위치에 배치합니다.
+      this.faceSprite.setPosition(facePadding, portraitY);
+      // -------------------------------------------------------------
+
       box.add(this.faceSprite);
     } else {
       console.warn(`DialogScene: Portrait texture '${this.faceKey}' not found!`);

@@ -271,13 +271,13 @@ export class WorldScene extends Phaser.Scene {
     this.npcs = this.add.group();
     this.mapData.spawns.forEach((spawn) => {
       if (spawn.type === "npc") {
-        let config = ASSETS.CHARACTERS.NPC_PEOPLE1; // Default
+        let config = ASSETS.CHARACTERS.PEOPLE1; // Default
         if (spawn.id === "elder_hyunseok" || spawn.id === "mira") {
-          config = ASSETS.CHARACTERS.NPC_ELDER;
+          config = ASSETS.CHARACTERS.PEOPLE4;
         } else if (spawn.id === "trainer_guardian_rowan") {
-          config = ASSETS.CHARACTERS.NPC_PEOPLE2;
+          config = ASSETS.CHARACTERS.PEOPLE2;
         } else if (spawn.id && spawn.id.startsWith("trainer")) {
-          config = ASSETS.CHARACTERS.NPC_PEOPLE1;
+          config = ASSETS.CHARACTERS.PEOPLE1;
         }
 
         const frames = this.getCharacterFrames(config.KEY, config.CHARACTER_INDEX);
