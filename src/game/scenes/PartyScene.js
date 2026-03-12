@@ -160,7 +160,7 @@ export class PartyScene extends Phaser.Scene {
     const spriteKey = creature.id.toLowerCase();
     const creatureSprite = this.add
       .sprite(-bgWidth / 2 + 70, -20, spriteKey)
-      .setScale(1.5);
+      .setScale(1.05);
 
     // Details Text
     const nameText = this.add.text(-bgWidth / 2 + 70, 25, creature.name, {

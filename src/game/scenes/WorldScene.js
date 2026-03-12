@@ -27,7 +27,7 @@ export class WorldScene extends Phaser.Scene {
 
     // Movement state
     this.isMoving = false;
-    this.movementDuration = 250; // ms per tile
+    this.movementDuration = 150; // ms per tile (Faster movement)
     this.playerDir = "down";
 
     // Interaction lock
@@ -177,9 +177,9 @@ export class WorldScene extends Phaser.Scene {
           inventory["capture_crystal"] = (inventory["capture_crystal"] || 0) + 2;
           this.registry.set("playerInventory", inventory);
 
-          this.events.emit('notifyItem', { 
+          this.events.emit('notifyItem', {
             message: `포획 크리스탈 x2 획득!`,
-            color: 0x27ae60 
+            color: 0x27ae60
           });
 
           this.registry.set("intro_done", true);
@@ -216,7 +216,7 @@ export class WorldScene extends Phaser.Scene {
     // If no specific spawn provided, use map default
     const spawn = this.mapData.spawns.find((s) => s.type === "player");
     const isInitialSpawn = this.mapId === 'starwhisk_village' && !this.registry.get("intro_done");
-    
+
     const tx = this.spawnX !== undefined ? this.spawnX : (isInitialSpawn ? 10 : (spawn ? spawn.x : 10));
     const ty = this.spawnY !== undefined ? this.spawnY : (isInitialSpawn ? 9 : (spawn ? spawn.y : 10));
 
@@ -252,18 +252,18 @@ export class WorldScene extends Phaser.Scene {
     const sheetCols = 12; // 12 columns in a standard 4x2 RPG Maker sheet
     console.log(`WorldScene: getCharacterFrames for ${textureKey}, index ${charIndex}, sheet size: ${image.width}x${image.height}, cols: ${sheetCols}`);
 
-    const blocksPerRow = 4; 
+    const blocksPerRow = 4;
     const blockX = charIndex % blocksPerRow;
     const blockY = Math.floor(charIndex / blocksPerRow);
 
     const startX = blockX * 3;
     const startY = blockY * 4;
-    
+
     const frames = {
-      down:  [ (startY + 0) * sheetCols + startX, (startY + 0) * sheetCols + startX + 1, (startY + 0) * sheetCols + startX + 2 ],
-      left:  [ (startY + 1) * sheetCols + startX, (startY + 1) * sheetCols + startX + 1, (startY + 1) * sheetCols + startX + 2 ],
-      right: [ (startY + 2) * sheetCols + startX, (startY + 2) * sheetCols + startX + 1, (startY + 2) * sheetCols + startX + 2 ],
-      up:    [ (startY + 3) * sheetCols + startX, (startY + 3) * sheetCols + startX + 1, (startY + 3) * sheetCols + startX + 2 ]
+      down: [(startY + 0) * sheetCols + startX, (startY + 0) * sheetCols + startX + 1, (startY + 0) * sheetCols + startX + 2],
+      left: [(startY + 1) * sheetCols + startX, (startY + 1) * sheetCols + startX + 1, (startY + 1) * sheetCols + startX + 2],
+      right: [(startY + 2) * sheetCols + startX, (startY + 2) * sheetCols + startX + 1, (startY + 2) * sheetCols + startX + 2],
+      up: [(startY + 3) * sheetCols + startX, (startY + 3) * sheetCols + startX + 1, (startY + 3) * sheetCols + startX + 2]
     };
     console.log(`WorldScene: calculated frames for ${textureKey}:`, frames);
     return frames;
@@ -300,11 +300,23 @@ export class WorldScene extends Phaser.Scene {
           return;
         }
 
+        // --- Chief Hyunseok Visibility Logic ---
+        if (npcId === "elder_hyunseok") {
+          const firstSteps = questSystem.getQuest(this.registry, 'first_steps');
+          const isRowanDefeated = (this.registry.get("defeatedTrainers") || []).includes("guardian_rowan");
+          
+          if (firstSteps && firstSteps.completed && !isRowanDefeated) {
+             // He "leaves" for the shrine (or hides his presence)
+             console.log("WorldScene: Chief Hyunseok is currently at the shrine.");
+             return; 
+          }
+        }
+
         // 1. Determine Sprite Key and Character Block
         const spriteKey = npcData.sprite || "people1";
         // Find the character block in ASSETS.CHARACTERS that matches this KEY
         const config = Object.values(ASSETS.CHARACTERS).find(c => c.KEY === spriteKey) || ASSETS.CHARACTERS.PEOPLE1;
-        
+
         const characterIndex = npcData.characterIndex !== undefined ? npcData.characterIndex : (config.CHARACTER_INDEX || 0);
 
         const frames = this.getCharacterFrames(config.KEY, characterIndex);
@@ -482,7 +494,7 @@ export class WorldScene extends Phaser.Scene {
         this.player.tileX,
         this.player.tileY,
       );
-      if (tile && tile.index !== 0) {
+      if (tile && tile.index !== 0 && !this.isPartyDead()) {
         const encounter = encounterSystem.checkEncounter(this.mapId, 0.15);
         if (encounter) {
           this.triggerBattle(encounter);
@@ -566,6 +578,14 @@ export class WorldScene extends Phaser.Scene {
     switch (currentRole) {
       case "healer_quest":
         this.healParty();
+        // Transition Quest logic
+        const firstSteps = questSystem.getQuest(this.registry, 'first_steps');
+        if (firstSteps && !firstSteps.completed && firstSteps.objectives.find(o => o.id === 'return_mira').completed) {
+          // Chief has sent player to defeat Rowan
+          questSystem.completeObjective(this.registry, 'first_steps', 'return_mira'); // This will mark firstSteps complete
+          // Start next phase objectives are already in the registry but maybe we should explicitly announce it?
+          this.events.emit('notifyItem', { message: "새로운 퀘스트: 숲의 각성", color: 0xf1c40f });
+        }
         break;
       case "shopkeeper":
         this.scene.pause();
@@ -573,6 +593,13 @@ export class WorldScene extends Phaser.Scene {
         break;
       case "trainer":
       case "boss_trainer":
+        if (this.isPartyDead()) {
+          this.events.emit('notifyItem', {
+            message: `모든 고양이가 쓰러졌습니다! 촌장 현석에게 치료를 받으세요.`,
+            color: 0xe74c3c
+          });
+          return;
+        }
         const defeated = this.registry.get("defeatedTrainers") || [];
         if (!defeated.includes(npcData.trainerId)) {
           this.triggerTrainerBattle(npcData.trainerId);
@@ -589,7 +616,11 @@ export class WorldScene extends Phaser.Scene {
   checkEventTriggers() {
     // Mosslight Shrine Boss Intro
     if (this.mapId === 'mosslight_shrine') {
-      if (this.player.tileY <= 6 && !this.registry.get('boss_rowan_intro')) {
+      const activeQuests = this.registry.get('activeQuests') || {};
+      const forestQuest = activeQuests['forest_awakening'];
+      const isQuestActive = forestQuest && !forestQuest.completed;
+
+      if (this.player.tileY <= 6 && !this.registry.get('boss_rowan_intro') && isQuestActive) {
         this.runMosslightBossIntro();
         return true;
       }
@@ -632,7 +663,7 @@ export class WorldScene extends Phaser.Scene {
     cutsceneSystem.lockInput(this);
 
     // 1. Rowan's final words (if any additional needed, but npc dialogue already says enough)
-    
+
     // 2. Chief Hyunseok Appears
     const spawn = this.mapData.spawns.find(s => s.id === 'trainer_guardian_rowan');
     const hyunseok = this.add.sprite(spawn.x * 32 + 16, (spawn.y + 5) * 32, 'people4', 37); // actor sheet index
@@ -641,7 +672,7 @@ export class WorldScene extends Phaser.Scene {
     hyunseok.setDepth(11);
 
     await cutsceneSystem.panCameraTo(this, hyunseok.x, hyunseok.y, 1000);
-    
+
     this.tweens.add({
       targets: hyunseok,
       alpha: 1,
@@ -678,9 +709,9 @@ export class WorldScene extends Phaser.Scene {
     // 4. Legendary Cats Scatter Effect
     await cutsceneSystem.shakeCamera(this, 3000, 0.05);
     this.cameras.main.flash(1000, 255, 255, 255);
-    
+
     this.updateLogText("전설의 고양이들이 대륙 곳곳으로 흩어졌습니다...");
-    
+
     await cutsceneSystem.delay(this, 2000);
 
     // 5. Final Fade and Set State
@@ -688,7 +719,7 @@ export class WorldScene extends Phaser.Scene {
     this.cameras.main.once('camerafadeoutcomplete', () => {
       this.registry.set('chapter1_done', true);
       this.registry.set('is_climax_battle', false);
-      
+
       // Return to village prison
       this.scene.start('WorldScene', {
         mapId: 'starwhisk_village',
@@ -795,6 +826,11 @@ export class WorldScene extends Phaser.Scene {
       this.scene.start("BattleScene", {
         isTrainer: true,
         trainerId: trainerId,
+        onComplete: () => {
+          if (trainerId === 'guardian_rowan') {
+            this.runClimaxSequence();
+          }
+        }
       });
     });
   }
@@ -824,5 +860,11 @@ export class WorldScene extends Phaser.Scene {
         enemyLevel: encounter.level,
       });
     });
+  }
+
+  isPartyDead() {
+    const party = this.registry.get("playerParty") || [];
+    if (party.length === 0) return false;
+    return party.every(cat => cat.currentHp <= 0);
   }
 }

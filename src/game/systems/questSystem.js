@@ -55,6 +55,10 @@ export const questSystem = {
 
       registry.set('activeQuests', activeQuests);
 
+      // Notify UI
+      const uiScene = registry.parent.scene.get('UIScene');
+      if (uiScene) uiScene.events.emit('updateQuests');
+
       // Autosave quest progress
       const mapId = registry.get('world_mapId') || 'starwhisk_village';
       const tx = registry.get('world_spawnX') || 10;

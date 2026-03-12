@@ -49,11 +49,87 @@ export class UIScene extends Phaser.Scene {
       worldScene.events.on("notifyItem", (data) => {
         this.queueNotification(data);
       });
+      // --- Quest Tracker ---
+      this.createQuestTracker();
+      
+      this.events.on("updateQuests", () => {
+        this.updateQuestTracker();
+      });
+
+      // Show/Hide tracker based on WorldScene state
+      this.time.addEvent({
+        delay: 500,
+        callback: () => {
+          const world = this.scene.manager.getScene("WorldScene");
+          if (world && world.scene.isActive()) {
+            this.questTracker.setVisible(!world.isDialogueActive && !world.isEncounterTriggered);
+            this.updateQuestTracker();
+          } else {
+            this.questTracker.setVisible(false);
+          }
+        },
+        loop: true
+      });
     }
 
     this.events.on("shutdown", () => {
       this.mapNameText.setVisible(false);
+      if (this.questTracker) this.questTracker.setVisible(false);
     });
+  }
+
+  createQuestTracker() {
+    const { width } = this.cameras.main;
+    this.questTracker = this.add.container(width - 20, 20);
+    
+    this.questTrackerBg = this.add.rectangle(0, 0, 250, 200, 0x000000, 0.4)
+      .setOrigin(1, 0);
+    
+    this.questTitleText = this.add.text(-10, 10, "퀘스트", {
+      fontFamily: '"Press Start 2P", Courier, monospace',
+      fontSize: "14px",
+      color: "#f1c40f",
+      align: "right",
+      wordWrap: { width: 230 }
+    }).setOrigin(1, 0);
+
+    this.questObjectivesText = this.add.text(-10, 40, "", {
+      fontFamily: 'Arial',
+      fontSize: "16px",
+      color: "#ffffff",
+      align: "right",
+      lineSpacing: 10,
+      wordWrap: { width: 230 }
+    }).setOrigin(1, 0);
+
+    this.questTracker.add([this.questTrackerBg, this.questTitleText, this.questObjectivesText]);
+    this.updateQuestTracker();
+  }
+
+  updateQuestTracker() {
+    const activeQuests = this.registry.get('activeQuests');
+    if (!activeQuests) {
+      if (this.questTracker) this.questTracker.setVisible(false);
+      return;
+    }
+
+    const firstQuest = Object.values(activeQuests).find(q => !q.completed);
+    if (!firstQuest) {
+      this.questTitleText.setText("퀘스트 완료!");
+      this.questObjectivesText.setText("모든 주요 퀘스트를 완료했습니다.");
+      return;
+    }
+
+    this.questTitleText.setText(`[${firstQuest.title}]`);
+    
+    const objectives = firstQuest.objectives
+      .map(o => `${o.completed ? '✓' : '○'} ${o.text}`)
+      .join('\n');
+    
+    this.questObjectivesText.setText(objectives);
+
+    const textHeight = this.questObjectivesText.y + this.questObjectivesText.height + 10;
+    this.questTrackerBg.height = Math.max(100, textHeight);
   }
 
   queueNotification(data) {

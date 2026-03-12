@@ -159,7 +159,7 @@ export class BattleScene extends Phaser.Scene {
     // Draw the generated placeholder sprite
     this.playerSprite = this.add
       .sprite(0, -100, ASSETS.SPRITES.MONSTER_FALLBACK.KEY)
-      .setScale(3);
+      .setScale(2.1);
 
     // UI Panel for Player
     this.playerBg = this.add
@@ -201,7 +201,7 @@ export class BattleScene extends Phaser.Scene {
     this.enemyUI = this.add.container(width * 0.3, height * 0.25);
     this.enemySprite = this.add
       .sprite(0, 0, ASSETS.SPRITES.MONSTER_FALLBACK.KEY)
-      .setScale(3);
+      .setScale(2.1);
     this.enemySprite.setTexture(this.enemyCat.id.toLowerCase());
 
     this.enemyBg = this.add

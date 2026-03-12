@@ -35,6 +35,16 @@ export const NPCS = {
         ];
       }
       if (firstSteps && !firstSteps.completed) {
+        if (firstSteps.objectives.find(o => o.id === 'return_mira').completed) {
+          // Special transition dialogue
+          return [
+            "장하구나, {playerName}! 고양이를 훌륭하게 포획해왔군.",
+            "하지만 지금 그린포우 숲 너머에서 심상치 않은 일이 벌어지고 있단다.",
+            "수호자 로완이라는 자가 고대 숲의 신전을 점거하고 숲의 정령들을 자극하고 있어.",
+            "그를 막지 않으면 우리 마을뿐만 아니라 온 대륙이 위험해질 게야.",
+            "자, 이제 모스라이트 길을 지나 고대 숲으로 가거라. 로완을 처치하고 숲의 평화를 되찾아야 한다!",
+          ];
+        }
         return [
           "네 고양이를 잘 돌봐주거라.",
           "숲에서는 언제 어떤 일이 벌어질지 모른단다. 그게 누구의 계획이든 말이지.",
@@ -293,6 +303,16 @@ export const NPCS = {
     faceKey: "face_evil",
     faceIndex: 0,
     getDialogue: (registry) => {
+      const activeQuests = registry.get("activeQuests") || {};
+      const forestQuest = activeQuests["forest_awakening"];
+
+      if (!forestQuest || !forestQuest.objectives[0].completed) {
+        return [
+          "여기는 네가 올 곳이 아니다. 당장 물러나거라!",
+          "숲의 질서를 어지럽히는 자들은 결코 용서하지 않겠다.",
+        ];
+      }
+
       const defeated = registry.get("defeatedTrainers") || [];
       if (defeated.includes("guardian_rowan")) {
         return [
@@ -307,4 +327,40 @@ export const NPCS = {
       ];
     },
   },
+  
+  // --- CLIMAX NPCs ---
+  boss_hyunseok_climax: {
+    id: "boss_hyunseok_climax",
+    name: "타락한 현석",
+    role: "boss_trainer",
+    trainerId: "boss_hyunseok",
+    sprite: "people4",
+    characterIndex: 5, // Custom index for bad guy look
+    faceKey: "face_evil", 
+    faceIndex: 0,
+    getDialogue: (registry) => {
+      return [
+        "하하하! 정말 수고했다, {playerName}.",
+        "말했지 않았느냐... 내가 너를 아주 특별하게 생각한다고.",
+        "너 덕분에 신전의 결계가 완벽하게 무너졌어. 이제 고대 고양이들을 내 의지대로 다룰 수 있다!",
+        "자, 이제 너는 쓸모가 없어졌구나. 사라져라!",
+      ];
+    }
+  },
+  boss_hyunseok_defeated: {
+    id: "boss_hyunseok_defeated",
+    name: "타락한 현석",
+    role: "lore_npc",
+    sprite: "people4",
+    characterIndex: 5,
+    faceKey: "face_evil",
+    faceIndex: 0,
+    getDialogue: (registry) => {
+      return [
+        "크윽... 이 힘이... 내 통제를 벗어나...?",
+        "신전의 봉인이 완전히 풀려버렸어! 전설의 고양이들이...!",
+        "안 돼! 내가 지배해야 할 전설들이 흩어지고 있다!",
+      ];
+    }
+  }
 };
