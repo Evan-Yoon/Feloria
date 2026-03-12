@@ -3,1308 +3,1084 @@ export const CREATURES = {
     id: "LEAFKIT",
     class: "스타팅",
     name: "리프킷",
-    type: "Forest",
+    type: "숲",
     description: "활기찬 초록 고양이. 상쾌한 소나무 향기가 난다.",
     baseHp: 20,
     baseAttack: 5,
     baseDefense: 4,
     catchRate: 1,
-    skills: [
-      "vine_swipe",
-      "leaf_dart",
-      "forest_guard"
-    ],
+    skills: ["vine_swipe", "leaf_dart", "forest_guard"],
     evolution: {
       target: "BRAMBLECAT",
-      level: 10
+      level: 10,
     },
     spriteKey: "creature_leafkit",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "starwhisk_village"
+    plannedRegion: "starwhisk_village",
   },
   BRAMBLECAT: {
     id: "BRAMBLECAT",
     class: "스타팅",
     name: "브램블캣",
-    type: "Forest",
+    type: "숲",
     description: "털이 단단하고 두꺼운 덩굴로 변해 몸을 보호한다.",
     baseHp: 45,
     baseAttack: 12,
     baseDefense: 10,
     catchRate: 0.5,
-    skills: [
-      "vine_swipe",
-      "leaf_dart",
-      "forest_guard"
-    ],
+    skills: ["vine_swipe", "leaf_dart", "forest_guard"],
     evolution: null,
     spriteKey: "creature_bramblecat",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "starwhisk_village"
+    plannedRegion: "starwhisk_village",
   },
   EMBERPAW: {
     id: "EMBERPAW",
     class: "스타팅",
     name: "엠버파우",
-    type: "Fire",
+    type: "불",
     description: "타오르는 불꽃 고양이. 발바닥이 따뜻하다.",
     baseHp: 18,
     baseAttack: 7,
     baseDefense: 3,
     catchRate: 1,
-    skills: [
-      "ember_bite",
-      "flame_dash",
-      "heat_claw"
-    ],
+    skills: ["ember_bite", "flame_dash", "heat_claw"],
     evolution: {
       target: "CINDERCLAW",
-      level: 10
+      level: 10,
     },
     spriteKey: "creature_emberpaw",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "starwhisk_village"
+    plannedRegion: "starwhisk_village",
   },
   CINDERCLAW: {
     id: "CINDERCLAW",
     class: "스타팅",
     name: "신더클로",
-    type: "Fire",
-    description: "사납고 다혈질인 고양이. 발톱이 지나간 자리에 그을음이 남는다.",
+    type: "불",
+    description:
+      "사납고 다혈질인 고양이. 발톱이 지나간 자리에 그을음이 남는다.",
     baseHp: 40,
     baseAttack: 16,
     baseDefense: 8,
     catchRate: 0.5,
-    skills: [
-      "ember_bite",
-      "flame_dash",
-      "heat_claw"
-    ],
+    skills: ["ember_bite", "flame_dash", "heat_claw"],
     evolution: null,
     spriteKey: "creature_cinderclaw",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "starwhisk_village"
+    plannedRegion: "starwhisk_village",
   },
   MISTTAIL: {
     id: "MISTTAIL",
     class: "스타팅",
     name: "미스트테일",
-    type: "Water",
+    type: "물",
     description: "수영을 좋아하는 날렵하고 매끄러운 고양이.",
     baseHp: 22,
     baseAttack: 4,
     baseDefense: 6,
     catchRate: 1,
-    skills: [
-      "water_slash",
-      "mist_burst",
-      "tidal_wave"
-    ],
+    skills: ["water_slash", "mist_burst", "tidal_wave"],
     evolution: {
       target: "DEWTAIL",
-      level: 10
+      level: 10,
     },
     spriteKey: "creature_misttail",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "starwhisk_village"
+    plannedRegion: "starwhisk_village",
   },
   DEWTAIL: {
     id: "DEWTAIL",
     class: "스타팅",
     name: "듀테일",
-    type: "Water",
+    type: "물",
     description: "수영의 달인. 화가 나면 가벼운 비를 부를 수 있다.",
     baseHp: 50,
     baseAttack: 10,
     baseDefense: 14,
     catchRate: 0.5,
-    skills: [
-      "water_slash",
-      "mist_burst",
-      "tidal_wave"
-    ],
+    skills: ["water_slash", "mist_burst", "tidal_wave"],
     evolution: null,
     spriteKey: "creature_dewtail",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "starwhisk_village"
+    plannedRegion: "starwhisk_village",
   },
   SNAGPUSS: {
     id: "SNAGPUSS",
     class: "노말",
     name: "스내그퍼스",
-    type: "Grass",
+    type: "풀",
     description: "키 큰 풀숲에 숨어 있는 호기심 많은 가시털 고양이.",
     baseHp: 15,
     baseAttack: 4,
     baseDefense: 5,
     catchRate: 0.8,
-    skills: [
-      "vine_swipe",
-      "leaf_dart",
-      "forest_guard"
-    ],
+    skills: ["vine_swipe", "leaf_dart", "forest_guard"],
     evolution: {
       target: "THISTLEFUR",
-      level: 12
+      level: 12,
     },
     spriteKey: "creature_snagpuss",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "greenpaw_forest"
+    plannedRegion: "greenpaw_forest",
   },
   THISTLEFUR: {
     id: "THISTLEFUR",
     class: "레어",
     name: "씨슬퍼",
-    type: "Grass",
+    type: "풀",
     description: "온몸이 가시로 덮여 있어 직접 공격하기 어렵다.",
     baseHp: 38,
     baseAttack: 11,
     baseDefense: 13,
     catchRate: 0.4,
-    skills: [
-      "filler_skill_1",
-      "filler_skill_2",
-      "filler_skill_3"
-    ],
+    skills: ["filler_skill_1", "filler_skill_2", "filler_skill_3"],
     evolution: null,
     spriteKey: "creature_thistlefur",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "greenpaw_forest"
+    plannedRegion: "greenpaw_forest",
   },
   MOSSLYNX: {
     id: "MOSSLYNX",
     class: "노말",
     name: "모스링스",
-    type: "Forest",
+    type: "숲",
     description: "숲 바닥에 숨어 지내는 조용한 이끼 덮인 야생 고양이.",
     baseHp: 18,
     baseAttack: 6,
     baseDefense: 4,
     catchRate: 0.7,
-    skills: [
-      "vine_swipe",
-      "leaf_dart",
-      "forest_guard"
-    ],
+    skills: ["vine_swipe", "leaf_dart", "forest_guard"],
     evolution: {
       target: "VERDANTLYNX",
-      level: 14
+      level: 14,
     },
     spriteKey: "creature_mosslynx",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "greenpaw_forest"
+    plannedRegion: "greenpaw_forest",
   },
   VERDANTLYNX: {
     id: "VERDANTLYNX",
     class: "전설",
     name: "버던트링스",
-    type: "Forest",
+    type: "숲",
     description: "깊은 숲의 고대 수호자. 발걸음마다 꽃이 피어난다.",
     baseHp: 120,
     baseAttack: 28,
     baseDefense: 30,
     catchRate: 0.01,
-    skills: [
-      "world_tree_root",
-      "nature_roar",
-      "abyssal_devour",
-      "dream_eater"
-    ],
+    skills: ["world_tree_root", "nature_roar", "abyssal_devour", "dream_eater"],
     evolution: null,
     spriteKey: "creature_verdantlynx",
     activeNow: false,
     reservedForFuture: false,
-    plannedRegion: "ancient_forest"
+    plannedRegion: "ancient_forest",
   },
   THORNKIT: {
     id: "THORNKIT",
     class: "노말",
     name: "쏜킷",
-    type: "Grass",
-    description: "부드러운 가시로 덮인 작은 고양이. 무서우면 가시가 단단해진다.",
+    type: "풀",
+    description:
+      "부드러운 가시로 덮인 작은 고양이. 무서우면 가시가 단단해진다.",
     baseHp: 15,
     baseAttack: 5,
     baseDefense: 3,
     catchRate: 0.8,
-    skills: [
-      "vine_swipe",
-      "leaf_dart",
-      "forest_guard"
-    ],
+    skills: ["vine_swipe", "leaf_dart", "forest_guard"],
     evolution: {
       target: "THORNMANE",
-      level: 12
+      level: 12,
     },
     spriteKey: "creature_thornkit",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "greenpaw_forest"
+    plannedRegion: "greenpaw_forest",
   },
   THORNMANE: {
     id: "THORNMANE",
     class: "에픽",
     name: "쏜메인",
-    type: "Grass",
+    type: "풀",
     description: "면도날처럼 날카로운 덤불 갈기를 가진 사나운 포식자.",
     baseHp: 42,
     baseAttack: 20,
     baseDefense: 8,
     catchRate: 0.2,
-    skills: [
-      "thorn_whip",
-      "root_snare",
-      "nature_roar"
-    ],
+    skills: ["thorn_whip", "root_snare", "nature_roar"],
     evolution: null,
     spriteKey: "creature_thornmane",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "mosslight_path"
+    plannedRegion: "mosslight_path",
   },
   FERNCLAW: {
     id: "FERNCLAW",
     class: "노말",
     name: "펀클로",
-    type: "Grass",
+    type: "풀",
     description: "날카로운 잎사귀처럼 자란 발톱으로 영역을 지킨다.",
     baseHp: 16,
     baseAttack: 7,
     baseDefense: 3,
     catchRate: 0.7,
-    skills: [
-      "vine_swipe",
-      "leaf_dart",
-      "forest_guard"
-    ],
+    skills: ["vine_swipe", "leaf_dart", "forest_guard"],
     evolution: {
       target: "VINEFANG",
-      level: 13
+      level: 13,
     },
     spriteKey: "creature_fernclaw",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "greenpaw_forest"
+    plannedRegion: "greenpaw_forest",
   },
   VINEFANG: {
     id: "VINEFANG",
     class: "레어",
     name: "바인팽",
-    type: "Grass",
+    type: "풀",
     description: "꼬리에서 뻗어 나온 덩굴로 먹잇감을 꼼짝 못 하게 만든다.",
     baseHp: 40,
     baseAttack: 16,
     baseDefense: 8,
     catchRate: 0.3,
-    skills: [
-      "filler_skill_4",
-      "filler_skill_5",
-      "filler_skill_6"
-    ],
+    skills: ["filler_skill_4", "filler_skill_5", "filler_skill_6"],
     evolution: null,
     spriteKey: "creature_vinefang",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "greenpaw_forest"
+    plannedRegion: "greenpaw_forest",
   },
   BARKPELT: {
     id: "BARKPELT",
     class: "노말",
     name: "바크펠트",
-    type: "Forest",
+    type: "숲",
     description: "나무껍질 같은 털을 가져 포식자로부터 몸을 보호한다.",
     baseHp: 22,
     baseAttack: 3,
     baseDefense: 8,
     catchRate: 0.8,
-    skills: [
-      "vine_swipe",
-      "leaf_dart",
-      "forest_guard"
-    ],
+    skills: ["vine_swipe", "leaf_dart", "forest_guard"],
     evolution: {
       target: "IRONBARK",
-      level: 15
+      level: 15,
     },
     spriteKey: "creature_barkpelt",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "greenpaw_forest"
+    plannedRegion: "greenpaw_forest",
   },
   IRONBARK: {
     id: "IRONBARK",
     class: "에픽",
     name: "아이언바크",
-    type: "Forest",
+    type: "숲",
     description: "보통의 공격으로는 뚫을 수 없는 단단한 가죽을 가졌다.",
     baseHp: 55,
     baseAttack: 8,
     baseDefense: 20,
     catchRate: 0.3,
-    skills: [
-      "thorn_whip",
-      "root_snare",
-      "nature_roar"
-    ],
+    skills: ["thorn_whip", "root_snare", "nature_roar"],
     evolution: null,
     spriteKey: "creature_ironbark",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "greenpaw_forest"
+    plannedRegion: "greenpaw_forest",
   },
   THISTLEKIT: {
     id: "THISTLEKIT",
     class: "노말",
     name: "씨슬킷",
-    type: "Grass",
+    type: "풀",
     description: "가시 덤불 속에 몸을 구부려 숨는 아주 작은 고양이.",
     baseHp: 12,
     baseAttack: 5,
     baseDefense: 2,
     catchRate: 0.9,
-    skills: [
-      "vine_swipe",
-      "leaf_dart",
-      "forest_guard"
-    ],
+    skills: ["vine_swipe", "leaf_dart", "forest_guard"],
     evolution: {
       target: "THORNPROWLER",
-      level: 11
+      level: 11,
     },
     spriteKey: "creature_thistlekit",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "greenpaw_forest"
+    plannedRegion: "greenpaw_forest",
   },
   THORNPROWLER: {
     id: "THORNPROWLER",
     class: "레어",
     name: "쏜프라울러",
-    type: "Grass",
+    type: "풀",
     description: "빽빽한 가시 덤불 속에서 매복하여 공격적으로 사냥한다.",
     baseHp: 32,
     baseAttack: 14,
     baseDefense: 7,
     catchRate: 0.4,
-    skills: [
-      "filler_skill_7",
-      "filler_skill_8",
-      "filler_skill_9"
-    ],
+    skills: ["filler_skill_7", "filler_skill_8", "filler_skill_9"],
     evolution: null,
     spriteKey: "creature_thornprowler",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "greenpaw_forest"
+    plannedRegion: "greenpaw_forest",
   },
   SPARKPAW: {
     id: "SPARKPAW",
     class: "노말",
     name: "스파크파우",
-    type: "Fire",
+    type: "불",
     description: "달릴 때마다 불꽃이 튀는 장난기 많은 고양이.",
     baseHp: 15,
     baseAttack: 6,
     baseDefense: 3,
     catchRate: 0.8,
-    skills: [
-      "ember_bite",
-      "flame_dash",
-      "heat_claw"
-    ],
+    skills: ["ember_bite", "flame_dash", "heat_claw"],
     evolution: {
       target: "BLAZECLAW",
-      level: 14
+      level: 14,
     },
     spriteKey: "creature_sparkpaw",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "mosslight_path"
+    plannedRegion: "mosslight_path",
   },
   BLAZECLAW: {
     id: "BLAZECLAW",
     class: "레어",
     name: "블레이즈클로",
-    type: "Fire",
+    type: "불",
     description: "발을 딛는 곳마다 땅을 뜨겁게 달구는 강력한 발걸음의 고양이.",
     baseHp: 38,
     baseAttack: 16,
     baseDefense: 9,
     catchRate: 0.3,
-    skills: [
-      "filler_skill_10",
-      "filler_skill_11",
-      "filler_skill_12"
-    ],
+    skills: ["filler_skill_10", "filler_skill_11", "filler_skill_12"],
     evolution: null,
     spriteKey: "creature_blazeclaw",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "mosslight_path"
+    plannedRegion: "mosslight_path",
   },
   CINDERCAT: {
     id: "CINDERCAT",
     class: "노말",
     name: "신더캣",
-    type: "Fire",
+    type: "불",
     description: "어둠 속에서 불씨처럼 희미하게 빛나는 털을 가졌다.",
     baseHp: 18,
     baseAttack: 5,
     baseDefense: 5,
     catchRate: 0.7,
-    skills: [
-      "ember_bite",
-      "flame_dash",
-      "heat_claw"
-    ],
+    skills: ["ember_bite", "flame_dash", "heat_claw"],
     evolution: {
       target: "INFERMANE",
-      level: 16
+      level: 16,
     },
     spriteKey: "creature_cindercat",
     activeNow: false,
     reservedForFuture: true,
-    plannedRegion: "volcano"
+    plannedRegion: "volcano",
   },
   INFERMANE: {
     id: "INFERMANE",
     class: "에픽",
     name: "인퍼메인",
-    type: "Fire",
+    type: "불",
     description: "끊임없이 타오르는 불꽃으로 이루어진 위엄 있는 갈기를 가졌다.",
     baseHp: 45,
     baseAttack: 14,
     baseDefense: 12,
     catchRate: 0.2,
-    skills: [
-      "inferno_slash",
-      "blazing_pounce",
-      "nature_roar"
-    ],
+    skills: ["inferno_slash", "blazing_pounce", "nature_roar"],
     evolution: null,
     spriteKey: "creature_infermane",
     activeNow: false,
     reservedForFuture: true,
-    plannedRegion: "volcano"
+    plannedRegion: "volcano",
   },
   ASHLYNX: {
     id: "ASHLYNX",
     class: "노말",
     name: "애시링스",
-    type: "Fire",
+    type: "불",
     description: "불이 휩쓸고 지나간 자리에 나타나 활발하게 움직인다.",
     baseHp: 17,
     baseAttack: 7,
     baseDefense: 4,
     catchRate: 0.7,
-    skills: [
-      "ember_bite",
-      "flame_dash",
-      "heat_claw"
-    ],
+    skills: ["ember_bite", "flame_dash", "heat_claw"],
     evolution: {
       target: "PYROLYNX",
-      level: 15
+      level: 15,
     },
     spriteKey: "creature_ashlynx",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "mosslight_path"
+    plannedRegion: "mosslight_path",
   },
   PYROLYNX: {
     id: "PYROLYNX",
     class: "레어",
     name: "파이로링스",
-    type: "Fire",
+    type: "불",
     description: "주변의 공기 온도를 자유자재로 조절할 수 있다.",
     baseHp: 42,
     baseAttack: 18,
     baseDefense: 8,
     catchRate: 0.3,
-    skills: [
-      "filler_skill_13",
-      "filler_skill_14",
-      "filler_skill_15"
-    ],
+    skills: ["filler_skill_13", "filler_skill_14", "filler_skill_15"],
     evolution: null,
     spriteKey: "creature_pyrolynx",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "mosslight_path"
+    plannedRegion: "mosslight_path",
   },
   RIPPLEPAW: {
     id: "RIPPLEPAW",
     class: "노말",
     name: "리플파우",
-    type: "Water",
+    type: "물",
     description: "얕은 개울 위로 퍼지는 물결을 쫓는 것을 좋아하는 고양이.",
     baseHp: 16,
     baseAttack: 5,
     baseDefense: 5,
     catchRate: 0.8,
-    skills: [
-      "water_slash",
-      "mist_burst",
-      "tidal_wave"
-    ],
+    skills: ["water_slash", "mist_burst", "tidal_wave"],
     evolution: {
       target: "TIDALCLAW",
-      level: 13
+      level: 13,
     },
     spriteKey: "creature_ripplepaw",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "greenpaw_forest"
+    plannedRegion: "greenpaw_forest",
   },
   TIDALCLAW: {
     id: "TIDALCLAW",
     class: "레어",
     name: "타이달클로",
-    type: "Water",
+    type: "물",
     description: "부서지는 바다 파도와 같은 묵직한 힘을 발톱에 품고 있다.",
     baseHp: 40,
     baseAttack: 13,
     baseDefense: 13,
     catchRate: 0.4,
-    skills: [
-      "filler_skill_16",
-      "filler_skill_17",
-      "filler_skill_18"
-    ],
+    skills: ["filler_skill_16", "filler_skill_17", "filler_skill_18"],
     evolution: null,
     spriteKey: "creature_tidalclaw",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "greenpaw_forest"
+    plannedRegion: "greenpaw_forest",
   },
   STREAMTAIL: {
     id: "STREAMTAIL",
     class: "노말",
     name: "스트림테일",
-    type: "Water",
+    type: "물",
     description: "강한 물살을 거슬러 수영할 수 있게 도와주는 긴 꼬리를 가졌다.",
     baseHp: 18,
     baseAttack: 6,
     baseDefense: 4,
     catchRate: 0.7,
-    skills: [
-      "water_slash",
-      "mist_burst",
-      "tidal_wave"
-    ],
+    skills: ["water_slash", "mist_burst", "tidal_wave"],
     evolution: {
       target: "FLOODLYNX",
-      level: 15
+      level: 15,
     },
     spriteKey: "creature_streamtail",
     activeNow: false,
     reservedForFuture: true,
-    plannedRegion: "ocean"
+    plannedRegion: "ocean",
   },
   FLOODLYNX: {
     id: "FLOODLYNX",
     class: "에픽",
     name: "플러드링스",
-    type: "Water",
+    type: "물",
     description: "울부짖으면 주변의 물이 갑자기 범람하여 수위를 높인다.",
     baseHp: 46,
     baseAttack: 15,
     baseDefense: 10,
     catchRate: 0.3,
-    skills: [
-      "nature_roar",
-      "bite",
-      "pounce"
-    ],
+    skills: ["nature_roar", "bite", "pounce"],
     evolution: null,
     spriteKey: "creature_floodlynx",
     activeNow: false,
     reservedForFuture: true,
-    plannedRegion: "ocean"
+    plannedRegion: "ocean",
   },
   DEWKIT: {
     id: "DEWKIT",
     class: "노말",
     name: "듀킷",
-    type: "Water",
-    description: "수줍음이 많으며 털이 항상 약간 젖어 있는 듯한 느낌을 주는 고양이.",
+    type: "물",
+    description:
+      "수줍음이 많으며 털이 항상 약간 젖어 있는 듯한 느낌을 주는 고양이.",
     baseHp: 14,
     baseAttack: 4,
     baseDefense: 6,
     catchRate: 0.9,
-    skills: [
-      "water_slash",
-      "mist_burst",
-      "tidal_wave"
-    ],
+    skills: ["water_slash", "mist_burst", "tidal_wave"],
     evolution: {
       target: "MISTLYNX",
-      level: 12
+      level: 12,
     },
     spriteKey: "creature_dewkit",
     activeNow: false,
     reservedForFuture: true,
-    plannedRegion: "ancient_forest"
+    plannedRegion: "ancient_forest",
   },
   MISTLYNX: {
     id: "MISTLYNX",
     class: "레어",
     name: "미스트링스",
-    type: "Water",
+    type: "물",
     description: "짙은 안개 속에서 완벽하게 모습을 감출 수 있다.",
     baseHp: 38,
     baseAttack: 10,
     baseDefense: 15,
     catchRate: 0.4,
-    skills: [
-      "filler_skill_19",
-      "filler_skill_20",
-      "filler_skill_21"
-    ],
+    skills: ["filler_skill_19", "filler_skill_20", "filler_skill_21"],
     evolution: null,
     spriteKey: "creature_mistlynx",
     activeNow: false,
     reservedForFuture: true,
-    plannedRegion: "ancient_forest"
+    plannedRegion: "ancient_forest",
   },
   PEBBLEPAW: {
     id: "PEBBLEPAW",
     class: "노말",
     name: "페블파우",
-    type: "Rock",
+    type: "바위",
     description: "반짝이는 돌을 모으는 고집불통 아기 고양이.",
     baseHp: 19,
     baseAttack: 5,
     baseDefense: 7,
     catchRate: 0.8,
-    skills: [
-      "pebble_toss",
-      "rock_smash",
-      "stone_throw"
-    ],
+    skills: ["pebble_toss", "rock_smash", "stone_throw"],
     evolution: {
       target: "STONECLAW",
-      level: 14
+      level: 14,
     },
     spriteKey: "creature_pebblepaw",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "mosslight_path"
+    plannedRegion: "mosslight_path",
   },
   STONECLAW: {
     id: "STONECLAW",
     class: "에픽",
     name: "스톤클로",
-    type: "Rock",
+    type: "바위",
     description: "단단한 대리석도 단번에 가를 수 있는 강력한 발톱을 가졌다.",
     baseHp: 45,
     baseAttack: 14,
     baseDefense: 16,
     catchRate: 0.3,
-    skills: [
-      "bite",
-      "pounce",
-      "flurry"
-    ],
+    skills: ["bite", "pounce", "flurry"],
     evolution: null,
     spriteKey: "creature_stoneclaw",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "mosslight_path"
+    plannedRegion: "mosslight_path",
   },
   GRANITECAT: {
     id: "GRANITECAT",
     class: "노말",
     name: "그래니트캣",
-    type: "Rock",
+    type: "바위",
     description: "위협을 느끼면 털이 돌처럼 딱딱하게 굳는다.",
     baseHp: 20,
     baseAttack: 4,
     baseDefense: 9,
     catchRate: 0.7,
-    skills: [
-      "pebble_toss",
-      "rock_smash",
-      "stone_throw"
-    ],
+    skills: ["pebble_toss", "rock_smash", "stone_throw"],
     evolution: {
       target: "TITANPELT",
-      level: 16
+      level: 16,
     },
     spriteKey: "creature_granitecat",
     activeNow: false,
     reservedForFuture: true,
-    plannedRegion: "rock_mountains"
+    plannedRegion: "rock_mountains",
   },
   TITANPELT: {
     id: "TITANPELT",
     class: "에픽",
     name: "타이탄펠트",
-    type: "Rock",
-    description: "거의 움직이지 않으며 산사태의 한복판에서도 잠을 자는 묵직한 고양이.",
+    type: "바위",
+    description:
+      "거의 움직이지 않으며 산사태의 한복판에서도 잠을 자는 묵직한 고양이.",
     baseHp: 55,
     baseAttack: 10,
     baseDefense: 22,
     catchRate: 0.2,
-    skills: [
-      "bite",
-      "pounce",
-      "flurry"
-    ],
+    skills: ["bite", "pounce", "flurry"],
     evolution: null,
     spriteKey: "creature_titanpelt",
     activeNow: false,
     reservedForFuture: true,
-    plannedRegion: "rock_mountains"
+    plannedRegion: "rock_mountains",
   },
   BOULDERLYNX: {
     id: "BOULDERLYNX",
     class: "노말",
     name: "볼더링스",
-    type: "Rock",
+    type: "바위",
     description: "바위를 밀어 경쟁자를 제압하는 것으로 유명한 거대한 고양이.",
     baseHp: 48,
     baseAttack: 16,
     baseDefense: 14,
     catchRate: 0.3,
-    skills: [
-      "pebble_toss",
-      "rock_smash",
-      "stone_throw"
-    ],
+    skills: ["pebble_toss", "rock_smash", "stone_throw"],
     evolution: {
       target: "CLIFFMAW",
-      level: 25
+      level: 25,
     },
     spriteKey: "creature_boulderlynx",
     activeNow: false,
     reservedForFuture: true,
-    plannedRegion: "rock_mountains"
+    plannedRegion: "rock_mountains",
   },
   CLIFFMAW: {
     id: "CLIFFMAW",
     class: "에픽",
     name: "클리프마우",
-    type: "Rock",
-    description: "석순도 무너뜨리는 강력한 턱을 가진 산악 지대의 최상위 포집자.",
+    type: "바위",
+    description:
+      "석순도 무너뜨리는 강력한 턱을 가진 산악 지대의 최상위 포집자.",
     baseHp: 70,
     baseAttack: 22,
     baseDefense: 18,
     catchRate: 0.1,
-    skills: [
-      "bite",
-      "pounce",
-      "flurry"
-    ],
+    skills: ["bite", "pounce", "flurry"],
     evolution: null,
     spriteKey: "creature_cliffmaw",
     activeNow: false,
     reservedForFuture: true,
-    plannedRegion: "rock_mountains"
+    plannedRegion: "rock_mountains",
   },
   NIGHTKIT: {
     id: "NIGHTKIT",
     class: "노말",
     name: "나이트킷",
-    type: "Shadow",
+    type: "그림자",
     description: "소리 없이 움직이는 조용한 그림자 고양이.",
     baseHp: 14,
     baseAttack: 6,
     baseDefense: 3,
     catchRate: 0.8,
-    skills: [
-      "shadow_sneak",
-      "dark_pulse",
-      "void_strike"
-    ],
+    skills: ["shadow_sneak", "dark_pulse", "void_strike"],
     evolution: {
       target: "NIGHTPELT",
-      level: 15
+      level: 15,
     },
     spriteKey: "creature_nightkit",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "shadowfen_swamp"
+    plannedRegion: "shadowfen_swamp",
   },
   NIGHTPELT: {
     id: "NIGHTPELT",
     class: "레어",
     name: "나이트펠트",
-    type: "Shadow",
+    type: "그림자",
     description: "완벽한 어둠을 틈타 먹잇감을 매복 공격한다.",
     baseHp: 38,
     baseAttack: 16,
     baseDefense: 8,
     catchRate: 0.3,
-    skills: [
-      "filler_skill_22",
-      "filler_skill_23",
-      "filler_skill_24"
-    ],
+    skills: ["filler_skill_22", "filler_skill_23", "filler_skill_24"],
     evolution: null,
     spriteKey: "creature_nightkit_evolution",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "shadowfen_swamp"
+    plannedRegion: "shadowfen_swamp",
   },
   DUSKPAW: {
     id: "DUSKPAW",
     class: "노말",
     name: "더스크파우",
-    type: "Shadow",
+    type: "그림자",
     description: "그림자가 길어지는 황혼 무렵에만 모습을 드러낸다.",
     baseHp: 16,
     baseAttack: 6,
     baseDefense: 4,
     catchRate: 0.7,
-    skills: [
-      "shadow_sneak",
-      "dark_pulse",
-      "void_strike"
-    ],
+    skills: ["shadow_sneak", "dark_pulse", "void_strike"],
     evolution: {
       target: "UMBRAFANG",
-      level: 16
+      level: 16,
     },
     spriteKey: "creature_duskpaw",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "shadowfen_swamp"
+    plannedRegion: "shadowfen_swamp",
   },
   UMBRAFANG: {
     id: "UMBRAFANG",
     class: "전설",
     name: "엄브라팽",
-    type: "Shadow",
+    type: "그림자",
     description: "순수한 그림자의 생명체. 주변의 빛을 빨아들인다고 전해진다.",
     baseHp: 85,
     baseAttack: 38,
     baseDefense: 22,
     catchRate: 0.01,
-    skills: [
-      "abyssal_devour",
-      "dream_eater",
-      "supernova",
-      "astral_judgment"
-    ],
+    skills: ["abyssal_devour", "dream_eater", "supernova", "astral_judgment"],
     evolution: null,
     spriteKey: "creature_umbrafang",
     activeNow: false,
     reservedForFuture: false,
-    plannedRegion: "shadowfen_swamp"
+    plannedRegion: "shadowfen_swamp",
   },
   SHADECLAW: {
     id: "SHADECLAW",
     class: "노말",
     name: "쉐이드클로",
-    type: "Shadow",
+    type: "그림자",
     description: "몸이 어둠 속에서 나타났다 사라졌다 하는 듯한 기이한 고양이.",
     baseHp: 15,
     baseAttack: 8,
     baseDefense: 3,
     catchRate: 0.6,
-    skills: [
-      "shadow_sneak",
-      "dark_pulse",
-      "void_strike"
-    ],
+    skills: ["shadow_sneak", "dark_pulse", "void_strike"],
     evolution: {
       target: "VOIDLYNX",
-      level: 18
+      level: 18,
     },
     spriteKey: "creature_shadeclaw",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "shadowfen_swamp"
+    plannedRegion: "shadowfen_swamp",
   },
   VOIDLYNX: {
     id: "VOIDLYNX",
     class: "에픽",
     name: "보이드링스",
-    type: "Shadow",
+    type: "그림자",
     description: "완벽하게 보이지 않는 상태에서 사냥을 하는 공포의 포식자.",
     baseHp: 45,
     baseAttack: 20,
     baseDefense: 7,
     catchRate: 0.2,
-    skills: [
-      "bite",
-      "pounce",
-      "flurry"
-    ],
+    skills: ["bite", "pounce", "flurry"],
     evolution: null,
     spriteKey: "creature_shadeclaw_evolution",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "shadowfen_swamp"
+    plannedRegion: "shadowfen_swamp",
   },
   FROSTKIT: {
     id: "FROSTKIT",
     class: "노말",
     name: "프로스트킷",
-    type: "Ice",
+    type: "얼음",
     description: "얼어붙은 호수 위를 미끄러지며 노는 것을 즐기는 아기 고양이.",
     baseHp: 16,
     baseAttack: 5,
     baseDefense: 5,
     catchRate: 0.8,
-    skills: [
-      "ice_shard",
-      "frost_breath",
-      "blizzard_claw"
-    ],
+    skills: ["ice_shard", "frost_breath", "blizzard_claw"],
     evolution: {
       target: "GLACIERPAW",
-      level: 15
+      level: 15,
     },
     spriteKey: "creature_frostkit",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "frostpeak_mountains"
+    plannedRegion: "frostpeak_mountains",
   },
   GLACIERPAW: {
     id: "GLACIERPAW",
     class: "레어",
     name: "글레이시아파우",
-    type: "Ice",
+    type: "얼음",
     description: "묵직한 발걸음은 한여름에도 얼어붙은 발자국을 남긴다.",
     baseHp: 42,
     baseAttack: 14,
     baseDefense: 13,
     catchRate: 0.3,
-    skills: [
-      "filler_skill_25",
-      "filler_skill_26",
-      "filler_skill_27"
-    ],
+    skills: ["filler_skill_25", "filler_skill_26", "filler_skill_27"],
     evolution: null,
     spriteKey: "creature_frostkit_evolution",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "frostpeak_mountains"
+    plannedRegion: "frostpeak_mountains",
   },
   SNOWPELT: {
     id: "SNOWPELT",
     class: "노말",
     name: "스노우펠트",
-    type: "Ice",
+    type: "얼음",
     description: "하얗게 내리는 눈과 완벽하게 동화되는 털을 가졌다.",
     baseHp: 18,
     baseAttack: 6,
     baseDefense: 4,
     catchRate: 0.7,
-    skills: [
-      "ice_shard",
-      "frost_breath",
-      "blizzard_claw"
-    ],
+    skills: ["ice_shard", "frost_breath", "blizzard_claw"],
     evolution: {
       target: "BLIZZARDFANG",
-      level: 16
+      level: 16,
     },
     spriteKey: "creature_snowpelt",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "frostpeak_mountains"
+    plannedRegion: "frostpeak_mountains",
   },
   BLIZZARDFANG: {
     id: "BLIZZARDFANG",
     class: "에픽",
     name: "블리자드팽",
-    type: "Ice",
-    description: "꼬리를 휘둘러 눈을 뜨기 힘들 정도의 강력한 눈보라를 일으킨다.",
+    type: "얼음",
+    description:
+      "꼬리를 휘둘러 눈을 뜨기 힘들 정도의 강력한 눈보라를 일으킨다.",
     baseHp: 48,
     baseAttack: 12,
     baseDefense: 16,
     catchRate: 0.2,
-    skills: [
-      "bite",
-      "pounce",
-      "flurry"
-    ],
+    skills: ["bite", "pounce", "flurry"],
     evolution: null,
     spriteKey: "creature_snowpelt_evolution",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "frostpeak_mountains"
+    plannedRegion: "frostpeak_mountains",
   },
   STORMKIT: {
     id: "STORMKIT",
     class: "노말",
     name: "스톰킷",
-    type: "Storm",
+    type: "폭풍",
     description: "털에서 정전기가 기분 좋게 따끔거리는 아기 번개 고양이.",
     baseHp: 15,
     baseAttack: 7,
     baseDefense: 3,
     catchRate: 0.7,
-    skills: [
-      "spark_strike",
-      "thunder_paw",
-      "storm_call"
-    ],
+    skills: ["spark_strike", "thunder_paw", "storm_call"],
     evolution: {
       target: "THUNDERLYNX",
-      level: 16
+      level: 16,
     },
     spriteKey: "creature_stormkit",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "skyreach_plateau"
+    plannedRegion: "skyreach_plateau",
   },
   THUNDERLYNX: {
     id: "THUNDERLYNX",
     class: "레어",
     name: "선더링스",
-    type: "Storm",
+    type: "폭풍",
     description: "울음소리가 천둥처럼 울려 퍼지는 늠름한 번개 고양이.",
     baseHp: 40,
     baseAttack: 18,
     baseDefense: 8,
     catchRate: 0.3,
-    skills: [
-      "filler_skill_28",
-      "filler_skill_29",
-      "filler_skill_30"
-    ],
+    skills: ["filler_skill_28", "filler_skill_29", "filler_skill_30"],
     evolution: null,
     spriteKey: "creature_stormkit_evolution",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "skyreach_plateau"
+    plannedRegion: "skyreach_plateau",
   },
   GALECLAW: {
     id: "GALECLAW",
     class: "노말",
     name: "게일클로",
-    type: "Storm",
-    description: "바람을 타고 믿을 수 없을 만큼 먼 거리를 도약하는 것으로 유명하다.",
+    type: "폭풍",
+    description:
+      "바람을 타고 믿을 수 없을 만큼 먼 거리를 도약하는 것으로 유명하다.",
     baseHp: 17,
     baseAttack: 8,
     baseDefense: 4,
     catchRate: 0.6,
-    skills: [
-      "spark_strike",
-      "thunder_paw",
-      "storm_call"
-    ],
+    skills: ["spark_strike", "thunder_paw", "storm_call"],
     evolution: {
       target: "TEMPESTFANG",
-      level: 18
+      level: 18,
     },
     spriteKey: "creature_galeclaw",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "skyreach_plateau"
+    plannedRegion: "skyreach_plateau",
   },
   TEMPESTFANG: {
     id: "TEMPESTFANG",
     class: "레어",
     name: "템페스트팽",
-    type: "Storm",
+    type: "폭풍",
     description: "허리케인과 같이 예측할 수 없는 속도로 공격을 퍼붓는다.",
     baseHp: 38,
     baseAttack: 21,
     baseDefense: 7,
     catchRate: 0.2,
-    skills: [
-      "filler_skill_31",
-      "filler_skill_32",
-      "filler_skill_33"
-    ],
+    skills: ["filler_skill_31", "filler_skill_32", "filler_skill_33"],
     evolution: null,
     spriteKey: "creature_galeclaw_evolution",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "skyreach_plateau"
+    plannedRegion: "skyreach_plateau",
   },
   WHISPERKIT: {
     id: "WHISPERKIT",
     class: "노말",
     name: "위스퍼킷",
-    type: "Spirit",
-    description: "오래전 잊힌 고양이의 영혼이 깃들었다고 전해지는 신비로운 고양이.",
+    type: "영혼",
+    description:
+      "오래전 잊힌 고양이의 영혼이 깃들었다고 전해지는 신비로운 고양이.",
     baseHp: 14,
     baseAttack: 4,
     baseDefense: 7,
     catchRate: 0.7,
-    skills: [
-      "phantom_claw",
-      "soul_reap",
-      "void_strike"
-    ],
+    skills: ["phantom_claw", "soul_reap", "void_strike"],
     evolution: {
       target: "SOULPELT",
-      level: 19
+      level: 19,
     },
     spriteKey: "creature_whisperkit",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "whispering_woods"
+    plannedRegion: "whispering_woods",
   },
   SOULPELT: {
     id: "SOULPELT",
     class: "레어",
     name: "소울펠트",
-    type: "Spirit",
+    type: "영혼",
     description: "길 잃은 영혼들을 집으로 인도하는 묘지의 수호자.",
     baseHp: 38,
     baseAttack: 11,
     baseDefense: 18,
     catchRate: 0.3,
-    skills: [
-      "filler_skill_34",
-      "filler_skill_35",
-      "filler_skill_36"
-    ],
+    skills: ["filler_skill_34", "filler_skill_35", "filler_skill_36"],
     evolution: null,
     spriteKey: "creature_soulpelt",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "whispering_woods"
+    plannedRegion: "whispering_woods",
   },
   PHANTOMLYNX: {
     id: "PHANTOMLYNX",
     class: "노말",
     name: "팬텀링스",
-    type: "Spirit",
+    type: "영혼",
     description: "발걸음 소리가 전혀 들리지 않는 유령 같은 고양이.",
     baseHp: 16,
     baseAttack: 7,
     baseDefense: 4,
     catchRate: 0.5,
-    skills: [
-      "phantom_claw",
-      "soul_reap",
-      "void_strike"
-    ],
+    skills: ["phantom_claw", "soul_reap", "void_strike"],
     evolution: {
       target: "SPECTRALCLAW",
-      level: 21
+      level: 21,
     },
     spriteKey: "creature_phantomlynx",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "whispering_woods"
+    plannedRegion: "whispering_woods",
   },
   SPECTRALCLAW: {
     id: "SPECTRALCLAW",
     class: "에픽",
     name: "스펙트럴클로",
-    type: "Spirit",
+    type: "영혼",
     description: "먹잇감을 잡기 위해 단단한 물체도 통과할 수 있는 기이한 존재.",
     baseHp: 44,
     baseAttack: 19,
     baseDefense: 10,
     catchRate: 0.2,
-    skills: [
-      "bite",
-      "pounce",
-      "flurry"
-    ],
+    skills: ["bite", "pounce", "flurry"],
     evolution: null,
     spriteKey: "creature_spectralclaw",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "whispering_woods"
+    plannedRegion: "whispering_woods",
   },
   RUNECLAW: {
     id: "RUNECLAW",
     class: "노말",
     name: "룬클로",
-    type: "Mystic",
+    type: "신비",
     description: "털 위로 신비롭게 빛나는 룬 문자가 떠오르는 마법 고양이.",
     baseHp: 18,
     baseAttack: 6,
     baseDefense: 5,
     catchRate: 0.6,
-    skills: [
-      "star_fall",
-      "cosmic_roar",
-      "aether_blast"
-    ],
+    skills: ["star_fall", "cosmic_roar", "aether_blast"],
     evolution: {
       target: "ARCANEFANG",
-      level: 20
+      level: 20,
     },
     spriteKey: "creature_runeclaw",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "celestial_sanctuary"
+    plannedRegion: "celestial_sanctuary",
   },
   ARCANEFANG: {
     id: "ARCANEFANG",
     class: "에픽",
     name: "아르케인팽",
-    type: "Mystic",
-    description: "신비로운 울음소리로 사소한 현실을 뒤틀어버릴 수 있는 능력을 가졌다.",
+    type: "신비",
+    description:
+      "신비로운 울음소리로 사소한 현실을 뒤틀어버릴 수 있는 능력을 가졌다.",
     baseHp: 45,
     baseAttack: 15,
     baseDefense: 12,
     catchRate: 0.2,
-    skills: [
-      "mana_burst",
-      "celestial_strike",
-      "star_fall"
-    ],
+    skills: ["mana_burst", "celestial_strike", "star_fall"],
     evolution: null,
     spriteKey: "creature_arcanefang",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "celestial_sanctuary"
+    plannedRegion: "celestial_sanctuary",
   },
   STARLIGHTKIT: {
     id: "STARLIGHTKIT",
     class: "노말",
     name: "스타라이트잇",
-    type: "Mystic",
-    description: "멀리 떨어진 별들처럼 반짝이는 눈동자를 가진 신비한 아기 고양이.",
+    type: "신비",
+    description:
+      "멀리 떨어진 별들처럼 반짝이는 눈동자를 가진 신비한 아기 고양이.",
     baseHp: 16,
     baseAttack: 5,
     baseDefense: 6,
     catchRate: 0.7,
-    skills: [
-      "star_fall",
-      "cosmic_roar",
-      "aether_blast"
-    ],
+    skills: ["star_fall", "cosmic_roar", "aether_blast"],
     evolution: {
       target: "CELESTIPELT",
-      level: 22
+      level: 22,
     },
     spriteKey: "creature_starlightkit",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "celestial_sanctuary"
+    plannedRegion: "celestial_sanctuary",
   },
   CELESTIPELT: {
     id: "CELESTIPELT",
     class: "에픽",
     name: "셀레스티펠트",
-    type: "Mystic",
+    type: "신비",
     description: "맑은 밤에 은하수로부터 내려온다고 전해지는 천상의 고양이.",
     baseHp: 42,
     baseAttack: 13,
     baseDefense: 16,
     catchRate: 0.2,
-    skills: [
-      "mana_burst",
-      "celestial_strike",
-      "star_fall"
-    ],
+    skills: ["mana_burst", "celestial_strike", "star_fall"],
     evolution: null,
     spriteKey: "creature_celestipelt",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "celestial_sanctuary"
+    plannedRegion: "celestial_sanctuary",
   },
   AURORACAT: {
     id: "AURORACAT",
@@ -1316,16 +1092,12 @@ export const CREATURES = {
     baseAttack: 16,
     baseDefense: 18,
     catchRate: 0.05,
-    skills: [
-      "bite",
-      "pounce",
-      "flurry"
-    ],
+    skills: ["bite", "pounce", "flurry"],
     evolution: null,
     spriteKey: "creature_auroracat",
     activeNow: false,
     reservedForFuture: true,
-    plannedRegion: "celestial_sanctuary"
+    plannedRegion: "celestial_sanctuary",
   },
   EMBERLYNX: {
     id: "EMBERLYNX",
@@ -1337,132 +1109,109 @@ export const CREATURES = {
     baseAttack: 22,
     baseDefense: 12,
     catchRate: 0.05,
-    skills: [
-      "inferno_slash",
-      "blazing_pounce",
-      "nature_roar"
-    ],
+    skills: ["inferno_slash", "blazing_pounce", "nature_roar"],
     evolution: null,
     spriteKey: "creature_emberlynx",
     activeNow: false,
     reservedForFuture: true,
-    plannedRegion: "volcano"
+    plannedRegion: "volcano",
   },
   VERDANTCLAW: {
     id: "VERDANTCLAW",
     class: "에픽",
     name: "버던트클로",
     type: "Forest/Spirit",
-    description: "가장 깊은 동굴을 지키는 수호자. 고대부터 전해오는 강력한 힘을 지녔다.",
+    description:
+      "가장 깊은 동굴을 지키는 수호자. 고대부터 전해오는 강력한 힘을 지녔다.",
     baseHp: 70,
     baseAttack: 14,
     baseDefense: 22,
     catchRate: 0.05,
-    skills: [
-      "thorn_whip",
-      "root_snare",
-      "nature_roar"
-    ],
+    skills: ["thorn_whip", "root_snare", "nature_roar"],
     evolution: null,
     spriteKey: "creature_verdantclaw",
     activeNow: false,
     reservedForFuture: true,
-    plannedRegion: "ancient_forest"
+    plannedRegion: "ancient_forest",
   },
   SOLARION: {
     id: "SOLARION",
     class: "전설",
     name: "솔라리온",
-    type: "Fire",
-    description: "태양 그 자체를 구현했다고 전해지는 전설적인 고양이. 눈부시게 빛난다.",
+    type: "불",
+    description:
+      "태양 그 자체를 구현했다고 전해지는 전설적인 고양이. 눈부시게 빛난다.",
     baseHp: 100,
     baseAttack: 35,
     baseDefense: 25,
     catchRate: 0.01,
-    skills: [
-      "supernova",
-      "genesis_light",
-      "astral_judgment",
-      "typhoon_fury"
-    ],
+    skills: ["supernova", "genesis_light", "astral_judgment", "typhoon_fury"],
     evolution: null,
     spriteKey: "creature_solarion",
     activeNow: false,
     reservedForFuture: false,
-    plannedRegion: "sunstone_desert"
+    plannedRegion: "sunstone_desert",
   },
   GLACIARA: {
     id: "GLACIARA",
     class: "전설",
     name: "글라시아라",
-    type: "Ice",
-    description: "주변의 공기를 얼려버리는 신화 속의 고양이. 털은 절대 영도를 상징한다.",
+    type: "얼음",
+    description:
+      "주변의 공기를 얼려버리는 신화 속의 고양이. 털은 절대 영도를 상징한다.",
     baseHp: 110,
     baseAttack: 25,
     baseDefense: 35,
     catchRate: 0.01,
-    skills: [
-      "permafrost",
-      "tsunami_burst",
-      "abyssal_devour",
-      "dream_eater"
-    ],
+    skills: ["permafrost", "tsunami_burst", "abyssal_devour", "dream_eater"],
     evolution: null,
     spriteKey: "creature_glaciara",
     activeNow: false,
     reservedForFuture: false,
-    plannedRegion: "frostpeak_mountains"
+    plannedRegion: "frostpeak_mountains",
   },
   TEMPESTCLAW: {
     id: "TEMPESTCLAW",
     class: "전설",
     name: "템페스트클로",
-    type: "Storm",
-    description: "울음소리가 허리케인처럼 들리는 전설적인 고양이. 바람 그 자체를 다스린다.",
+    type: "폭풍",
+    description:
+      "울음소리가 허리케인처럼 들리는 전설적인 고양이. 바람 그 자체를 다스린다.",
     baseHp: 100,
     baseAttack: 35,
     baseDefense: 25,
     catchRate: 0.01,
-    skills: [
-      "typhoon_fury",
-      "supernova",
-      "astral_judgment",
-      "abyssal_devour"
-    ],
+    skills: ["typhoon_fury", "supernova", "astral_judgment", "abyssal_devour"],
     evolution: null,
     spriteKey: "creature_tempestclaw",
     activeNow: false,
     reservedForFuture: false,
-    plannedRegion: "skyreach_plateau"
+    plannedRegion: "skyreach_plateau",
   },
   AQUARION: {
     id: "AQUARION",
     class: "전설",
     name: "아쿠아리온",
-    type: "Water",
+    type: "물",
     description: "깊은 바다의 지배자. 급류와 같이 거침없고 유연하게 움직인다.",
     baseHp: 105,
     baseAttack: 30,
     baseDefense: 28,
     catchRate: 0.01,
-    skills: [
-      "tsunami_burst",
-      "typhoon_fury",
-      "abyssal_devour",
-      "dream_eater"
-    ],
+    skills: ["tsunami_burst", "typhoon_fury", "abyssal_devour", "dream_eater"],
     evolution: null,
     spriteKey: "creature_aquarion",
     activeNow: false,
     reservedForFuture: false,
-    plannedRegion: "ocean"
+    plannedRegion: "ocean",
   },
   TERRACLAW: {
     id: "TERRACLAW",
     class: "전설",
     name: "테라클로",
-    type: "Rock",
-    description: "대지 그 자체에서 빚어진 존재. 털은 결코 뚫을 수 없는 단단한 암석과 같다.",
+    type: "바위",
+    description:
+      "대지 그 자체에서 빚어진 존재. 털은 결코 뚫을 수 없는 단단한 암석과 같다.",
     baseHp: 130,
     baseAttack: 25,
     baseDefense: 45,
@@ -1471,20 +1220,21 @@ export const CREATURES = {
       "tectonic_slam",
       "abyssal_devour",
       "dream_eater",
-      "world_tree_root"
+      "world_tree_root",
     ],
     evolution: null,
     spriteKey: "creature_terraclaw",
     activeNow: false,
     reservedForFuture: false,
-    plannedRegion: "rock_mountains"
+    plannedRegion: "rock_mountains",
   },
   LUMINA: {
     id: "LUMINA",
     class: "전설",
     name: "루미나",
-    type: "Light",
-    description: "순수한 희망과 빛의 결정체. 사악한 의도를 가진 자들의 눈을 멀게 한다.",
+    type: "빛",
+    description:
+      "순수한 희망과 빛의 결정체. 사악한 의도를 가진 자들의 눈을 멀게 한다.",
     baseHp: 95,
     baseAttack: 32,
     baseDefense: 25,
@@ -1493,57 +1243,48 @@ export const CREATURES = {
       "genesis_light",
       "supernova",
       "astral_judgment",
-      "world_tree_root"
+      "world_tree_root",
     ],
     evolution: null,
     spriteKey: "creature_lumina",
     activeNow: false,
     reservedForFuture: false,
-    plannedRegion: "celestial_sanctuary"
+    plannedRegion: "celestial_sanctuary",
   },
   AETHERION: {
     id: "AETHERION",
     class: "전설",
     name: "에더리온",
-    type: "Mystic",
+    type: "신비",
     description: "에테르의 우주 바람을 타고 떠다니는 신비로운 천상의 고양이.",
     baseHp: 90,
     baseAttack: 35,
     baseDefense: 35,
     catchRate: 0.01,
-    skills: [
-      "astral_judgment",
-      "genesis_light",
-      "supernova",
-      "abyssal_devour"
-    ],
+    skills: ["astral_judgment", "genesis_light", "supernova", "abyssal_devour"],
     evolution: null,
     spriteKey: "creature_aetherion",
     activeNow: false,
     reservedForFuture: false,
-    plannedRegion: "celestial_sanctuary"
+    plannedRegion: "celestial_sanctuary",
   },
   NOCTYRA: {
     id: "NOCTYRA",
     class: "전설",
     name: "녹티라",
     type: "Spirit/Shadow",
-    description: "밤의 정적을 지키는 자. 그녀의 발길이 닿는 곳마다 꿈과 악몽이 피어난다.",
+    description:
+      "밤의 정적을 지키는 자. 그녀의 발길이 닿는 곳마다 꿈과 악몽이 피어난다.",
     baseHp: 110,
     baseAttack: 30,
     baseDefense: 30,
     catchRate: 0.01,
-    skills: [
-      "dream_eater",
-      "abyssal_devour",
-      "astral_judgment",
-      "supernova"
-    ],
+    skills: ["dream_eater", "abyssal_devour", "astral_judgment", "supernova"],
     evolution: null,
     spriteKey: "creature_noctyra",
     activeNow: false,
     reservedForFuture: false,
-    plannedRegion: "shadowfen_swamp"
+    plannedRegion: "shadowfen_swamp",
   },
   RUSSIAN_BLUE: {
     id: "RUSSIAN_BLUE",
@@ -1555,16 +1296,12 @@ export const CREATURES = {
     baseAttack: 7,
     baseDefense: 8,
     catchRate: 0.55,
-    skills: [
-      "filler_skill_37",
-      "filler_skill_38",
-      "filler_skill_39"
-    ],
+    skills: ["filler_skill_37", "filler_skill_38", "filler_skill_39"],
     evolution: null,
     spriteKey: "creature_russian_blue",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "frostpeak_mountains"
+    plannedRegion: "frostpeak_mountains",
   },
   SIAMESE: {
     id: "SIAMESE",
@@ -1576,16 +1313,12 @@ export const CREATURES = {
     baseAttack: 9,
     baseDefense: 5,
     catchRate: 0.6,
-    skills: [
-      "filler_skill_40",
-      "filler_skill_41",
-      "filler_skill_42"
-    ],
+    skills: ["filler_skill_40", "filler_skill_41", "filler_skill_42"],
     evolution: null,
     spriteKey: "creature_siamese",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "sunstone_desert"
+    plannedRegion: "sunstone_desert",
   },
   PERSIAN: {
     id: "PERSIAN",
@@ -1597,16 +1330,12 @@ export const CREATURES = {
     baseAttack: 6,
     baseDefense: 9,
     catchRate: 0.6,
-    skills: [
-      "filler_skill_43",
-      "filler_skill_1",
-      "filler_skill_2"
-    ],
+    skills: ["filler_skill_43", "filler_skill_1", "filler_skill_2"],
     evolution: null,
     spriteKey: "creature_persian",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "celestial_sanctuary"
+    plannedRegion: "celestial_sanctuary",
   },
   MAINE_COON: {
     id: "MAINE_COON",
@@ -1618,16 +1347,12 @@ export const CREATURES = {
     baseAttack: 8,
     baseDefense: 10,
     catchRate: 0.45,
-    skills: [
-      "filler_skill_3",
-      "filler_skill_4",
-      "filler_skill_5"
-    ],
+    skills: ["filler_skill_3", "filler_skill_4", "filler_skill_5"],
     evolution: null,
     spriteKey: "creature_maine_coon",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "rock_mountains"
+    plannedRegion: "rock_mountains",
   },
   BENGAL: {
     id: "BENGAL",
@@ -1639,16 +1364,12 @@ export const CREATURES = {
     baseAttack: 10,
     baseDefense: 5,
     catchRate: 0.55,
-    skills: [
-      "filler_skill_6",
-      "filler_skill_7",
-      "filler_skill_8"
-    ],
+    skills: ["filler_skill_6", "filler_skill_7", "filler_skill_8"],
     evolution: null,
     spriteKey: "creature_bengal",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "skyreach_plateau"
+    plannedRegion: "skyreach_plateau",
   },
   RAGDOLL: {
     id: "RAGDOLL",
@@ -1660,16 +1381,12 @@ export const CREATURES = {
     baseAttack: 5,
     baseDefense: 9,
     catchRate: 0.65,
-    skills: [
-      "filler_skill_9",
-      "filler_skill_10",
-      "filler_skill_11"
-    ],
+    skills: ["filler_skill_9", "filler_skill_10", "filler_skill_11"],
     evolution: null,
     spriteKey: "creature_ragdoll",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "ocean"
+    plannedRegion: "ocean",
   },
   SCOTTISH_FOLD: {
     id: "SCOTTISH_FOLD",
@@ -1681,16 +1398,12 @@ export const CREATURES = {
     baseAttack: 6,
     baseDefense: 8,
     catchRate: 0.65,
-    skills: [
-      "filler_skill_12",
-      "filler_skill_13",
-      "filler_skill_14"
-    ],
+    skills: ["filler_skill_12", "filler_skill_13", "filler_skill_14"],
     evolution: null,
     spriteKey: "creature_scottish_fold",
     activeNow: false,
     reservedForFuture: true,
-    plannedRegion: "ancient_forest"
+    plannedRegion: "ancient_forest",
   },
   NORWEGIAN_FOREST: {
     id: "NORWEGIAN_FOREST",
@@ -1702,16 +1415,12 @@ export const CREATURES = {
     baseAttack: 8,
     baseDefense: 11,
     catchRate: 0.45,
-    skills: [
-      "filler_skill_15",
-      "filler_skill_16",
-      "filler_skill_17"
-    ],
+    skills: ["filler_skill_15", "filler_skill_16", "filler_skill_17"],
     evolution: null,
     spriteKey: "creature_norwegian_forest",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "frostpeak_mountains"
+    plannedRegion: "frostpeak_mountains",
   },
   SPHYNX: {
     id: "SPHYNX",
@@ -1723,16 +1432,12 @@ export const CREATURES = {
     baseAttack: 7,
     baseDefense: 6,
     catchRate: 0.5,
-    skills: [
-      "filler_skill_18",
-      "filler_skill_19",
-      "filler_skill_20"
-    ],
+    skills: ["filler_skill_18", "filler_skill_19", "filler_skill_20"],
     evolution: null,
     spriteKey: "creature_sphynx",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "celestial_sanctuary"
+    plannedRegion: "celestial_sanctuary",
   },
   BRITISH_SHORTHAIR: {
     id: "BRITISH_SHORTHAIR",
@@ -1744,16 +1449,12 @@ export const CREATURES = {
     baseAttack: 7,
     baseDefense: 12,
     catchRate: 0.5,
-    skills: [
-      "filler_skill_21",
-      "filler_skill_22",
-      "filler_skill_23"
-    ],
+    skills: ["filler_skill_21", "filler_skill_22", "filler_skill_23"],
     evolution: null,
     spriteKey: "creature_british_shorthair",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "rock_mountains"
+    plannedRegion: "rock_mountains",
   },
   ABYSSINIAN: {
     id: "ABYSSINIAN",
@@ -1765,16 +1466,12 @@ export const CREATURES = {
     baseAttack: 9,
     baseDefense: 5,
     catchRate: 0.6,
-    skills: [
-      "filler_skill_24",
-      "filler_skill_25",
-      "filler_skill_26"
-    ],
+    skills: ["filler_skill_24", "filler_skill_25", "filler_skill_26"],
     evolution: null,
     spriteKey: "creature_abyssinian",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "sunstone_desert"
+    plannedRegion: "sunstone_desert",
   },
   TURKISH_ANGORA: {
     id: "TURKISH_ANGORA",
@@ -1786,16 +1483,12 @@ export const CREATURES = {
     baseAttack: 7,
     baseDefense: 7,
     catchRate: 0.6,
-    skills: [
-      "filler_skill_27",
-      "filler_skill_28",
-      "filler_skill_29"
-    ],
+    skills: ["filler_skill_27", "filler_skill_28", "filler_skill_29"],
     evolution: null,
     spriteKey: "creature_turkish_angora",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "celestial_sanctuary"
+    plannedRegion: "celestial_sanctuary",
   },
   SAVANNAH: {
     id: "SAVANNAH",
@@ -1807,16 +1500,12 @@ export const CREATURES = {
     baseAttack: 10,
     baseDefense: 4,
     catchRate: 0.5,
-    skills: [
-      "filler_skill_30",
-      "filler_skill_31",
-      "filler_skill_32"
-    ],
+    skills: ["filler_skill_30", "filler_skill_31", "filler_skill_32"],
     evolution: null,
     spriteKey: "creature_savannah",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "skyreach_plateau"
+    plannedRegion: "skyreach_plateau",
   },
   MUNCHKIN: {
     id: "MUNCHKIN",
@@ -1828,16 +1517,12 @@ export const CREATURES = {
     baseAttack: 7,
     baseDefense: 6,
     catchRate: 0.7,
-    skills: [
-      "filler_skill_33",
-      "filler_skill_34",
-      "filler_skill_35"
-    ],
+    skills: ["filler_skill_33", "filler_skill_34", "filler_skill_35"],
     evolution: null,
     spriteKey: "creature_munchkin",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "celestial_sanctuary"
+    plannedRegion: "celestial_sanctuary",
   },
   BIRMAN: {
     id: "BIRMAN",
@@ -1849,16 +1534,12 @@ export const CREATURES = {
     baseAttack: 6,
     baseDefense: 8,
     catchRate: 0.55,
-    skills: [
-      "filler_skill_36",
-      "filler_skill_37",
-      "filler_skill_38"
-    ],
+    skills: ["filler_skill_36", "filler_skill_37", "filler_skill_38"],
     evolution: null,
     spriteKey: "creature_birman",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "celestial_sanctuary"
+    plannedRegion: "celestial_sanctuary",
   },
   DEVON_REX: {
     id: "DEVON_REX",
@@ -1870,16 +1551,12 @@ export const CREATURES = {
     baseAttack: 8,
     baseDefense: 5,
     catchRate: 0.65,
-    skills: [
-      "filler_skill_39",
-      "filler_skill_40",
-      "filler_skill_41"
-    ],
+    skills: ["filler_skill_39", "filler_skill_40", "filler_skill_41"],
     evolution: null,
     spriteKey: "creature_devon_rex",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "skyreach_plateau"
+    plannedRegion: "skyreach_plateau",
   },
   CORNISH_REX: {
     id: "CORNISH_REX",
@@ -1891,16 +1568,12 @@ export const CREATURES = {
     baseAttack: 8,
     baseDefense: 5,
     catchRate: 0.65,
-    skills: [
-      "filler_skill_42",
-      "filler_skill_43",
-      "filler_skill_1"
-    ],
+    skills: ["filler_skill_42", "filler_skill_43", "filler_skill_1"],
     evolution: null,
     spriteKey: "creature_cornish_rex",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "skyreach_plateau"
+    plannedRegion: "skyreach_plateau",
   },
   ORIENTAL_SHORTHAIR: {
     id: "ORIENTAL_SHORTHAIR",
@@ -1912,16 +1585,12 @@ export const CREATURES = {
     baseAttack: 7,
     baseDefense: 6,
     catchRate: 0.6,
-    skills: [
-      "filler_skill_2",
-      "filler_skill_3",
-      "filler_skill_4"
-    ],
+    skills: ["filler_skill_2", "filler_skill_3", "filler_skill_4"],
     evolution: null,
     spriteKey: "creature_oriental_shorthair",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "celestial_sanctuary"
+    plannedRegion: "celestial_sanctuary",
   },
   AMERICAN_SHORTHAIR: {
     id: "AMERICAN_SHORTHAIR",
@@ -1933,16 +1602,12 @@ export const CREATURES = {
     baseAttack: 7,
     baseDefense: 8,
     catchRate: 0.65,
-    skills: [
-      "filler_skill_5",
-      "filler_skill_6",
-      "filler_skill_7"
-    ],
+    skills: ["filler_skill_5", "filler_skill_6", "filler_skill_7"],
     evolution: null,
     spriteKey: "creature_american_shorthair",
     activeNow: false,
     reservedForFuture: true,
-    plannedRegion: "rock_mountains"
+    plannedRegion: "rock_mountains",
   },
   EGYPTIAN_MAU: {
     id: "EGYPTIAN_MAU",
@@ -1954,16 +1619,12 @@ export const CREATURES = {
     baseAttack: 9,
     baseDefense: 5,
     catchRate: 0.55,
-    skills: [
-      "filler_skill_8",
-      "filler_skill_9",
-      "filler_skill_10"
-    ],
+    skills: ["filler_skill_8", "filler_skill_9", "filler_skill_10"],
     evolution: null,
     spriteKey: "creature_egyptian_mau",
     activeNow: false,
     reservedForFuture: true,
-    plannedRegion: "sunstone_desert"
+    plannedRegion: "sunstone_desert",
   },
   TURKISH_VAN: {
     id: "TURKISH_VAN",
@@ -1975,16 +1636,12 @@ export const CREATURES = {
     baseAttack: 7,
     baseDefense: 7,
     catchRate: 0.6,
-    skills: [
-      "filler_skill_11",
-      "filler_skill_12",
-      "filler_skill_13"
-    ],
+    skills: ["filler_skill_11", "filler_skill_12", "filler_skill_13"],
     evolution: null,
     spriteKey: "creature_turkish_van",
     activeNow: false,
     reservedForFuture: true,
-    plannedRegion: "ocean"
+    plannedRegion: "ocean",
   },
   MANX: {
     id: "MANX",
@@ -1996,16 +1653,12 @@ export const CREATURES = {
     baseAttack: 8,
     baseDefense: 9,
     catchRate: 0.55,
-    skills: [
-      "filler_skill_14",
-      "filler_skill_15",
-      "filler_skill_16"
-    ],
+    skills: ["filler_skill_14", "filler_skill_15", "filler_skill_16"],
     evolution: null,
     spriteKey: "creature_manx",
     activeNow: false,
     reservedForFuture: true,
-    plannedRegion: "rock_mountains"
+    plannedRegion: "rock_mountains",
   },
   NEBELUNG: {
     id: "NEBELUNG",
@@ -2017,16 +1670,12 @@ export const CREATURES = {
     baseAttack: 8,
     baseDefense: 6,
     catchRate: 0.55,
-    skills: [
-      "filler_skill_17",
-      "filler_skill_18",
-      "filler_skill_19"
-    ],
+    skills: ["filler_skill_17", "filler_skill_18", "filler_skill_19"],
     evolution: null,
     spriteKey: "creature_nebelung",
     activeNow: false,
     reservedForFuture: true,
-    plannedRegion: "shadowfen_swamp"
+    plannedRegion: "shadowfen_swamp",
   },
   HAVANA_BROWN: {
     id: "HAVANA_BROWN",
@@ -2038,16 +1687,12 @@ export const CREATURES = {
     baseAttack: 8,
     baseDefense: 6,
     catchRate: 0.6,
-    skills: [
-      "filler_skill_20",
-      "filler_skill_21",
-      "filler_skill_22"
-    ],
+    skills: ["filler_skill_20", "filler_skill_21", "filler_skill_22"],
     evolution: null,
     spriteKey: "creature_havana_brown",
     activeNow: false,
     reservedForFuture: true,
-    plannedRegion: "sunstone_desert"
+    plannedRegion: "sunstone_desert",
   },
   RAGAMUFFIN: {
     id: "RAGAMUFFIN",
@@ -2059,16 +1704,12 @@ export const CREATURES = {
     baseAttack: 5,
     baseDefense: 9,
     catchRate: 0.65,
-    skills: [
-      "filler_skill_23",
-      "filler_skill_24",
-      "filler_skill_25"
-    ],
+    skills: ["filler_skill_23", "filler_skill_24", "filler_skill_25"],
     evolution: null,
     spriteKey: "creature_ragamuffin",
     activeNow: false,
     reservedForFuture: true,
-    plannedRegion: "ocean"
+    plannedRegion: "ocean",
   },
   CHARTREUX: {
     id: "CHARTREUX",
@@ -2080,16 +1721,12 @@ export const CREATURES = {
     baseAttack: 7,
     baseDefense: 8,
     catchRate: 0.55,
-    skills: [
-      "filler_skill_26",
-      "filler_skill_27",
-      "filler_skill_28"
-    ],
+    skills: ["filler_skill_26", "filler_skill_27", "filler_skill_28"],
     evolution: null,
     spriteKey: "creature_chartreux",
     activeNow: false,
     reservedForFuture: true,
-    plannedRegion: "skyreach_plateau"
+    plannedRegion: "skyreach_plateau",
   },
   SINGAPURA: {
     id: "SINGAPURA",
@@ -2101,16 +1738,12 @@ export const CREATURES = {
     baseAttack: 8,
     baseDefense: 4,
     catchRate: 0.75,
-    skills: [
-      "filler_skill_29",
-      "filler_skill_30",
-      "filler_skill_31"
-    ],
+    skills: ["filler_skill_29", "filler_skill_30", "filler_skill_31"],
     evolution: null,
     spriteKey: "creature_singapura",
     activeNow: false,
     reservedForFuture: true,
-    plannedRegion: "skyreach_plateau"
+    plannedRegion: "skyreach_plateau",
   },
   SOMALI: {
     id: "SOMALI",
@@ -2122,16 +1755,12 @@ export const CREATURES = {
     baseAttack: 9,
     baseDefense: 5,
     catchRate: 0.6,
-    skills: [
-      "filler_skill_32",
-      "filler_skill_33",
-      "filler_skill_34"
-    ],
+    skills: ["filler_skill_32", "filler_skill_33", "filler_skill_34"],
     evolution: null,
     spriteKey: "creature_somali",
     activeNow: false,
     reservedForFuture: true,
-    plannedRegion: "sunstone_desert"
+    plannedRegion: "sunstone_desert",
   },
   TOYGER: {
     id: "TOYGER",
@@ -2143,16 +1772,12 @@ export const CREATURES = {
     baseAttack: 9,
     baseDefense: 7,
     catchRate: 0.55,
-    skills: [
-      "filler_skill_35",
-      "filler_skill_36",
-      "filler_skill_37"
-    ],
+    skills: ["filler_skill_35", "filler_skill_36", "filler_skill_37"],
     evolution: null,
     spriteKey: "creature_toyger",
     activeNow: false,
     reservedForFuture: true,
-    plannedRegion: "rock_mountains"
+    plannedRegion: "rock_mountains",
   },
   BURMILLA: {
     id: "BURMILLA",
@@ -2164,16 +1789,12 @@ export const CREATURES = {
     baseAttack: 7,
     baseDefense: 7,
     catchRate: 0.6,
-    skills: [
-      "filler_skill_38",
-      "filler_skill_39",
-      "filler_skill_40"
-    ],
+    skills: ["filler_skill_38", "filler_skill_39", "filler_skill_40"],
     evolution: null,
     spriteKey: "creature_burmilla",
     activeNow: false,
     reservedForFuture: true,
-    plannedRegion: "celestial_sanctuary"
+    plannedRegion: "celestial_sanctuary",
   },
   SELKIRK_REX: {
     id: "SELKIRK_REX",
@@ -2185,16 +1806,12 @@ export const CREATURES = {
     baseAttack: 7,
     baseDefense: 10,
     catchRate: 0.55,
-    skills: [
-      "filler_skill_41",
-      "filler_skill_42",
-      "filler_skill_43"
-    ],
+    skills: ["filler_skill_41", "filler_skill_42", "filler_skill_43"],
     evolution: null,
     spriteKey: "creature_selkirk_rex",
     activeNow: false,
     reservedForFuture: true,
-    plannedRegion: "rock_mountains"
+    plannedRegion: "rock_mountains",
   },
   EGYPTIAN_MAU: {
     id: "EGYPTIAN_MAU",
@@ -2206,16 +1823,12 @@ export const CREATURES = {
     baseAttack: 9,
     baseDefense: 5,
     catchRate: 0.55,
-    skills: [
-      "filler_skill_1",
-      "filler_skill_2",
-      "filler_skill_3"
-    ],
+    skills: ["filler_skill_1", "filler_skill_2", "filler_skill_3"],
     evolution: null,
     spriteKey: "creature_egyptian_mau",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "sunstone_desert"
+    plannedRegion: "sunstone_desert",
   },
   TURKISH_VAN: {
     id: "TURKISH_VAN",
@@ -2227,16 +1840,12 @@ export const CREATURES = {
     baseAttack: 7,
     baseDefense: 7,
     catchRate: 0.6,
-    skills: [
-      "filler_skill_4",
-      "filler_skill_5",
-      "filler_skill_6"
-    ],
+    skills: ["filler_skill_4", "filler_skill_5", "filler_skill_6"],
     evolution: null,
     spriteKey: "creature_turkish_van",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "ocean"
+    plannedRegion: "ocean",
   },
   MANX: {
     id: "MANX",
@@ -2248,16 +1857,12 @@ export const CREATURES = {
     baseAttack: 8,
     baseDefense: 9,
     catchRate: 0.55,
-    skills: [
-      "filler_skill_7",
-      "filler_skill_8",
-      "filler_skill_9"
-    ],
+    skills: ["filler_skill_7", "filler_skill_8", "filler_skill_9"],
     evolution: null,
     spriteKey: "creature_manx",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "rock_mountains"
+    plannedRegion: "rock_mountains",
   },
   NEBELUNG: {
     id: "NEBELUNG",
@@ -2269,16 +1874,12 @@ export const CREATURES = {
     baseAttack: 8,
     baseDefense: 6,
     catchRate: 0.55,
-    skills: [
-      "filler_skill_10",
-      "filler_skill_11",
-      "filler_skill_12"
-    ],
+    skills: ["filler_skill_10", "filler_skill_11", "filler_skill_12"],
     evolution: null,
     spriteKey: "creature_nebelung",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "shadowfen_swamp"
+    plannedRegion: "shadowfen_swamp",
   },
   HAVANA_BROWN: {
     id: "HAVANA_BROWN",
@@ -2290,16 +1891,12 @@ export const CREATURES = {
     baseAttack: 8,
     baseDefense: 6,
     catchRate: 0.6,
-    skills: [
-      "filler_skill_13",
-      "filler_skill_14",
-      "filler_skill_15"
-    ],
+    skills: ["filler_skill_13", "filler_skill_14", "filler_skill_15"],
     evolution: null,
     spriteKey: "creature_havana_brown",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "sunstone_desert"
+    plannedRegion: "sunstone_desert",
   },
   RAGAMUFFIN: {
     id: "RAGAMUFFIN",
@@ -2311,16 +1908,12 @@ export const CREATURES = {
     baseAttack: 5,
     baseDefense: 9,
     catchRate: 0.65,
-    skills: [
-      "filler_skill_16",
-      "filler_skill_17",
-      "filler_skill_18"
-    ],
+    skills: ["filler_skill_16", "filler_skill_17", "filler_skill_18"],
     evolution: null,
     spriteKey: "creature_ragamuffin",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "ocean"
+    plannedRegion: "ocean",
   },
   CHARTREUX: {
     id: "CHARTREUX",
@@ -2332,16 +1925,12 @@ export const CREATURES = {
     baseAttack: 7,
     baseDefense: 8,
     catchRate: 0.55,
-    skills: [
-      "filler_skill_19",
-      "filler_skill_20",
-      "filler_skill_21"
-    ],
+    skills: ["filler_skill_19", "filler_skill_20", "filler_skill_21"],
     evolution: null,
     spriteKey: "creature_chartreux",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "skyreach_plateau"
+    plannedRegion: "skyreach_plateau",
   },
   SINGAPURA: {
     id: "SINGAPURA",
@@ -2353,16 +1942,12 @@ export const CREATURES = {
     baseAttack: 8,
     baseDefense: 4,
     catchRate: 0.75,
-    skills: [
-      "filler_skill_22",
-      "filler_skill_23",
-      "filler_skill_24"
-    ],
+    skills: ["filler_skill_22", "filler_skill_23", "filler_skill_24"],
     evolution: null,
     spriteKey: "creature_singapura",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "skyreach_plateau"
+    plannedRegion: "skyreach_plateau",
   },
   SOMALI: {
     id: "SOMALI",
@@ -2374,16 +1959,12 @@ export const CREATURES = {
     baseAttack: 9,
     baseDefense: 5,
     catchRate: 0.6,
-    skills: [
-      "filler_skill_25",
-      "filler_skill_26",
-      "filler_skill_27"
-    ],
+    skills: ["filler_skill_25", "filler_skill_26", "filler_skill_27"],
     evolution: null,
     spriteKey: "creature_somali",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "sunstone_desert"
+    plannedRegion: "sunstone_desert",
   },
   TOYGER: {
     id: "TOYGER",
@@ -2395,16 +1976,12 @@ export const CREATURES = {
     baseAttack: 9,
     baseDefense: 7,
     catchRate: 0.55,
-    skills: [
-      "filler_skill_28",
-      "filler_skill_29",
-      "filler_skill_30"
-    ],
+    skills: ["filler_skill_28", "filler_skill_29", "filler_skill_30"],
     evolution: null,
     spriteKey: "creature_toyger",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "rock_mountains"
+    plannedRegion: "rock_mountains",
   },
   BURMILLA: {
     id: "BURMILLA",
@@ -2416,16 +1993,12 @@ export const CREATURES = {
     baseAttack: 7,
     baseDefense: 7,
     catchRate: 0.6,
-    skills: [
-      "filler_skill_31",
-      "filler_skill_32",
-      "filler_skill_33"
-    ],
+    skills: ["filler_skill_31", "filler_skill_32", "filler_skill_33"],
     evolution: null,
     spriteKey: "creature_burmilla",
     activeNow: true,
     reservedForFuture: false,
-    plannedRegion: "celestial_sanctuary"
+    plannedRegion: "celestial_sanctuary",
   },
   SELKIRK_REX: {
     id: "SELKIRK_REX",
@@ -2437,15 +2010,11 @@ export const CREATURES = {
     baseAttack: 7,
     baseDefense: 10,
     catchRate: 0.55,
-    skills: [
-      "filler_skill_34",
-      "filler_skill_35",
-      "filler_skill_36"
-    ],
+    skills: ["filler_skill_34", "filler_skill_35", "filler_skill_36"],
     evolution: null,
     spriteKey: "creature_ironbark",
     activeNow: false,
     reservedForFuture: true,
-    plannedRegion: "ancient_forest"
-  }
+    plannedRegion: "ancient_forest",
+  },
 };

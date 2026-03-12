@@ -144,7 +144,7 @@ export class BattleScene extends Phaser.Scene {
               this.enemyUI.setVisible(true);
               this.logBg.setVisible(true);
               this.logText.setVisible(true);
-              this.updateLog(`A wild ${this.enemyCat.name} appeared!`);
+              this.updateLog(`야생의 ${this.enemyCat.name}(이)가 나타났다!`);
             }
           });
         });
@@ -166,7 +166,7 @@ export class BattleScene extends Phaser.Scene {
       .setStrokeStyle(3, 0x3498db)
       .setOrigin(0.5);
     this.playerName = this.add
-      .text(0, 10, `${this.playerCat.name} Lvl ${this.playerCat.level}`, {
+      .text(0, 10, `${this.playerCat.name} Lv. ${this.playerCat.level}`, {
         font: "bold 22px Arial",
         fill: "#ffffff",
       })
@@ -208,7 +208,7 @@ export class BattleScene extends Phaser.Scene {
       .setStrokeStyle(3, 0xe74c3c)
       .setOrigin(0.5);
     this.enemyName = this.add
-      .text(0, 90, `${this.enemyCat.name} Lvl ${this.enemyCat.level}`, {
+      .text(0, 90, `${this.enemyCat.name} Lv. ${this.enemyCat.level}`, {
         font: "bold 22px Arial",
         fill: "#ffffff",
       })
@@ -370,7 +370,7 @@ export class BattleScene extends Phaser.Scene {
 
   playerAttack() {
     this.canInput = false;
-    this.updateLog(`${this.playerCat.name} used Scratch!`);
+    this.updateLog(`${this.playerCat.name}(이)가 할퀴기를 사용했다!`);
     
     const { damage, multiplier } = battleSystem.calculateDamage(
       this.playerCat,
@@ -396,7 +396,7 @@ export class BattleScene extends Phaser.Scene {
     const skill = SKILLS[skillId];
     if (!skill) return;
 
-    this.updateLog(`${this.playerCat.name} used ${skill.name}!`);
+    this.updateLog(`${this.playerCat.name}(이)가 ${skill.name}(을)를 사용했다!`);
     
     const { damage, multiplier } = battleSystem.calculateDamage(
       this.playerCat,
@@ -419,7 +419,7 @@ export class BattleScene extends Phaser.Scene {
 
   playerCapture() {
     if (this.isTrainer) {
-      this.updateLog("You can't catch a Trainer's cat!");
+      this.updateLog("트레이너의 고양이는 포획할 수 없습니다!");
       this.time.delayedCall(1500, () => {
         this.menuUI.setVisible(true);
         this.canInput = true;
@@ -432,7 +432,7 @@ export class BattleScene extends Phaser.Scene {
     const crystalCount = inventory["capture_crystal"] || 0;
 
     if (crystalCount <= 0) {
-      this.updateLog("You have no Capture Crystals!");
+      this.updateLog("포획 크리스탈이 부족합니다!");
       this.time.delayedCall(1500, () => {
         this.menuUI.setVisible(true);
         this.canInput = true;
@@ -445,7 +445,7 @@ export class BattleScene extends Phaser.Scene {
     this.registry.set("playerInventory", inventory);
 
     this.updateLog(
-      `You threw a capture crystal... (${inventory["capture_crystal"]} left)`,
+      `포획 크리스탈을 던졌다... (남은 개수: ${inventory["capture_crystal"]})`,
     );
 
     this.time.delayedCall(1000, () => {
@@ -488,7 +488,7 @@ export class BattleScene extends Phaser.Scene {
           }
 
           this.showSummaryPanel(
-            "Captured",
+            "포획",
             0,
             false,
             this.playerCat.level,
@@ -496,7 +496,7 @@ export class BattleScene extends Phaser.Scene {
           );
         });
       } else {
-        this.updateLog("The wild cat broke free!");
+        this.updateLog("야생 고양이가 빠져나왔다!");
         this.time.delayedCall(1000, () => this.nextTurn());
       }
     });
@@ -504,7 +504,7 @@ export class BattleScene extends Phaser.Scene {
 
   playerRun() {
     if (this.isTrainer) {
-      this.updateLog("You can't run from a Trainer battle!");
+      this.updateLog("트레이너 배틀에서는 도망칠 수 없습니다!");
       this.time.delayedCall(1500, () => {
         this.menuUI.setVisible(true);
         this.canInput = true;
@@ -512,9 +512,9 @@ export class BattleScene extends Phaser.Scene {
       return;
     }
 
-    this.updateLog("You ran away...");
+    this.updateLog("도망쳤다...");
     this.time.delayedCall(1000, () => {
-      this.showSummaryPanel("Fled", 0, false, this.playerCat.level, false);
+      this.showSummaryPanel("도주", 0, false, this.playerCat.level, false);
     });
   }
 
@@ -527,7 +527,7 @@ export class BattleScene extends Phaser.Scene {
       const skillId = enemySkills[Math.floor(Math.random() * enemySkills.length)];
       const skill = SKILLS[skillId];
       if (skill) {
-        this.updateLog(`${this.enemyCat.name} used ${skill.name}!`);
+        this.updateLog(`${this.enemyCat.name}(이)가 ${skill.name}(을)를 사용했다!`);
         
         const { damage, multiplier } = battleSystem.calculateDamage(this.enemyCat, this.playerCat, skillId);
         skillEffectSystem.playEffect(this, this.playerSprite, skillId, skill.type, multiplier);
@@ -546,7 +546,7 @@ export class BattleScene extends Phaser.Scene {
     }
 
     // Fallback to basic attack
-    this.updateLog(`${this.enemyCat.name} used Scratch!`);
+    this.updateLog(`${this.enemyCat.name}(이)가 할퀴기를 사용했다!`);
     
     const { damage, multiplier } = battleSystem.calculateDamage(
       this.enemyCat,
@@ -740,7 +740,7 @@ export class BattleScene extends Phaser.Scene {
     });
 
     // Bouncing text
-    const levelUpText = this.add.text(this.playerSprite.x, this.playerSprite.y - 80, "LEVEL UP!", {
+    const levelUpText = this.add.text(this.playerSprite.x, this.playerSprite.y - 80, "레벨 업!", {
       font: 'bold 32px "Press Start 2P", Courier',
       fill: '#f1c40f',
       shadow: { offsetX: 3, offsetY: 3, color: '#000', blur: 0, fill: true }
@@ -830,7 +830,7 @@ export class BattleScene extends Phaser.Scene {
 
     let yPos = height / 2 - 80;
 
-    if (result === "Victory" || result === "Captured" || result === "승리") {
+    if (result === "Victory" || result === "Captured" || result === "승리" || result === "포획") {
       let line = `경험치 획득: +${expGained}`;
       if (goldGain > 0) line += ` | 골드: +${goldGain}`;
 

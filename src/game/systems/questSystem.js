@@ -6,26 +6,26 @@ import { saveSystem } from './saveSystem.js';
 export const QUEST_DATA = {
   first_steps: {
     id: 'first_steps',
-    title: 'First Steps',
-    description: 'Get your first companion and learn the basics of exploring Feloria.',
+    title: '첫 걸음',
+    description: '첫 번째 동료를 얻고 펠로리아를 탐험하는 기본 방법을 배웁니다.',
     objectives: [
-      { id: 'talk_mira', text: 'Talk to Elder Mira', completed: false },
-      { id: 'choose_starter', text: 'Choose a Starter', completed: false },
-      { id: 'enter_forest', text: 'Enter Greenpaw Forest', completed: false },
-      { id: 'trigger_encounter', text: 'Trigger a Wild Encounter', completed: false },
-      { id: 'capture_cat', text: 'Capture a Wild Cat', completed: false },
-      { id: 'return_mira', text: 'Return to Elder Mira', completed: false }
+      { id: 'talk_mira', text: '촌장 현석과 대화하기', completed: false },
+      { id: 'choose_starter', text: '스타팅 포켓몬 선택하기', completed: false },
+      { id: 'enter_forest', text: '그린포우 숲 입장하기', completed: false },
+      { id: 'trigger_encounter', text: '야생 몬스터와 조우하기', completed: false },
+      { id: 'capture_cat', text: '야생 고양이 포획하기', completed: false },
+      { id: 'return_mira', text: '촌장 현석에게 돌아가기', completed: false }
     ],
     completed: false
   },
   forest_awakening: {
     id: 'forest_awakening',
-    title: 'Forest Awakening',
-    description: 'Ancient shadows stir in the deep woods. Seek the Shrine.',
+    title: '숲의 각성',
+    description: '깊은 숲 속에서 고대의 그림자가 요동칩니다. 신전을 찾으세요.',
     objectives: [
-      { id: 'explore_path', text: 'Explore Mosslight Path', completed: false },
-      { id: 'enter_ancient_forest', text: 'Enter Ancient Forest', completed: false },
-      { id: 'defeat_rowan', text: 'Defeat Guardian Rowan', completed: false }
+      { id: 'explore_path', text: '모스라이트 길 탐험하기', completed: false },
+      { id: 'enter_ancient_forest', text: '고대 숲 입장하기', completed: false },
+      { id: 'defeat_rowan', text: '수호자 로완 처치하기', completed: false }
     ],
     completed: false
   }

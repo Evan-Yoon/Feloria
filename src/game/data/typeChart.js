@@ -58,6 +58,7 @@ export const TYPE_CHART = {
  * Maps Korean types in skills.js to English keys in TYPE_CHART
  */
 export const TYPE_MAPPING = {
+  "숲": "forest",
   "풀": "grass",
   "불": "fire",
   "물": "water",

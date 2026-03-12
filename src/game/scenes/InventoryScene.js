@@ -23,7 +23,7 @@ export class InventoryScene extends Phaser.Scene {
     // Dim background
     this.add.rectangle(0, 0, width, height, 0x000000, 0.85).setOrigin(0);
 
-    const mWidth = 760;
+    const mWidth = 1000;
     const mHeight = 560;
     this.panelX = width / 2;
     this.panelY = height / 2;
@@ -64,9 +64,6 @@ export class InventoryScene extends Phaser.Scene {
     // Quick, clean fetch of normalized items
     const inventory = this.registry.get('playerInventory') || {};
     
-    // In our architecture ITEMS is defined in items.js, but since ES modules don't allow synchronous 
-    // imports perfectly inside class bodies without top level, we will dynamically fetch it using the system 
-    // or just assume we have access to it via a system call. We'll use shopSystem to get all items to map data.
     import('../systems/shopSystem.js').then(({ shopSystem }) => {
         const itemDatabase = shopSystem.getShopInventory(); // Gets all items as an array
         
@@ -77,22 +74,31 @@ export class InventoryScene extends Phaser.Scene {
             const quantity = inventory[itemDef.id] || 0;
             if (quantity <= 0) return; // Only show owned items
 
-            const rowBg = this.add.rectangle(this.panelX, yPos, 660, 60, 0x2c3e50)
+            const rowBg = this.add.rectangle(this.panelX, yPos, 900, 60, 0x2c3e50)
                 .setOrigin(0.5)
                 .setStrokeStyle(2, 0x34495e);
             this.itemsContainer.add(rowBg);
             
-            // Icon Placeholder
-            const iconBg = this.add.rectangle(this.panelX - 290, yPos, 40, 40, 0x34495e).setOrigin(0.5);
-            this.itemsContainer.add(iconBg);
+            // Icon
+            if (itemDef.spriteKey) {
+                const icon = this.add.image(this.panelX - 425, yPos, itemDef.spriteKey).setScale(1.5);
+                this.itemsContainer.add(icon);
+            } else {
+                const iconBg = this.add.rectangle(this.panelX - 425, yPos, 40, 40, 0x34495e).setOrigin(0.5);
+                this.itemsContainer.add(iconBg);
+            }
 
-            this.itemsContainer.add(this.add.text(this.panelX - 250, yPos, itemDef.name, { font: 'bold 24px Arial', fill: '#ffffff' }).setOrigin(0, 0.5));
-            this.itemsContainer.add(this.add.text(this.panelX - 80, yPos, itemDef.description, { font: '18px Arial', fill: '#bdc3c7' }).setOrigin(0, 0.5));
-            this.itemsContainer.add(this.add.text(this.panelX + 180, yPos, `x${quantity}`, { font: 'bold 24px Arial', fill: '#f1c40f' }).setOrigin(1, 0.5));
+            this.itemsContainer.add(this.add.text(this.panelX - 380, yPos, itemDef.name, { font: 'bold 24px Arial', fill: '#ffffff' }).setOrigin(0, 0.5));
+            this.itemsContainer.add(this.add.text(this.panelX - 180, yPos, itemDef.description, { 
+                font: '18px Arial', 
+                fill: '#bdc3c7',
+                wordWrap: { width: 450 }
+            }).setOrigin(0, 0.5));
+            this.itemsContainer.add(this.add.text(this.panelX + 320, yPos, `x${quantity}`, { font: 'bold 24px Arial', fill: '#f1c40f' }).setOrigin(1, 0.5));
 
             if (itemDef.type === 'healing') {
-               const useBtn = this.add.rectangle(this.panelX + 250, yPos, 90, 40, 0x27ae60).setInteractive({ useHandCursor: true }).setStrokeStyle(2, 0xffffff);
-               const useLbl = this.add.text(this.panelX + 250, yPos, '사용', { font: 'bold 18px Arial', fill: '#ffffff' }).setOrigin(0.5);
+               const useBtn = this.add.rectangle(this.panelX + 410, yPos, 90, 40, 0x27ae60).setInteractive({ useHandCursor: true }).setStrokeStyle(2, 0xffffff);
+               const useLbl = this.add.text(this.panelX + 410, yPos, '사용', { font: 'bold 18px Arial', fill: '#ffffff' }).setOrigin(0.5);
                
                useBtn.on('pointerover', () => useBtn.setFillStyle(0x2ecc71));
                useBtn.on('pointerout', () => useBtn.setFillStyle(0x27ae60));
@@ -100,7 +106,7 @@ export class InventoryScene extends Phaser.Scene {
                
                this.itemsContainer.add([useBtn, useLbl]);
             } else {
-               const passiveLbl = this.add.text(this.panelX + 250, yPos, '전투용', { font: 'bold 16px Arial', fill: '#95a5a6' }).setOrigin(0.5);
+               const passiveLbl = this.add.text(this.panelX + 410, yPos, '전투용', { font: 'bold 16px Arial', fill: '#95a5a6' }).setOrigin(0.5);
                this.itemsContainer.add(passiveLbl);
             }
             

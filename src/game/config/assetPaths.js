@@ -923,6 +923,7 @@ export const ASSETS = {
     CRYSTAL: { KEY: "icon_00_02", PATH: "/assets/icons/icon_00_02.png" },
     SWORD: { KEY: "icon_00_03", PATH: "/assets/icons/icon_00_03.png" },
     SHIELD: { KEY: "icon_00_04", PATH: "/assets/icons/icon_00_04.png" },
+    BADGE: { KEY: "icon_00_07", PATH: "/assets/icons/icon_00_07.png" },
   },
   TILESETS: {
     OUTSIDE: {

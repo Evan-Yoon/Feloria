@@ -115,7 +115,7 @@ export class DialogScene extends Phaser.Scene {
 
   displayPage() {
     const rawText = this.displayPages[this.currentPage];
-    const playerName = this.registry.get("playerName") || "Hero";
+    const playerName = this.registry.get("playerName") || "여행자";
     const formattedText = rawText.replace(/{playerName}/g, playerName);
     this.contentText.setText(formattedText);
   }

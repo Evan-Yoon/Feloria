@@ -17,20 +17,20 @@ export class ShopScene extends Phaser.Scene {
     // Dim background
     this.add.rectangle(0, 0, width, height, 0x000000, 0.85).setOrigin(0);
 
-    const mWidth = 760;
+    const mWidth = 1000;
     const mHeight = 560;
     const bg = this.add.rectangle(width / 2, height / 2, mWidth, mHeight, 0x1a252f).setOrigin(0.5);
     this.add.rectangle(width / 2, height / 2, mWidth, mHeight).setStrokeStyle(4, 0x3498db).setOrigin(0.5);
 
     // Header
-    this.add.text(width / 2 - 120, height / 2 - 230, "아이템 상점", { 
+    this.add.text(width / 2 - 150, height / 2 - 230, "아이템 상점", { 
         font: 'bold 44px "Press Start 2P", Courier, monospace', fill: '#f1c40f',
         shadow: { offsetX: 3, offsetY: 3, color: '#000', blur: 0, fill: true }
     }).setOrigin(0.5);
         
     this.add.text(width / 2, height / 2 + 250, "ESC를 눌러 닫기", { font: '20px Arial', fill: '#bdc3c7' }).setOrigin(0.5);
 
-    this.goldText = this.add.text(width / 2 + mWidth/2 - 40, height / 2 - 230, `보유 골드: 0`, { font: 'bold 34px Arial', fill: '#f1c40f' }).setOrigin(1, 0.5);
+    this.goldText = this.add.text(width / 2 + mWidth/2 - 50, height / 2 - 230, `보유 골드: 0`, { font: 'bold 34px Arial', fill: '#f1c40f' }).setOrigin(1, 0.5);
 
     // Notification Text
     this.notifText = this.add.text(width / 2, height / 2 + 200, "", { font: 'bold 20px Arial', fill: '#e74c3c' }).setOrigin(0.5);
@@ -56,21 +56,29 @@ export class ShopScene extends Phaser.Scene {
         const itemY = height / 2 - 130 + (index * 85);
         
         // Item Backing
-        const rowBg = this.add.rectangle(width / 2, itemY, 660, 65, 0x2c3e50)
+        const rowBg = this.add.rectangle(width / 2, itemY, 900, 65, 0x2c3e50)
             .setOrigin(0.5)
             .setStrokeStyle(2, 0x34495e);
             
-        // Icon Placeholder
-        const iconBg = this.add.rectangle(width / 2 - 290, itemY, 40, 40, 0x34495e).setOrigin(0.5);
+        // Icon
+        if (item.spriteKey) {
+            this.add.image(width / 2 - 420, itemY, item.spriteKey).setScale(1.5);
+        } else {
+            this.add.rectangle(width / 2 - 420, itemY, 40, 40, 0x34495e).setOrigin(0.5);
+        }
         
         // Text
-        this.add.text(width / 2 - 250, itemY, item.name, { font: 'bold 30px Arial', fill: '#ffffff' }).setOrigin(0, 0.5);
-        this.add.text(width / 2 - 30, itemY, item.description, { font: '22px Arial', fill: '#bdc3c7' }).setOrigin(0, 0.5);
-        this.add.text(width / 2 + 180, itemY, `${item.price} G`, { font: 'bold 28px Arial', fill: '#f1c40f' }).setOrigin(1, 0.5);
+        this.add.text(width / 2 - 380, itemY, item.name, { font: 'bold 28px Arial', fill: '#ffffff' }).setOrigin(0, 0.5);
+        this.add.text(width / 2 - 180, itemY, item.description, { 
+            font: '20px Arial', 
+            fill: '#bdc3c7',
+            wordWrap: { width: 450 } 
+        }).setOrigin(0, 0.5);
+        this.add.text(width / 2 + 320, itemY, `${item.price} G`, { font: 'bold 28px Arial', fill: '#f1c40f' }).setOrigin(1, 0.5);
 
         // Buy Button
-        const buyBtn = this.add.rectangle(width / 2 + 250, itemY, 90, 40, 0x27ae60).setInteractive({ useHandCursor: true }).setStrokeStyle(2, 0xffffff);
-        const buyLabel = this.add.text(width / 2 + 250, itemY, '구매', { font: 'bold 18px Arial', fill: '#fff' }).setOrigin(0.5);
+        const buyBtn = this.add.rectangle(width / 2 + 400, itemY, 90, 40, 0x27ae60).setInteractive({ useHandCursor: true }).setStrokeStyle(2, 0xffffff);
+        const buyLabel = this.add.text(width / 2 + 400, itemY, '구매', { font: 'bold 18px Arial', fill: '#fff' }).setOrigin(0.5);
 
         buyBtn.on('pointerout', () => buyBtn.setFillStyle(0x27ae60));
         buyBtn.on('pointerover', () => buyBtn.setFillStyle(0x2ecc71));

@@ -1,24 +1,27 @@
 export const ITEMS = {
   potion: {
-    id: 'potion',
-    name: 'Potion',
-    description: 'Restores 20 HP to a creature.',
+    id: "potion",
+    name: "포션",
+    description: "고양이의 HP를 20 회복시킵니다.",
+    spriteKey: "icon_12_02",
     price: 10,
-    type: 'healing',
-    effectValue: 20
+    type: "healing",
+    effectValue: 20,
   },
   capture_crystal: {
-    id: 'capture_crystal',
-    name: 'Capture Crystal',
-    description: 'Used to catch wild creatures.',
+    id: "capture_crystal",
+    name: "포획 크리스탈",
+    description: "야생 고양이를 포획하는 데 사용됩니다.",
+    spriteKey: "icon_22_07",
     price: 25,
-    type: 'capture'
+    type: "capture",
   },
   FOREST_BADGE: {
-    id: 'FOREST_BADGE',
-    name: 'Forest Badge',
-    description: 'A badge given to those who prove their strength to the Forest Guardian.',
+    id: "FOREST_BADGE",
+    name: "숲의 배지",
+    description: "숲의 수호자에게 실력을 증명한 자에게 수여되는 배지입니다.",
+    spriteKey: "icon_32_08",
     price: 0,
-    type: 'key'
-  }
+    type: "key",
+  },
 };

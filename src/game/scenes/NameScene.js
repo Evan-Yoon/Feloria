@@ -64,6 +64,11 @@ export class NameScene extends Phaser.Scene {
       this.updateCursorPosition();
     });
 
+    inputElement.addEventListener("compositionend", () => {
+      this.nameText.setText(inputElement.value);
+      this.updateCursorPosition();
+    });
+
     inputElement.addEventListener("keydown", (event) => {
       if (event.key === "Enter" && inputElement.value.length > 0) {
         inputElement.remove();

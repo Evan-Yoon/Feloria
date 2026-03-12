@@ -180,34 +180,36 @@ export class PartyScene extends Phaser.Scene {
     // Creature Sprite
     const spriteKey = creature.id.toLowerCase();
     const creatureSprite = this.add
-      .sprite(-bgWidth / 2 + 50, 0, spriteKey)
-      .setScale(1.2);
+      .sprite(-bgWidth / 2 + 70, -20, spriteKey)
+      .setScale(1.5);
 
     // Details Text
-    const nameText = this.add.text(-bgWidth / 2 + 100, -35, creature.name, {
-      font: "bold 26px Arial",
+    const nameText = this.add.text(-bgWidth / 2 + 70, 25, creature.name, {
+      font: "bold 22px Arial",
       fill: "#ffffff",
-    });
+    }).setOrigin(0.5, 0);
+
+    const detailX = -bgWidth / 2 + 150;
     const lvlText = this.add.text(
-      -bgWidth / 2 + 100,
-      -5,
+      detailX,
+      -35,
       `레벨 ${creature.level}`,
-      { font: "22px Arial", fill: "#f1c40f" },
+      { font: "bold 24px Arial", fill: "#f1c40f" },
     );
 
     // HP Bar / Text
     const hpText = this.add.text(
-      -bgWidth / 2 + 200,
-      -5,
+      detailX,
+      0,
       `HP: ${creature.currentHp}/${creature.maxHp}`,
-      { font: "20px Arial", fill: "#ff7979" },
+      { font: "bold 22px Arial", fill: "#ff7979" },
     );
 
     // Exact EXP Text
     const expNeeded = creature.level * 50;
     const expText = this.add.text(
-      -bgWidth / 2 + 200,
-      20,
+      detailX,
+      30,
       `EXP: ${creature.exp}/${expNeeded}`,
       { font: "18px Arial", fill: "#81ecec" },
     );
