@@ -15,7 +15,13 @@ export class StartScene extends Phaser.Scene {
 
     // Play Title BGM
     import('../systems/audioManager.js').then(module => {
-      module.audioManager.playBGM('bgm_title');
+      const am = module.audioManager;
+      if (am.game) {
+        am.playBGM('bgm_title');
+      } else {
+        // Retry shortly if not ready
+        this.time.delayedCall(100, () => am.playBGM('bgm_title'));
+      }
     });
 
     // Background Image
@@ -84,7 +90,11 @@ export class StartScene extends Phaser.Scene {
       continueBtn.removeInteractive();
     }
 
-    this.menuContainer.add([newGameBtn, continueBtn]);
+    const settingsBtn = this.createMenuItem(width / 2, height * 0.8, "설정", () => {
+      this.showSettingsMenu();
+    });
+
+    this.menuContainer.add([newGameBtn, continueBtn, settingsBtn]);
 
     // Click or Press Space/Enter to show menu
     const showMenu = () => {
@@ -144,5 +154,95 @@ export class StartScene extends Phaser.Scene {
     item.on("pointerdown", callback);
 
     return item;
+  }
+
+  showSettingsMenu() {
+    const { width, height } = this.cameras.main;
+
+    // Hide main menu
+    this.menuContainer.setVisible(false);
+
+    // Settings Container
+    this.settingsContainer = this.add.container(0, 0);
+
+    const bg = this.add.rectangle(width / 2, height / 2, 600, 500, 0x000000, 0.85)
+      .setStrokeStyle(4, 0xf1c40f);
+
+    const title = this.add.text(width / 2, height / 2 - 200, "환경 설정", {
+      font: "bold 36px Arial",
+      fill: "#f1c40f"
+    }).setOrigin(0.5);
+
+    this.settingsContainer.add([bg, title]);
+
+    // Volume Options
+    const options = [
+      { key: 'master', label: '전체 볼륨' },
+      { key: 'bgm', label: 'BGM' },
+      { key: 'bgs', label: 'BGS' },
+      { key: 'me', label: 'ME' },
+      { key: 'se', label: 'SE' },
+    ];
+
+    import('../systems/audioManager.js').then(module => {
+      const am = module.audioManager;
+
+      options.forEach((opt, i) => {
+        const yPos = height / 2 - 100 + (i * 60);
+
+        const label = this.add.text(width / 2 - 250, yPos, opt.label, {
+          font: "24px Arial",
+          fill: "#ffffff"
+        }).setOrigin(0, 0.5);
+
+        const valText = this.add.text(width / 2 + 200, yPos, `${Math.round(am.volumes[opt.key] * 100)}%`, {
+          font: "24px Arial",
+          fill: "#ffffff"
+        }).setOrigin(1, 0.5);
+
+        // Simple +/- Buttons
+        const btnMinus = this.add.text(width / 2 + 50, yPos, "-", {
+          font: "bold 32px Arial",
+          fill: "#f1c40f"
+        }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+
+        const btnPlus = this.add.text(width / 2 + 100, yPos, "+", {
+          font: "bold 32px Arial",
+          fill: "#f1c40f"
+        }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+
+        btnMinus.on('pointerdown', () => {
+          am.setVolume(opt.key, am.volumes[opt.key] - 0.1);
+          valText.setText(`${Math.round(am.volumes[opt.key] * 100)}%`);
+          am.playSE('se_cursor');
+        });
+
+        btnPlus.on('pointerdown', () => {
+          am.setVolume(opt.key, am.volumes[opt.key] + 0.1);
+          valText.setText(`${Math.round(am.volumes[opt.key] * 100)}%`);
+          am.playSE('se_cursor');
+        });
+
+        this.settingsContainer.add([label, valText, btnMinus, btnPlus]);
+      });
+    });
+
+    // Back Button
+    const backBtn = this.add.text(width / 2, height / 2 + 200, "돌아가기", {
+      font: "bold 28px Arial",
+      fill: "#ffffff"
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+
+    backBtn.on('pointerover', () => backBtn.setStyle({ fill: "#e74c3c" }));
+    backBtn.on('pointerout', () => backBtn.setStyle({ fill: "#ffffff" }));
+    backBtn.on('pointerdown', () => {
+      this.settingsContainer.destroy();
+      this.menuContainer.setVisible(true);
+      import('../systems/audioManager.js').then(module => {
+        module.audioManager.playSE('se_cancel');
+      });
+    });
+
+    this.settingsContainer.add(backBtn);
   }
 }

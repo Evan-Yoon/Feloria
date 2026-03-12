@@ -96,9 +96,9 @@ export class PreloadScene extends Phaser.Scene {
       });
     });
 
-    // Error handling: if an asset fails to load, it won't crash the scene
+    // Error handling
     this.load.on('loaderror', (file) => {
-      console.warn(`Failed to load asset: ${file.key} at ${file.src}`);
+      console.warn(`PreloadScene: Failed to load asset: ${file.key} at ${file.src}`);
     });
 
     // Load Start Scene Cutscene Backgrounds (Legacy/Fallback)
@@ -115,13 +115,12 @@ export class PreloadScene extends Phaser.Scene {
     // Initialize Audio Manager
     import('../systems/audioManager.js').then(module => {
       module.audioManager.init(this.game);
+      // Create placeholder textures at runtime so the game is playable without external files
+      this.createPlaceholderTextures();
+
+      // Transition to StartScene
+      this.scene.start('StartScene');
     });
-
-    // Create placeholder textures at runtime so the game is playable without external files
-    this.createPlaceholderTextures();
-
-    // Transition to StartScene
-    this.scene.start('StartScene');
   }
 
   createLoadingUI() {

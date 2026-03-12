@@ -14,10 +14,17 @@ class AudioManager {
     this.currentBGSKey = null;
     this.mapBGMKey = null;
     this.isMEPlaying = false;
-    this.bgmVolume = 0.5;
-    this.seVolume = 0.7;
-    this.meVolume = 0.7;
-    this.bgsVolume = 0.4;
+
+    // Volume Defaults
+    this.volumes = {
+      master: 1.0,
+      bgm: 0.5,
+      bgs: 0.4,
+      me: 0.7,
+      se: 0.7
+    };
+
+    this.loadVolumes();
   }
 
   /**
@@ -25,6 +32,78 @@ class AudioManager {
    */
   init(game) {
     this.game = game;
+    this.setupResumeOnInput();
+  }
+
+  /**
+   * Loads volumes from localStorage.
+   */
+  loadVolumes() {
+    try {
+      const saved = localStorage.getItem('feloria_audio_config');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        this.volumes = { ...this.volumes, ...parsed };
+      }
+    } catch (e) {
+      console.warn("AudioManager: Failed to load volumes", e);
+    }
+  }
+
+  /**
+   * Saves volumes to localStorage.
+   */
+  saveVolumes() {
+    try {
+      localStorage.setItem('feloria_audio_config', JSON.stringify(this.volumes));
+    } catch (e) {
+      console.warn("AudioManager: Failed to save volumes", e);
+    }
+  }
+
+  /**
+   * Sets volume for a specific channel.
+   * @param {string} channel 'master', 'bgm', 'bgs', 'me', 'se'
+   * @param {number} value 0.0 to 1.0
+   */
+  setVolume(channel, value) {
+    if (this.volumes[channel] !== undefined) {
+      this.volumes[channel] = Phaser.Math.Clamp(value, 0, 1);
+      this.saveVolumes();
+      this.updateActiveVolumes();
+    }
+  }
+
+  /**
+   * Updates currently playing audio with new volume settings.
+   */
+  updateActiveVolumes() {
+    if (this.currentBGM) {
+      this.currentBGM.setVolume(this.volumes.bgm * this.volumes.master);
+    }
+    if (this.currentBGS) {
+      this.currentBGS.setVolume(this.volumes.bgs * this.volumes.master);
+    }
+  }
+
+  /**
+   * Automates resuming AudioContext on first user interaction.
+   * Modern browsers block audio until a gesture occurs.
+   */
+  setupResumeOnInput() {
+    const resume = () => {
+      if (this.game && this.game.sound && this.game.sound.context) {
+        if (this.game.sound.context.state === 'suspended') {
+          this.game.sound.context.resume();
+        }
+      }
+      // Once unlocked, we don't need these listeners anymore
+      window.removeEventListener('pointerdown', resume);
+      window.removeEventListener('keydown', resume);
+    };
+
+    window.addEventListener('pointerdown', resume);
+    window.addEventListener('keydown', resume);
   }
 
   /**
@@ -34,30 +113,47 @@ class AudioManager {
    */
   playBGM(key, options = {}) {
     if (!this.game) return;
+    
+    // Safety check: is it in cache?
+    if (!this.game.cache.audio.exists(key)) {
+      console.warn(`AudioManager: BGM key "${key}" not found in cache.`);
+      return;
+    }
+    
     if (this.currentBGMKey === key) return; // Already playing
 
     const loop = options.loop !== undefined ? options.loop : true;
     const fade = options.fade !== undefined ? options.fade : 500;
-    const volume = options.volume !== undefined ? options.volume : this.bgmVolume;
+    const volume = options.volume !== undefined ? options.volume : (this.volumes.bgm * this.volumes.master);
 
     // Stop previous BGM with fade
     this.stopBGM(fade);
 
     this.currentBGMKey = key;
-    const activeScene = this.game.scene.getScenes(true)[0];
-    if (!activeScene) return;
-
-    this.currentBGM = activeScene.sound.add(key, { loop, volume: 0 });
+    
+    // Use global sound manager for BGM so it persists across scenes
+    this.currentBGM = this.game.sound.add(key, { loop, volume: 0 });
     this.currentBGM.play();
 
     if (fade > 0) {
-      activeScene.tweens.add({
-        targets: this.currentBGM,
-        volume: volume,
-        duration: fade
-      });
+      // Use any active scene for the tween
+      const activeScene = this.game.scene.getScenes(true)[0];
+      if (activeScene) {
+        activeScene.tweens.add({
+          targets: this.currentBGM,
+          volume: volume,
+          duration: fade
+        });
+      } else {
+        this.currentBGM.setVolume(volume);
+      }
     } else {
       this.currentBGM.setVolume(volume);
+    }
+    
+    // Handle the case where audio context is suspended
+    if (this.game.sound.context.state === 'suspended') {
+      console.log("AudioManager: AudioContext is suspended. Music will start on user gesture.");
     }
   }
 
@@ -109,19 +205,16 @@ class AudioManager {
    * Plays a BGS (Ambient looping sound).
    */
   playBGS(key, options = {}) {
-    if (!this.game) return;
+    if (!this.game || !this.game.cache.audio.exists(key)) return;
     if (this.currentBGSKey === key) return;
 
     const loop = options.loop !== undefined ? options.loop : true;
-    const volume = options.volume !== undefined ? options.volume : this.bgsVolume;
+    const volume = options.volume !== undefined ? options.volume : (this.volumes.bgs * this.volumes.master);
 
     this.stopBGS();
 
     this.currentBGSKey = key;
-    const activeScene = this.game.scene.getScenes(true)[0];
-    if (!activeScene) return;
-
-    this.currentBGS = activeScene.sound.add(key, { loop, volume });
+    this.currentBGS = this.game.sound.add(key, { loop, volume });
     this.currentBGS.play();
   }
 
@@ -142,11 +235,9 @@ class AudioManager {
    * Temporarily ducks BGM if requested.
    */
   playME(key, options = {}) {
-    if (!this.game) return;
+    if (!this.game || !this.game.cache.audio.exists(key)) return;
 
-    const volume = options.volume !== undefined ? options.volume : this.meVolume;
-    const activeScene = this.game.scene.getScenes(true)[0];
-    if (!activeScene) return;
+    const volume = options.volume !== undefined ? options.volume : (this.volumes.me * this.volumes.master);
 
     // Optional BGM ducking
     const prevBGMVol = this.currentBGM ? this.currentBGM.volume : 0;
@@ -154,18 +245,24 @@ class AudioManager {
       this.currentBGM.setVolume(prevBGMVol * 0.2);
     }
 
-    const me = activeScene.sound.add(key, { volume });
+    const me = this.game.sound.add(key, { volume });
     me.play();
     this.isMEPlaying = true;
 
     me.once('complete', () => {
       this.isMEPlaying = false;
       if (this.currentBGM && options.duckBGM) {
-        activeScene.tweens.add({
-          targets: this.currentBGM,
-          volume: prevBGMVol,
-          duration: 300
-        });
+        // Use active scene for tween
+        const activeScene = this.game.scene.getScenes(true)[0];
+        if (activeScene) {
+          activeScene.tweens.add({
+            targets: this.currentBGM,
+            volume: prevBGMVol,
+            duration: 300
+          });
+        } else {
+          this.currentBGM.setVolume(prevBGMVol);
+        }
       }
       me.destroy();
     });
@@ -176,12 +273,17 @@ class AudioManager {
    */
   playSE(key, options = {}) {
     if (!this.game) return;
+    
+    if (!this.game.cache.audio.exists(key)) {
+      // Don't log for cursor moves to avoid spamming
+      if (key !== 'se_cursor') {
+        console.warn(`AudioManager: SE key "${key}" not found in cache.`);
+      }
+      return;
+    }
 
-    const volume = options.volume !== undefined ? options.volume : this.seVolume;
-    const activeScene = this.game.scene.getScenes(true)[0];
-    if (!activeScene) return;
-
-    activeScene.sound.play(key, { volume });
+    const volume = options.volume !== undefined ? options.volume : (this.volumes.se * this.volumes.master);
+    this.game.sound.play(key, { volume });
   }
 
   /**
