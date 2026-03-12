@@ -145,6 +145,7 @@ export class BattleScene extends Phaser.Scene {
               this.logBg.setVisible(true);
               this.logText.setVisible(true);
               this.updateLog(`야생의 ${this.enemyCat.name}(이)가 나타났다!`);
+              this.time.delayedCall(1500, () => this.nextTurn());
             }
           });
         });

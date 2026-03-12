@@ -73,8 +73,9 @@ export const skillEffectSystem = {
       });
     }
 
-    let x = targetSprite.x;
-    let y = targetSprite.y;
+    const matrix = targetSprite.getWorldTransformMatrix();
+    let x = matrix.tx;
+    let y = matrix.ty;
 
     // Handle Anchor Rules
     if (config.anchorType === "feet") {

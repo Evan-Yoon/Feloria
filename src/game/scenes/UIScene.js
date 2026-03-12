@@ -43,6 +43,9 @@ export class UIScene extends Phaser.Scene {
       });
 
       // --- Notification System ---
+      this.notificationQueue = [];
+      this.isShowingNotification = false;
+
       worldScene.events.on("notifyItem", (data) => {
         this.queueNotification(data);
       });
@@ -86,25 +89,22 @@ export class UIScene extends Phaser.Scene {
     container.add([bg, text]);
 
     // Animate In, Wait, Animate Out
-    this.tweens.timeline(
-      {
-        targets: container,
-        tweens: [
-          { y: height - 100, duration: 400, ease: "Power2" },
-          { y: height - 110, duration: 2000 }, // Wait period
-          {
-            y: height + 50,
-            duration: 400,
-            ease: "Power2",
-            onComplete: () => {
-              container.destroy();
-              this.processNotificationQueue();
-            },
+    this.tweens.chain({
+      targets: container,
+      tweens: [
+        { y: height - 100, duration: 400, ease: "Power2" },
+        { y: height - 110, duration: 2000 }, // Wait period
+        {
+          y: height + 50,
+          duration: 400,
+          ease: "Power2",
+          onComplete: () => {
+            container.destroy();
+            this.processNotificationQueue();
           },
-        ],
-      },
-      this,
-    );
+        },
+      ],
+    });
   }
 
   update() {
