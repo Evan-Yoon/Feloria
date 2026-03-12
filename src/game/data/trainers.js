@@ -60,4 +60,16 @@ export const TRAINERS = {
         { creatureId: "VOIDLYNX", level: 20 }
     ],
   },
+  ellie: {
+    id: "ellie",
+    name: "순례자 엘리",
+    rewards: {
+      gold: 300,
+      expMultiplier: 2.0,
+    },
+    party: [
+      { creatureId: "MISTTAIL", level: 11 },
+      { creatureId: "PEBBLEPAW", level: 11 },
+    ],
+  },
 };

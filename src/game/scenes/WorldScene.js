@@ -330,6 +330,15 @@ export class WorldScene extends Phaser.Scene {
           }
         }
 
+        // --- Ellie Visibility Logic ---
+        if (npcId === "ellie") {
+          const defeated = this.registry.get("defeatedTrainers") || [];
+          if (defeated.includes("ellie")) {
+            console.log("WorldScene: Ellie has been defeated and removed.");
+            return;
+          }
+        }
+
         // 1. Determine Sprite Key and Character Block
         const spriteKey = npcData.sprite || "people1";
         // Find the character block in ASSETS.CHARACTERS that matches this KEY
@@ -626,6 +635,15 @@ export class WorldScene extends Phaser.Scene {
         }
         const defeated = this.registry.get("defeatedTrainers") || [];
         if (!defeated.includes(npcData.trainerId)) {
+          // Ellie only fights during the Rowan quest
+          if (npcData.trainerId === 'ellie') {
+            const activeQuests = this.registry.get('activeQuests') || {};
+            const forestQuest = activeQuests['forest_awakening'];
+            if (!forestQuest || forestQuest.completed) {
+              console.log("WorldScene: Ellie is peaceful (no quest).");
+              return; 
+            }
+          }
           this.triggerTrainerBattle(npcData.trainerId);
         } else if (npcData.role === "boss_trainer" && npcData.trainerId === "guardian_rowan") {
           questSystem.completeObjective(this.registry, "forest_awakening", "defeat_rowan");

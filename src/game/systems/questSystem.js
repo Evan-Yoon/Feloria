@@ -56,8 +56,12 @@ export const questSystem = {
       registry.set('activeQuests', activeQuests);
 
       // Notify UI
-      const uiScene = registry.parent.scene.get('UIScene');
-      if (uiScene) uiScene.events.emit('updateQuests');
+      // In Phaser 3, registry.parent is the Game instance. Game.scene is the SceneManager.
+      const game = registry.parent;
+      if (game && game.scene && typeof game.scene.get === 'function') {
+        const uiScene = game.scene.get('UIScene');
+        if (uiScene) uiScene.events.emit('updateQuests');
+      }
 
       // Autosave quest progress
       const mapId = registry.get('world_mapId') || 'starwhisk_village';

@@ -20,7 +20,7 @@ export class CodexScene extends Phaser.Scene {
     this.selectedIndex = 0;
     this.filter = "ALL"; // ALL, SEEN, CAPTURED
     this.filteredList = [];
-    this.itemsPerPage = 10;
+    this.itemsPerPage = 9; // Reduced to fit better
     this.scrollOffset = 0;
   }
 
@@ -93,8 +93,21 @@ export class CodexScene extends Phaser.Scene {
     // List Panel (Left)
     this.listContainer = this.add.container(
       this.panelX - 350,
-      this.panelY - 180,
+      this.panelY - 140, // Lowered to clear tabs
     );
+
+    // Add Mask to List Container
+    const maskRect = this.add.rectangle(
+      this.panelX - 150, // Center of the 400px wide list (x - 350 + 200)
+      this.panelY + 50,  // Center of the 450px high area
+      450, // Width (slightly wider than 400 to accommodate highlights)
+      405, // Height (9 items * 45px)
+      0x000000,
+      0
+    ).setVisible(false);
+
+    const mask = maskRect.createGeometryMask();
+    this.listContainer.setMask(mask);
 
     // Detail Panel (Right)
     this.detailContainer = this.add.container(this.panelX + 200, this.panelY);
@@ -215,7 +228,7 @@ export class CodexScene extends Phaser.Scene {
     // Scroll Indicator & Buttons
     if (this.filteredList.length > this.itemsPerPage) {
       const scrollY = -20;
-      const scrollHeight = this.itemsPerPage * 45 - 5;
+      const scrollHeight = this.itemsPerPage * 45 - 20;
 
       const scrollBarBg = this.add
         .rectangle(410, scrollY, 15, scrollHeight, 0x1a252f)
@@ -230,19 +243,19 @@ export class CodexScene extends Phaser.Scene {
 
       // Up/Down Buttons
       const upBtn = this.add
-        .rectangle(417.5, scrollY - 15, 25, 25, 0x34495e)
+        .rectangle(417.5, scrollY - 20, 30, 30, 0x34495e)
         .setInteractive({ useHandCursor: true });
       this.add
-        .text(417.5, scrollY - 15, "▲", { font: "14px Arial", fill: "#ffffff" })
+        .text(417.5, scrollY - 20, "▲", { font: "16px Arial", fill: "#ffffff" })
         .setOrigin(0.5);
       upBtn.on("pointerdown", () => this.scrollUp());
 
       const downBtn = this.add
-        .rectangle(417.5, scrollY + scrollHeight + 15, 25, 25, 0x34495e)
+        .rectangle(417.5, scrollY + scrollHeight + 20, 30, 30, 0x34495e)
         .setInteractive({ useHandCursor: true });
       this.add
-        .text(417.5, scrollY + scrollHeight + 15, "▼", {
-          font: "14px Arial",
+        .text(417.5, scrollY + scrollHeight + 20, "▼", {
+          font: "16px Arial",
           fill: "#ffffff",
         })
         .setOrigin(0.5);

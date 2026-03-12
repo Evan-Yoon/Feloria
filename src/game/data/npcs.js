@@ -10,8 +10,9 @@ export const NPCS = {
     id: "Chief Hyunseok",
     name: "촌장 현석",
     role: "healer_quest",
-    sprite: "people4",
-    faceKey: "face_people4",
+    sprite: "people2",
+    characterIndex: 0,
+    faceKey: "face_people2",
     faceIndex: 0,
     getDialogue: (registry) => {
       // Post-Seal Dialogue (Prison)
@@ -62,8 +63,9 @@ export const NPCS = {
     id: "boss_hyunseok_climax",
     name: "촌장 현석",
     role: "boss_trainer",
-    sprite: "people4",
-    faceKey: "face_people4",
+    sprite: "people2",
+    characterIndex: 0,
+    faceKey: "face_people2",
     faceIndex: 0,
     getDialogue: (registry) => {
       return [
@@ -77,8 +79,9 @@ export const NPCS = {
   boss_hyunseok_defeated: {
     id: "boss_hyunseok_defeated",
     name: "촌장 현석",
-    sprite: "people4",
-    faceKey: "face_people4",
+    sprite: "people2",
+    characterIndex: 0,
+    faceKey: "face_people2",
     faceIndex: 1, 
     getDialogue: (registry) => {
       return [
@@ -90,9 +93,10 @@ export const NPCS = {
     id: "shopkeeper",
     name: "상인 토비",
     role: "shopkeeper",
-    sprite: "people1",
-    faceKey: "face_people1",
-    faceIndex: 0,
+    sprite: "people2",
+    characterIndex: 3,
+    faceKey: "face_people2",
+    faceIndex: 3,
     getDialogue: (registry) => {
       return [
         "어서 와! 필요한 물건이 있나?",
@@ -104,7 +108,8 @@ export const NPCS = {
     id: "villager1",
     name: "마을 주민 리나",
     role: "hint_npc",
-    sprite: "people2",
+    sprite: "people1",
+    characterIndex: 1,
     faceKey: "face_people1",
     faceIndex: 1,
     getDialogue: (registry) => {
@@ -132,7 +137,8 @@ export const NPCS = {
     id: "eugene",
     name: "고양이 연구가 유진",
     role: "lore_npc",
-    sprite: "people3",
+    sprite: "people1",
+    characterIndex: 2,
     faceKey: "face_people1",
     faceIndex: 2,
     getDialogue: (registry) => {
@@ -165,8 +171,9 @@ export const NPCS = {
     id: "darin",
     name: "숲 탐험가 다린",
     role: "hint_npc",
-    sprite: "people5",
-    faceKey: "face_people2",
+    sprite: "people3",
+    characterIndex: 0,
+    faceKey: "face_people3",
     faceIndex: 0,
     getDialogue: (registry) => {
       // Very simple reactive check: if their highest level cat is > 3
@@ -189,8 +196,9 @@ export const NPCS = {
     name: "초보 트레이너 카일",
     role: "trainer",
     trainerId: "kyle",
-    sprite: "people6",
-    faceKey: "face_people2",
+    sprite: "people3",
+    characterIndex: 1,
+    faceKey: "face_people3",
     faceIndex: 1,
     getDialogue: (registry) => {
       const defeated = registry.get("defeatedTrainers") || [];
@@ -206,9 +214,10 @@ export const NPCS = {
     id: "noah",
     name: "여행자 노아",
     role: "hint_npc",
-    sprite: "people7",
-    faceKey: "face_people3",
-    faceIndex: 0,
+    sprite: "people4",
+    characterIndex: 7,
+    faceKey: "face_people4",
+    faceIndex: 7,
     getDialogue: (registry) => {
       if (registry.get("chapter1_done")) {
         return [
@@ -227,9 +236,10 @@ export const NPCS = {
     name: "트레이너 세라",
     role: "trainer",
     trainerId: "sera",
-    sprite: "people8",
-    faceKey: "face_people2",
-    faceIndex: 2,
+    sprite: "actor1",
+    characterIndex: 3,
+    faceKey: "face_actor1",
+    faceIndex: 3,
     getDialogue: (registry) => {
       const defeated = registry.get("defeatedTrainers") || [];
       if (defeated.includes("sera")) {
@@ -283,11 +293,23 @@ export const NPCS = {
   ellie: {
     id: "ellie",
     name: "순례자 엘리",
-    role: "hint_npc",
+    role: "boss_trainer",
+    trainerId: "ellie",
     sprite: "actor5",
+    characterIndex: 0,
     faceKey: "face_actor5",
     faceIndex: 0,
     getDialogue: (registry) => {
+      const activeQuests = registry.get("activeQuests") || {};
+      const forestQuest = activeQuests["forest_awakening"];
+
+      if (forestQuest && !forestQuest.completed) {
+        return [
+          "여기는 네가 올 곳이 아니다. 당장 물러나거라!",
+          "숲의 질서를 어지럽히는 자들은 결코 용서하지 않겠다.",
+        ];
+      }
+
       return [
         "신전에 들어가기 전에 준비를 단단히 해.",
         "수호자님은 강한 힘으로 무언가를 억누르고 계셔.",
