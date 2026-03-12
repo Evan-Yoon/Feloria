@@ -64,9 +64,9 @@ export class StarterSelectScene extends Phaser.Scene {
     const height = this.cameras.main.height;
     const container = this.add.container(data.x, height / 2);
 
-    const sprite = this.add.sprite(0, -20, data.id).setScale(2);
-    const label = this.add.text(0, 30, data.name, { font: 'bold 24px Arial', fill: data.color }).setOrigin(0.5);
-    const typeLabel = this.add.text(0, 55, data.type, { font: '16px Arial', fill: '#ffffff' }).setOrigin(0.5);
+    const sprite = this.add.sprite(0, -60, data.id).setScale(2);
+    const label = this.add.text(0, 80, data.name, { font: 'bold 24px Arial', fill: data.color }).setOrigin(0.5);
+    const typeLabel = this.add.text(0, 110, data.type, { font: '16px Arial', fill: '#ffffff' }).setOrigin(0.5);
 
     container.add([sprite, label, typeLabel]);
 

@@ -107,7 +107,8 @@ export class NameScene extends Phaser.Scene {
   }
 
   saveAndContinue() {
-    const playerName = this.nameText.text || "영웅";
+    // Note: inputElement.value is already reflected in this.nameText.text via the 'input' event listener
+    const playerName = this.nameText.text.trim() || "여행자";
     console.log(`Setting player name to: ${playerName}`);
     this.registry.set("playerName", playerName);
     this.scene.start("WorldScene", { mapId: "starwhisk_village" });

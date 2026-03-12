@@ -30,7 +30,7 @@ export const NPCS = {
       if (!firstSteps || !firstSteps.objectives[1].completed) {
         // Starter not chosen yet
         return [
-          "어서 오너라, 여행자야.",
+          "어서 오너라, {playerName}아.",
           "요즘 숲의 기운이 조금 이상하단다. 모험을 도와줄 고양이 한마리를 입양하거라...",
         ];
       }
