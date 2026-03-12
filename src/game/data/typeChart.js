@@ -17,8 +17,15 @@ export const TYPE_CHART = {
     rock: 2.0,
     storm: 0.5,
     grass: 0.5,
+    forest: 0.5,
   },
   grass: {
+    water: 2.0,
+    rock: 2.0,
+    fire: 0.5,
+    ice: 0.5,
+  },
+  forest: {
     water: 2.0,
     rock: 2.0,
     fire: 0.5,
@@ -28,6 +35,8 @@ export const TYPE_CHART = {
     fire: 2.0,
     storm: 2.0,
     water: 0.5,
+    forest: 0.5,
+    grass: 0.5,
   },
   ice: {
     forest: 2.0,
@@ -37,6 +46,7 @@ export const TYPE_CHART = {
   storm: {
     water: 2.0,
     forest: 0.5,
+    grass: 0.5,
   },
   shadow: {
     light: 2.0,

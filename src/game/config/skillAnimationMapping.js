@@ -85,6 +85,7 @@ export const typeAnimationMap = {
   "빛": "Light1",
   "노말": "Sword1",
   "전기": "Thunder2",
+  "숲": "Wind1",
   // English fallbacks
   "forest": "Wind1",
   "fire": "Fire2",

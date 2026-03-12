@@ -28,9 +28,7 @@ export class UIScene extends Phaser.Scene {
       },
     }).setOrigin(0, 0);
 
-    // Listen to events from the WorldScene
-    const worldScene = this.scene.manager.getScene('WorldScene');
-    
+    // Listens for Map Names
     worldScene.events.on('displayMapName', (mapName) => {
         this.mapNameText.setText(mapName);
         this.mapNameText.setVisible(true);
@@ -40,9 +38,60 @@ export class UIScene extends Phaser.Scene {
         this.mapNameText.setVisible(false);
     });
 
-    worldScene.events.on('shutdown', () => {
+    // --- Notification System ---
+    this.notificationQueue = [];
+    this.isShowingNotification = false;
+
+    worldScene.events.on('notifyItem', (data) => {
+        this.queueNotification(data);
+    });
+
+    this.events.on('shutdown', () => {
         this.mapNameText.setVisible(false);
     });
+  }
+
+  queueNotification(data) {
+    this.notificationQueue.push(data);
+    if (!this.isShowingNotification) {
+      this.processNotificationQueue();
+    }
+  }
+
+  processNotificationQueue() {
+    if (this.notificationQueue.length === 0) {
+      this.isShowingNotification = false;
+      return;
+    }
+
+    this.isShowingNotification = true;
+    const { message, color } = this.notificationQueue.shift();
+    const { width, height } = this.cameras.main;
+
+    const container = this.add.container(width / 2, height + 50);
+    
+    const bg = this.add.rectangle(0, 0, 400, 60, 0x000000, 0.8)
+      .setStrokeStyle(2, color || 0xf1c40f);
+    
+    const text = this.add.text(0, 0, message, {
+      font: 'bold 20px "Malgun Gothic", "Apple SD Gothic Neo", sans-serif',
+      fill: '#ffffff'
+    }).setOrigin(0.5);
+
+    container.add([bg, text]);
+
+    // Animate In, Wait, Animate Out
+    this.tweens.timeline({
+      targets: container,
+      tweens: [
+        { y: height - 100, duration: 400, ease: 'Power2' },
+        { y: height - 110, duration: 2000 }, // Wait period
+        { y: height + 50, duration: 400, ease: 'Power2', onComplete: () => {
+          container.destroy();
+          this.processNotificationQueue();
+        }}
+      ]
+    }, this);
   }
 
   update() {

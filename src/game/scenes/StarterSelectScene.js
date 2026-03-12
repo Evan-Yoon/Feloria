@@ -57,6 +57,12 @@ export class StarterSelectScene extends Phaser.Scene {
 
     this.confirmButton.on('pointerdown', () => this.confirmStarter());
     
+    this.input.keyboard.on('keydown-SPACE', () => {
+        if (this.confirmButton.visible) {
+            this.confirmStarter();
+        }
+    });
+    
     this.selectedId = null;
   }
 

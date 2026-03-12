@@ -100,7 +100,13 @@ export class WorldScene extends Phaser.Scene {
     this.time.delayedCall(10, () => {
       this.events.emit('displayMapName', this.mapData.name);
 
-      this.checkStoryTriggers(data);
+      if (data.triggerClimax) {
+        this.runClimaxSequence();
+      } else if (data.triggerPostClimax) {
+        this.runPostClimaxSequence();
+      } else {
+        this.checkStoryTriggers(data);
+      }
     });
   }
 
@@ -170,6 +176,11 @@ export class WorldScene extends Phaser.Scene {
           const inventory = this.registry.get("playerInventory") || {};
           inventory["capture_crystal"] = (inventory["capture_crystal"] || 0) + 2;
           this.registry.set("playerInventory", inventory);
+
+          this.events.emit('notifyItem', { 
+            message: `포획 크리스탈 x2 획득!`,
+            color: 0x27ae60 
+          });
 
           this.registry.set("intro_done", true);
 
@@ -280,35 +291,40 @@ export class WorldScene extends Phaser.Scene {
     this.npcs = this.add.group();
     this.mapData.spawns.forEach((spawn) => {
       if (spawn.type === "npc") {
-        let config = ASSETS.CHARACTERS.PEOPLE1; // Default
-        if (spawn.id === "elder_hyunseok" || spawn.id === "mira") {
-          config = ASSETS.CHARACTERS.PEOPLE4;
-        } else if (spawn.id === "trainer_guardian_rowan") {
-          config = ASSETS.CHARACTERS.PEOPLE2;
-        } else if (spawn.id && spawn.id.startsWith("trainer")) {
-          config = ASSETS.CHARACTERS.PEOPLE1;
+        let npcId = spawn.id;
+        if (npcId === "mira") npcId = "elder_hyunseok";
+        const npcData = NPCS[npcId];
+
+        if (!npcData) {
+          console.warn(`WorldScene: No data for NPC '${npcId}' in createNPCs`);
+          return;
         }
 
-        const frames = this.getCharacterFrames(config.KEY, config.CHARACTER_INDEX);
+        // 1. Determine Sprite Key and Character Block
+        const spriteKey = npcData.sprite || "people1";
+        // Find the character block in ASSETS.CHARACTERS that matches this KEY
+        const config = Object.values(ASSETS.CHARACTERS).find(c => c.KEY === spriteKey) || ASSETS.CHARACTERS.PEOPLE1;
+        
+        const characterIndex = npcData.characterIndex !== undefined ? npcData.characterIndex : (config.CHARACTER_INDEX || 0);
+
+        const frames = this.getCharacterFrames(config.KEY, characterIndex);
         const startFrame = frames.down[1];
 
         let nx = spawn.x;
         let ny = spawn.y;
 
-        if ((spawn.id === "elder_hyunseok" || spawn.id === "mira") && this.mapId === "starwhisk_village" && this.registry.get("chapter1_done")) {
+        // Custom positioning for prison scene
+        if (npcId === "elder_hyunseok" && this.mapId === "starwhisk_village" && this.registry.get("chapter1_done")) {
           nx = 2;
           ny = 16;
-
-          // Build temporary prison
+          // (Prison construction logic remains same)
           const ground = this.mapData.layers.groundLayer;
           const collision = this.mapData.layers.collisionLayer;
-
           const rocks = [
             { x: 1, y: 15 }, { x: 2, y: 15 }, { x: 3, y: 15 },
             { x: 1, y: 16 }, { x: 3, y: 16 },
-            { x: 1, y: 17 }, { x: 3, y: 17 } // Leave (2,17) open for player to talk
+            { x: 1, y: 17 }, { x: 3, y: 17 }
           ];
-
           rocks.forEach(pos => {
             if (ground) this.mapData.map.putTileAt(4, pos.x, pos.y, true, ground);
             if (collision) this.mapData.map.putTileAt(4, pos.x, pos.y, true, collision);
@@ -325,6 +341,12 @@ export class WorldScene extends Phaser.Scene {
         npc.npcId = spawn.id;
         npc.tileX = nx;
         npc.tileY = ny;
+
+        // 2. Differentiate Trainers with red tint
+        if (npcData.role === "trainer" || npcData.role === "boss_trainer") {
+          npc.setTint(0xff8888); // Reddish color for trainers
+        }
+
         this.npcs.add(npc);
       }
     });
@@ -488,16 +510,14 @@ export class WorldScene extends Phaser.Scene {
 
     if (npcSprite) {
       // Find NPC Data
-      // Special check for dynamic legendaries
-      if (npcSprite.npcId && npcSprite.npcId.startsWith("legendary_")) {
-        this.triggerLegendaryEncounter(npcSprite);
-        return;
-      }
+      let npcId = npcSprite.npcId;
+      // Fallback: mira is actually Chief Hyunseok (elder_hyunseok)
+      if (npcId === "mira") npcId = "elder_hyunseok";
 
-      const npcData = NPCS[npcSprite.npcId];
+      const npcData = NPCS[npcId];
 
       if (!npcData) {
-        console.warn(`WorldScene: NPC ID '${npcSprite.npcId}' not found in npcs.js`);
+        console.warn(`WorldScene: NPC ID '${npcId}' not found in npcs.js`);
         return;
       }
 
@@ -505,7 +525,7 @@ export class WorldScene extends Phaser.Scene {
       let pages = npcData.getDialogue(this.registry);
 
       // Pre-dialogue objective triggers
-      if (npcData.id === "Chief Hyunseok" || npcData.id === "mira") {
+      if (npcData.id === "Chief Hyunseok") {
         const quest = questSystem.getQuest(this.registry, "first_steps");
         if (quest && !quest.objectives.find((o) => o.id === "talk_mira").completed) {
           questSystem.completeObjective(this.registry, "first_steps", "talk_mira");
@@ -605,6 +625,81 @@ export class WorldScene extends Phaser.Scene {
 
     // Force trigger battle
     this.triggerTrainerBattle('guardian_rowan');
+  }
+
+  async runClimaxSequence() {
+    this.isDialogueActive = true;
+    cutsceneSystem.lockInput(this);
+
+    // 1. Rowan's final words (if any additional needed, but npc dialogue already says enough)
+    
+    // 2. Chief Hyunseok Appears
+    const spawn = this.mapData.spawns.find(s => s.id === 'trainer_guardian_rowan');
+    const hyunseok = this.add.sprite(spawn.x * 32 + 16, (spawn.y + 5) * 32, 'people4', 37); // actor sheet index
+    hyunseok.setOrigin(0.5, 1);
+    hyunseok.setAlpha(0);
+    hyunseok.setDepth(11);
+
+    await cutsceneSystem.panCameraTo(this, hyunseok.x, hyunseok.y, 1000);
+    
+    this.tweens.add({
+      targets: hyunseok,
+      alpha: 1,
+      duration: 1000
+    });
+
+    await cutsceneSystem.delay(this, 1000);
+
+    // Walk up to player
+    await new Promise(resolve => {
+      this.tweens.add({
+        targets: hyunseok,
+        y: (spawn.y + 2) * 32,
+        duration: 2000,
+        onComplete: resolve
+      });
+    });
+
+    const npcData = NPCS['boss_hyunseok_climax'];
+    await cutsceneSystem.playDialogue(this, npcData.name, npcData.getDialogue(this.registry), npcData.faceKey, npcData.faceIndex);
+
+    // 3. Trigger Battle
+    this.registry.set('is_climax_battle', true);
+    this.triggerTrainerBattle('boss_hyunseok');
+  }
+
+  async runPostClimaxSequence() {
+    this.isDialogueActive = true;
+    cutsceneSystem.lockInput(this);
+
+    const npcData = NPCS['boss_hyunseok_defeated'];
+    await cutsceneSystem.playDialogue(this, npcData.name, npcData.getDialogue(this.registry), npcData.faceKey, npcData.faceIndex);
+
+    // 4. Legendary Cats Scatter Effect
+    await cutsceneSystem.shakeCamera(this, 3000, 0.05);
+    this.cameras.main.flash(1000, 255, 255, 255);
+    
+    this.updateLogText("전설의 고양이들이 대륙 곳곳으로 흩어졌습니다...");
+    
+    await cutsceneSystem.delay(this, 2000);
+
+    // 5. Final Fade and Set State
+    this.cameras.main.fadeOut(2000, 0, 0, 0);
+    this.cameras.main.once('camerafadeoutcomplete', () => {
+      this.registry.set('chapter1_done', true);
+      this.registry.set('is_climax_battle', false);
+      
+      // Return to village prison
+      this.scene.start('WorldScene', {
+        mapId: 'starwhisk_village',
+        spawnX: 2,
+        spawnY: 17
+      });
+    });
+  }
+
+  updateLogText(text) {
+    this.events.emit('notifyItem', { message: text, color: 0x3498db });
   }
 
   async triggerLegendaryEncounter(sprite) {

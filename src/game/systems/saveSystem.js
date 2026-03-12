@@ -51,6 +51,13 @@ export const saveSystem = {
       activeQuests: registry.get('activeQuests') || [],
       completedQuests: registry.get('completedQuests') || [],
 
+      // Story Flags
+      intro_started: registry.get('intro_started') || false,
+      intro_done: registry.get('intro_done') || false,
+      chapter1_done: registry.get('chapter1_done') || false,
+      boss_rowan_intro: registry.get('boss_rowan_intro') || false,
+      is_climax_battle: registry.get('is_climax_battle') || false,
+
       // World state
       currentMapId: mapId,
       playerX: playerX,
@@ -110,6 +117,13 @@ export const saveSystem = {
       
       registry.set('activeQuests', state.activeQuests || []);
       registry.set('completedQuests', state.completedQuests || []);
+
+      // Load story flags
+      registry.set('intro_started', state.intro_started || false);
+      registry.set('intro_done', state.intro_done || false);
+      registry.set('chapter1_done', state.chapter1_done || false);
+      registry.set('boss_rowan_intro', state.boss_rowan_intro || false);
+      registry.set('is_climax_battle', state.is_climax_battle || false);
 
       console.log(`[SaveSystem] Successfully loaded slot ${slot} state from ${new Date(parsedSave.timestamp).toLocaleTimeString()}`);
       

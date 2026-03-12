@@ -31,7 +31,7 @@ export const TRAINERS = {
     },
     party: [
       { creatureId: "BRAMBLECAT", level: 10 },
-      { creatureId: "AQUATAIL", level: 9 },
+      { creatureId: "DEWTAIL", level: 9 },
     ],
   },
   guardian_rowan: {
@@ -45,6 +45,19 @@ export const TRAINERS = {
     party: [
         { creatureId: "MOSSLYNX", level: 12 },
         { creatureId: "THORNMANE", level: 14 }
+    ],
+  },
+  boss_hyunseok: {
+    id: "boss_hyunseok",
+    name: "촌장 현석",
+    rewards: {
+        gold: 1000,
+        expMultiplier: 3.0,
+    },
+    party: [
+        { creatureId: "INFERMANE", level: 18 },
+        { creatureId: "FLOODLYNX", level: 19 },
+        { creatureId: "VOIDLYNX", level: 20 }
     ],
   },
 };

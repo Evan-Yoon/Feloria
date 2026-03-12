@@ -773,8 +773,17 @@ export class BattleScene extends Phaser.Scene {
     this.registry.set("playerParty", this.playerParty);
 
     this.updateLog(`${this.playerCat.name}가 쓰러졌다...`);
+    
     this.time.delayedCall(1500, () => {
-      this.showSummaryPanel("패배", 0, false, this.playerCat.level, false);
+      if (this.trainerId === 'boss_hyunseok') {
+        // Special Game Over for final boss
+        this.cameras.main.fadeOut(2000, 0, 0, 0);
+        this.cameras.main.once('camerafadeoutcomplete', () => {
+          this.scene.start('GameOverScene'); // Assuming this exists or I'll create it
+        });
+      } else {
+        this.showSummaryPanel("패배", 0, false, this.playerCat.level, false);
+      }
     });
   }
 
@@ -899,8 +908,10 @@ export class BattleScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    // Click to proceed
+    // Click or Key to proceed
     panelBg.on("pointerdown", () => this.endBattle());
+    this.input.keyboard.once("keydown-SPACE", () => this.endBattle());
+    this.input.keyboard.once("keydown-ENTER", () => this.endBattle());
   }
 
   endBattle() {
@@ -918,17 +929,27 @@ export class BattleScene extends Phaser.Scene {
       saveSystem.saveData(this.registry, mapId, tx, ty);
 
       const onBattleCompletelyDone = () => {
-        // Chapter 1 Boss Twist Sequence
-        if (this.trainerId === "guardian_rowan" && !this.registry.get("chapter1_done")) {
-          this.runChapterCompleteSequence(mapId, tx, ty);
-          return;
+        if (this.trainerId === 'guardian_rowan') {
+          this.scene.start('WorldScene', {
+            mapId: this.registry.get('world_mapId'),
+            spawnX: this.registry.get('world_spawnX'),
+            spawnY: this.registry.get('world_spawnY'),
+            triggerClimax: true
+          });
+        } else if (this.trainerId === 'boss_hyunseok') {
+          this.scene.start('WorldScene', {
+            mapId: this.registry.get('world_mapId'),
+            spawnX: this.registry.get('world_spawnX'),
+            spawnY: this.registry.get('world_spawnY'),
+            triggerPostClimax: true
+          });
+        } else {
+          this.scene.start("WorldScene", {
+            mapId: this.registry.get("world_mapId"),
+            spawnX: this.registry.get("world_spawnX"),
+            spawnY: this.registry.get("world_spawnY"),
+          });
         }
-
-        this.scene.start("WorldScene", {
-          mapId,
-          spawnX: tx,
-          spawnY: ty,
-        });
       };
 
       if (this.evolutionHappened) {
@@ -945,85 +966,6 @@ export class BattleScene extends Phaser.Scene {
       } else {
         onBattleCompletelyDone();
       }
-    });
-  }
-
-  async runChapterCompleteSequence(mapId, tx, ty) {
-    const { width, height } = this.cameras.main;
-
-    // 1. Rowan Defeat Visuals
-    this.tweens.add({
-      targets: this.enemySprite,
-      y: this.enemySprite.y + 50,
-      alpha: 0.5,
-      duration: 2000,
-      ease: 'Quad.easeInOut'
-    });
-
-    await cutsceneSystem.shakeCamera(this, 800, 0.015);
-    await cutsceneSystem.delay(this, 1000);
-
-    // 2. Rowan Defeat Dialogue
-    const rowanData = NPCS['trainer_guardian_rowan'];
-    await cutsceneSystem.playDialogue(this, rowanData.name, [
-      "크윽…",
-      "어리석은 녀석…",
-      "네가 무슨 짓을 했는지 아느냐?",
-      "네가 나를 쓰러뜨림으로써…",
-      "봉인을 지키던 마지막 결계가 깨져버렸다…"
-    ]);
-
-    await cutsceneSystem.shakeCamera(this, 1000, 0.02);
-    await cutsceneSystem.delay(this, 500);
-
-    // 3. Hyunseok Appearance
-    const hyunseokSprite = this.add.sprite(width + 100, height / 2, 'npc_mira').setScale(4).setDepth(20);
-    this.tweens.add({
-      targets: hyunseokSprite,
-      x: width - 200,
-      duration: 1500,
-      ease: 'Power2'
-    });
-
-    // Pan camera slightly towards the right
-    await cutsceneSystem.panCameraTo(this, width / 2 + 50, height / 2, 1000);
-
-    // 4. Hyunseok Twist Dialogue
-    await cutsceneSystem.playDialogue(this, "촌장 현석", [
-      "훌륭하구나.",
-      "로완, 이 고지식한 친구가 길을 비켜주지 않아 곤란하던 참이었단다.",
-      "역시 내가 선택한 아이답게 훌륭히 자라주었어.",
-      "그래… 이 순간을 위해 널 키운 것이지."
-    ]);
-
-    // 5. Legendary Awakening Sequence
-    // Light pulse
-    const whiteFlash = this.add.rectangle(0, 0, width, height, 0xffffff, 0).setOrigin(0).setDepth(30).setBlendMode(Phaser.BlendModes.ADD);
-
-    this.tweens.add({
-      targets: whiteFlash,
-      alpha: { from: 0, to: 1 },
-      duration: 3000,
-      yoyo: true,
-      repeat: 1,
-      ease: 'Sine.easeInOut'
-    });
-
-    await cutsceneSystem.shakeCamera(this, 3000, 0.03);
-
-    this.registry.set("chapter1_done", true);
-
-    // Launch Ending Cutscene 
-    this.scene.start("CutsceneScene", {
-      messages: [
-        "고대 고양이의 봉인이 무너졌다.",
-        "전설 속 존재들이 펠로리아 대륙 곳곳으로 흩어지기 시작했다.",
-        "(화염의 솔라리온, 눈보라의 글라시아라, 폭풍의 템페스트클로...)",
-        "(어둠의 엄브라팽, 고목의 버던트링크스)",
-        "- 시즌 1 종료 -"
-      ],
-      nextScene: "WorldScene",
-      sceneData: { mapId, spawnX: tx, spawnY: ty }
     });
   }
 }

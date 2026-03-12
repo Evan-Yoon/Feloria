@@ -48,12 +48,41 @@ export const NPCS = {
       ];
     },
   },
+  boss_hyunseok_climax: {
+    id: "boss_hyunseok_climax",
+    name: "촌장 현석",
+    role: "boss_trainer",
+    sprite: "people4",
+    faceKey: "face_people4",
+    faceIndex: 0,
+    getDialogue: (registry) => {
+      return [
+        "하하하! 정말 수고했다, {playerName}.",
+        "말했지 않았느냐... 내가 너를 아주 특별하게 생각한다고.",
+        "너 덕분에 신전의 결계가 완벽하게 무너졌어. 이제 고대 고양이들을 내 의지대로 다룰 수 있다!",
+        "자, 이제 너는 쓸모가 없어졌구나. 사라져라!",
+      ];
+    },
+  },
+  boss_hyunseok_defeated: {
+    id: "boss_hyunseok_defeated",
+    name: "촌장 현석",
+    sprite: "people4",
+    faceKey: "face_people4",
+    faceIndex: 1, 
+    getDialogue: (registry) => {
+      return [
+        "큭... 하지만 이미 전설의 고양이들이 깨어났다. 내 계획은 멈출 수 없어!",
+      ];
+    },
+  },
   shopkeeper: {
     id: "shopkeeper",
     name: "상인 토비",
     role: "shopkeeper",
     sprite: "people1",
     faceKey: "face_people1",
+    faceIndex: 0,
     getDialogue: (registry) => {
       return [
         "어서 와! 필요한 물건이 있나?",
@@ -67,6 +96,7 @@ export const NPCS = {
     role: "hint_npc",
     sprite: "people2",
     faceKey: "face_people1",
+    faceIndex: 1,
     getDialogue: (registry) => {
       if (registry.get("chapter1_done")) {
         return [
@@ -78,7 +108,7 @@ export const NPCS = {
       if (collection.length > 1) {
         // Has captured at least one cat (since starter is 1)
         return [
-          "와! 벌써 고양이를 잡았구나!",
+          "와! {playerName}! 벌써 고양이를 잡았구나!",
           "촌장님이 널 아주 특별하게 생각하시는 것 같더라.",
         ];
       }
@@ -94,6 +124,7 @@ export const NPCS = {
     role: "lore_npc",
     sprite: "people3",
     faceKey: "face_people1",
+    faceIndex: 2,
     getDialogue: (registry) => {
       // Emergency Healer Role
       if (registry.get("chapter1_done")) {
@@ -125,7 +156,8 @@ export const NPCS = {
     name: "숲 탐험가 다린",
     role: "hint_npc",
     sprite: "people5",
-    faceKey: "face_people1",
+    faceKey: "face_people2",
+    faceIndex: 0,
     getDialogue: (registry) => {
       // Very simple reactive check: if their highest level cat is > 3
       const party = registry.get("playerParty") || [];
@@ -149,6 +181,7 @@ export const NPCS = {
     trainerId: "kyle",
     sprite: "people6",
     faceKey: "face_people2",
+    faceIndex: 1,
     getDialogue: (registry) => {
       const defeated = registry.get("defeatedTrainers") || [];
       if (defeated.includes("kyle")) {
@@ -165,6 +198,7 @@ export const NPCS = {
     role: "hint_npc",
     sprite: "people7",
     faceKey: "face_people3",
+    faceIndex: 0,
     getDialogue: (registry) => {
       if (registry.get("chapter1_done")) {
         return [
@@ -185,6 +219,7 @@ export const NPCS = {
     trainerId: "sera",
     sprite: "people8",
     faceKey: "face_people2",
+    faceIndex: 2,
     getDialogue: (registry) => {
       const defeated = registry.get("defeatedTrainers") || [];
       if (defeated.includes("sera")) {
@@ -200,7 +235,8 @@ export const NPCS = {
     name: "신비한 여행자 에반",
     role: "lore_npc",
     sprite: "actor2",
-    faceKey: "face_people1",
+    faceKey: "face_actor2",
+    faceIndex: 0,
     getDialogue: (registry) => {
       if (registry.get("chapter1_done")) {
         return [
@@ -222,7 +258,8 @@ export const NPCS = {
     role: "trainer",
     trainerId: "luke",
     sprite: "actor3",
-    faceKey: "face_people1",
+    faceKey: "face_actor3",
+    faceIndex: 0,
     getDialogue: (registry) => {
       const defeated = registry.get("defeatedTrainers") || [];
       if (defeated.includes("luke")) {
@@ -237,8 +274,9 @@ export const NPCS = {
     id: "ellie",
     name: "순례자 엘리",
     role: "hint_npc",
-    sprite: "npc",
-    faceKey: "face_people1",
+    sprite: "actor5",
+    faceKey: "face_actor5",
+    faceIndex: 0,
     getDialogue: (registry) => {
       return [
         "신전에 들어가기 전에 준비를 단단히 해.",
@@ -251,21 +289,21 @@ export const NPCS = {
     name: "신전 수호자 로완",
     role: "boss_trainer",
     trainerId: "guardian_rowan",
-    sprite: "actor4",
+    sprite: "evil",
     faceKey: "face_evil",
     faceIndex: 0,
     getDialogue: (registry) => {
       const defeated = registry.get("defeatedTrainers") || [];
       if (defeated.includes("guardian_rowan")) {
         return [
-          "크윽... 훌륭하다...",
-          "하지만 네가 무슨 짓을 했는지 아느냐?",
+          "크윽...",
+          "네가 무슨 짓을 했는지 아느냐?",
           "결계가... 깨져버렸어. 설마 이 모든 게 그 자의 계획이었단 말인가!",
         ];
       }
       return [
         "여기까지 온 걸 보니 꽤 실력이 있군.",
-        "하지만 이 앞은 절대 지나갈 수 없다. 세계의 균형을 위해 나를 꺾어봐라!",
+        "하지만 이 앞은 절대 지나갈 수 없다. 세계의 평화를 위해!",
       ];
     },
   },

@@ -67,11 +67,23 @@ export class CutsceneScene extends Phaser.Scene {
     // Start Sequence
     this.time.delayedCall(500, () => this.showNextMessage());
 
-    // Input to skip/advance
-    this.input.on("pointerdown", () => {
+    // Input to advance
+    const advance = () => {
       if (!this.isFading) {
         this.showNextMessage();
       }
+    };
+
+    this.input.on("pointerdown", advance);
+    this.input.keyboard.on("keydown-SPACE", advance);
+    this.input.keyboard.on("keydown-ENTER", advance);
+
+    // Skip with 'S' or 'ESC'
+    this.input.keyboard.on("keydown-S", () => {
+        if (!this.isFading) this.finishCutscene();
+    });
+    this.input.keyboard.on("keydown-ESC", () => {
+        if (!this.isFading) this.finishCutscene();
     });
   }
 

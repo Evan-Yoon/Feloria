@@ -31,6 +31,15 @@ export const shopSystem = {
     inventory[itemId] += quantity;
     registry.set("playerInventory", inventory);
 
+    // Emit notification to UIScene
+    const scene = registry.systems.scene.getScene('WorldScene');
+    if (scene) {
+      scene.events.emit('notifyItem', { 
+        message: `${item.name} x${quantity} 획득!`,
+        color: 0x27ae60 
+      });
+    }
+
     return { success: true, message: `Bought ${quantity}x ${item.name}!` };
   },
 };

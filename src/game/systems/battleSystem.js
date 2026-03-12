@@ -66,7 +66,7 @@ export const battleSystem = {
     creature.baseExp = evolvedSpecies.baseExp || 50;
     creature.skills = evolvedSpecies.skills ? [...evolvedSpecies.skills] : [];
     creature.description = evolvedSpecies.description || "";
-    creature.habitat = evolvedSpecies.habitat;
+    creature.plannedRegion = evolvedSpecies.plannedRegion;
 
     // Clear old evolution to prevent re-triggering (or assign next stage if it existed)
     creature.evolution = evolvedSpecies.evolution || null;

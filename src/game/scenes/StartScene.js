@@ -81,8 +81,8 @@ export class StartScene extends Phaser.Scene {
 
     this.menuContainer.add([newGameBtn, continueBtn]);
 
-    // Click anywhere to show menu
-    this.input.once("pointerdown", () => {
+    // Click or Press Space/Enter to show menu
+    const showMenu = () => {
       this.pressStartText.setVisible(false);
       this.menuContainer.setVisible(true);
 
@@ -92,7 +92,20 @@ export class StartScene extends Phaser.Scene {
         alpha: { from: 0, to: (t) => t === this.menuContainer ? 1 : 0.4 },
         duration: 500
       });
+    };
+
+    this.input.once("pointerdown", showMenu);
+    this.input.keyboard.on("keydown-SPACE", () => {
+      if (this.pressStartText.visible) {
+        showMenu();
+      } else {
+        // If menu is already visible but fading, skip fade
+        this.tweens.killTweensOf([this.menuContainer, this.overlay]);
+        this.menuContainer.setAlpha(1);
+        this.overlay.setAlpha(0.4);
+      }
     });
+    this.input.keyboard.once("keydown-ENTER", showMenu);
 
     // Instructions
     this.instructions = this.add

@@ -64,8 +64,9 @@ export class InventoryScene extends Phaser.Scene {
     // Quick, clean fetch of normalized items
     const inventory = this.registry.get('playerInventory') || {};
     
-    import('../systems/shopSystem.js').then(({ shopSystem }) => {
-        const itemDatabase = shopSystem.getShopInventory(); // Gets all items as an array
+    // Import ITEMS directly for comprehensive rendering
+    import('../data/items.js').then(({ ITEMS }) => {
+        const itemDatabase = Object.values(ITEMS);
         
         let yPos = this.panelY - 120;
         let itemsRendered = 0;
@@ -124,6 +125,15 @@ export class InventoryScene extends Phaser.Scene {
       if (currentQuantity <= 0) return;
 
       if (itemDef.type === 'healing') {
+          // Emit notification
+          const worldScene = this.scene.manager.getScene('WorldScene');
+          if (worldScene) {
+              worldScene.events.emit('notifyItem', { 
+                  message: `${itemDef.name} x1 사용됨`,
+                  color: 0xe67e22 
+              });
+          }
+
           // Send player to PartyScene with targetMode = true
           this.scene.sleep();
           this.scene.launch('PartyScene', { 

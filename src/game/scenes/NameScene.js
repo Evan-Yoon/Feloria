@@ -70,7 +70,7 @@ export class NameScene extends Phaser.Scene {
     });
 
     inputElement.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" && inputElement.value.length > 0) {
+      if ((event.key === "Enter" || event.key === " ") && inputElement.value.trim().length > 0) {
         inputElement.remove();
         this.saveAndContinue();
       }
