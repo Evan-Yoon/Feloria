@@ -88,6 +88,14 @@ export class PreloadScene extends Phaser.Scene {
       this.load.image(asset.KEY, asset.PATH);
     });
 
+    // 5. Audio Assets
+    const audioCats = ['BGM', 'BGS', 'ME', 'SE'];
+    audioCats.forEach(cat => {
+      Object.values(ASSETS.AUDIO[cat]).forEach(asset => {
+        this.load.audio(asset.KEY, asset.PATH);
+      });
+    });
+
     // Error handling: if an asset fails to load, it won't crash the scene
     this.load.on('loaderror', (file) => {
       console.warn(`Failed to load asset: ${file.key} at ${file.src}`);
@@ -103,6 +111,11 @@ export class PreloadScene extends Phaser.Scene {
 
   create() {
     console.log('PreloadScene: Assets loaded, creating placeholder textures...');
+
+    // Initialize Audio Manager
+    import('../systems/audioManager.js').then(module => {
+      module.audioManager.init(this.game);
+    });
 
     // Create placeholder textures at runtime so the game is playable without external files
     this.createPlaceholderTextures();

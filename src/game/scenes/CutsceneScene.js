@@ -15,6 +15,13 @@ export class CutsceneScene extends Phaser.Scene {
     this.nextScene = data.nextScene || "StartScene";
     this.sceneData = data.sceneData || {};
     this.currentMessageIndex = 0;
+
+    // Play Intro BGM if applicable
+    if (this.nextScene === "NameScene") {
+      import('../systems/audioManager.js').then(module => {
+        module.audioManager.playBGM('bgm_intro');
+      });
+    }
   }
 
   create() {

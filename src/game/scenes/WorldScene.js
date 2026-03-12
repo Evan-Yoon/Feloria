@@ -100,6 +100,24 @@ export class WorldScene extends Phaser.Scene {
     this.time.delayedCall(10, () => {
       this.events.emit('displayMapName', this.mapData.name);
 
+      // --- Map BGM Integration ---
+      import('../systems/audioManager.js').then(module => {
+        const bgmMap = {
+          'starwhisk_village': 'bgm_village',
+          'greenpaw_forest': 'bgm_forest_greenpaw',
+          'mosslight_path': 'bgm_path_mosslight',
+          'ancient_forest': 'bgm_forest_ancient',
+          'mosslight_shrine': 'bgm_shrine_mosslight'
+        };
+        const bgmKey = bgmMap[this.mapId] || 'bgm_village';
+        module.audioManager.setMapBGM(bgmKey);
+        
+        // Don't restart if already playing (e.g. from battle return)
+        if (!data.triggerClimax && !data.triggerPostClimax) {
+          module.audioManager.resumeMapBGM();
+        }
+      });
+
       if (data.triggerClimax) {
         this.runClimaxSequence();
       } else if (data.triggerPostClimax) {
@@ -468,6 +486,12 @@ export class WorldScene extends Phaser.Scene {
       // Add a slight delay to prevent warp loop jitter
       this.isMoving = true;
       this.events.emit('hideMapName');
+      
+      // Play Map Transition SE
+      import('../systems/audioManager.js').then(module => {
+        module.audioManager.playSE('se_move');
+      });
+
       this.cameras.main.fadeOut(300, 0, 0, 0);
       this.cameras.main.once("camerafadeoutcomplete", () => {
         // Autosave upon map transition securely
@@ -692,6 +716,12 @@ export class WorldScene extends Phaser.Scene {
     });
 
     const npcData = NPCS['boss_hyunseok_climax'];
+    
+    // Play Climax BGM
+    import('../systems/audioManager.js').then(module => {
+      module.audioManager.playBGM('bgm_climax_event');
+    });
+
     await cutsceneSystem.playDialogue(this, npcData.name, npcData.getDialogue(this.registry), npcData.faceKey, npcData.faceIndex);
 
     // 3. Trigger Battle
@@ -707,6 +737,10 @@ export class WorldScene extends Phaser.Scene {
     await cutsceneSystem.playDialogue(this, npcData.name, npcData.getDialogue(this.registry), npcData.faceKey, npcData.faceIndex);
 
     // 4. Legendary Cats Scatter Effect
+    import('../systems/audioManager.js').then(module => {
+      module.audioManager.playBGS('bgs_quake');
+    });
+
     await cutsceneSystem.shakeCamera(this, 3000, 0.05);
     this.cameras.main.flash(1000, 255, 255, 255);
 
@@ -719,6 +753,11 @@ export class WorldScene extends Phaser.Scene {
     this.cameras.main.once('camerafadeoutcomplete', () => {
       this.registry.set('chapter1_done', true);
       this.registry.set('is_climax_battle', false);
+
+      // Stop Quake BGS
+      import('../systems/audioManager.js').then(module => {
+        module.audioManager.stopBGS();
+      });
 
       // Return to village prison
       this.scene.start('WorldScene', {
@@ -797,6 +836,11 @@ export class WorldScene extends Phaser.Scene {
 
     this.cameras.main.flash(300, 150, 255, 150);
 
+    // Play Heal SE
+    import('../systems/audioManager.js').then(module => {
+      module.audioManager.playSE('se_heal');
+    });
+
     // Flash completely heals, log internally
     console.log("WorldScene: Party fully healed via Elder Mira.");
 
@@ -820,6 +864,12 @@ export class WorldScene extends Phaser.Scene {
     this.player.setFrame(this.player.animFrames[this.playerDir][1]);
 
     this.events.emit('hideMapName');
+    
+    // Play Encounter SE
+    import('../systems/audioManager.js').then(module => {
+      module.audioManager.playSE('se_encounter');
+    });
+
     this.cameras.main.flash(500, 255, 0, 0); // Red flash
 
     this.time.delayedCall(600, () => {
@@ -852,6 +902,12 @@ export class WorldScene extends Phaser.Scene {
     this.player.setFrame(this.player.animFrames[this.playerDir][1]);
 
     this.events.emit('hideMapName');
+    
+    // Play Encounter SE
+    import('../systems/audioManager.js').then(module => {
+      module.audioManager.playSE('se_encounter');
+    });
+
     this.cameras.main.flash(500, 255, 255, 255);
 
     this.time.delayedCall(600, () => {

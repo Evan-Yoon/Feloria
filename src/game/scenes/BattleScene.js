@@ -144,6 +144,20 @@ export class BattleScene extends Phaser.Scene {
               this.enemyUI.setVisible(true);
               this.logBg.setVisible(true);
               this.logText.setVisible(true);
+
+              // --- Play Battle BGM ---
+              import('../systems/audioManager.js').then(module => {
+                const bgmMap = {
+                  'kyle': 'bgm_battle_kyle',
+                  'sera': 'bgm_battle_sera',
+                  'luke': 'bgm_battle_luke',
+                  'guardian_rowan': 'bgm_battle_rowan',
+                  'boss_hyunseok': 'bgm_battle_hyunseok'
+                };
+                const bgmKey = this.isTrainer ? (bgmMap[this.trainerId] || 'bgm_battle_wild') : 'bgm_battle_wild';
+                module.audioManager.playBGM(bgmKey);
+              });
+
               this.updateLog(`야생의 ${this.enemyCat.name}(이)가 나타났다!`);
               this.time.delayedCall(1500, () => this.nextTurn());
             }
@@ -279,7 +293,12 @@ export class BattleScene extends Phaser.Scene {
         .setOrigin(0.5);
 
       btnBg.on("pointerdown", () => this.handleAction(text));
-      btnBg.on("pointerover", () => btnBg.setFillStyle(0xe74c3c));
+      btnBg.on("pointerover", () => {
+        btnBg.setFillStyle(0xe74c3c);
+        import('../systems/audioManager.js').then(module => {
+          module.audioManager.playSE('se_cursor');
+        });
+      });
       btnBg.on("pointerout", () => btnBg.setFillStyle(0x34495e));
 
       this.menuUI.add([btnBg, btnText]);
@@ -328,6 +347,10 @@ export class BattleScene extends Phaser.Scene {
         btnBg.on("pointerdown", () => {
           this.skillMenuUI.setVisible(false);
           this.menuUI.setVisible(true);
+          // Play Cancel SE
+          import('../systems/audioManager.js').then(module => {
+            module.audioManager.playSE('se_cancel');
+          });
         });
       } else {
         btnBg.on("pointerdown", () => {
@@ -336,7 +359,12 @@ export class BattleScene extends Phaser.Scene {
         });
       }
 
-      btnBg.on("pointerover", () => btnBg.setFillStyle(0xe74c3c));
+      btnBg.on("pointerover", () => {
+        btnBg.setFillStyle(0xe74c3c);
+        import('../systems/audioManager.js').then(module => {
+          module.audioManager.playSE('se_cursor');
+        });
+      });
       btnBg.on("pointerout", () => btnBg.setFillStyle(0x34495e));
 
       this.skillMenuUI.add([btnBg, btnText]);
@@ -379,6 +407,11 @@ export class BattleScene extends Phaser.Scene {
       "scratch",
     );
 
+    // Play Basic Attack SE
+    import('../systems/audioManager.js').then(module => {
+      module.audioManager.playSE('se_attack_basic');
+    });
+
     skillEffectSystem.playEffect(this, this.enemySprite, "scratch", "노말", multiplier);
 
     this.time.delayedCall(800, () => {
@@ -404,6 +437,11 @@ export class BattleScene extends Phaser.Scene {
       this.enemyCat,
       skillId,
     );
+
+    // Play Skill SE by type
+    import('../systems/audioManager.js').then(module => {
+      module.audioManager.playSkillSE(skill.type);
+    });
 
     skillEffectSystem.playEffect(this, this.enemySprite, skillId, skill.type, multiplier);
 
@@ -452,6 +490,11 @@ export class BattleScene extends Phaser.Scene {
     this.time.delayedCall(1000, () => {
       if (battleSystem.checkCapture(this.enemyCat)) {
         this.updateLog("성공! 야생 고양이를 포획했다!");
+
+        // Play Capture ME
+        import('../systems/audioManager.js').then(module => {
+          module.audioManager.playME('me_catch_success', { duckBGM: true });
+        });
 
         // Update Codex and Quest
         codexSystem.markCaught(this.registry, this.enemyCat.id);
@@ -531,6 +574,12 @@ export class BattleScene extends Phaser.Scene {
         this.updateLog(`${this.enemyCat.name}(이)가 ${skill.name}(을)를 사용했다!`);
         
         const { damage, multiplier } = battleSystem.calculateDamage(this.enemyCat, this.playerCat, skillId);
+        
+        // Play Skill SE
+        import('../systems/audioManager.js').then(module => {
+          module.audioManager.playSkillSE(skill.type);
+        });
+
         skillEffectSystem.playEffect(this, this.playerSprite, skillId, skill.type, multiplier);
 
         this.time.delayedCall(1000, () => {
@@ -554,6 +603,12 @@ export class BattleScene extends Phaser.Scene {
       this.playerCat,
       "scratch",
     );
+
+    // Play Attack SE
+    import('../systems/audioManager.js').then(module => {
+      module.audioManager.playSE('se_attack_basic');
+    });
+
     skillEffectSystem.playEffect(this, this.playerSprite, "scratch", "노말", multiplier);
 
     this.time.delayedCall(1000, () => {
@@ -580,6 +635,15 @@ export class BattleScene extends Phaser.Scene {
       this.enemyHpText.setText(`HP: ${target.currentHp}/${target.maxHp}`);
       this.enemyHpBar.width = 260 * ratio;
       this.enemySprite.setTint(0xff0000);
+      
+      // Play Death SE if HP hits 0
+      if (target.currentHp <= 0) {
+        import('../systems/audioManager.js').then(module => {
+          const deathKey = targetType === "player" ? "se_collapse_player" : "se_collapse_enemy";
+          module.audioManager.playSE(deathKey);
+        });
+      }
+
       this.time.delayedCall(100, () => this.enemySprite.clearTint());
     }
   }
@@ -653,6 +717,12 @@ export class BattleScene extends Phaser.Scene {
         const itemId = trainerData.rewards.item;
         inventory[itemId] = (inventory[itemId] || 0) + 1;
         this.registry.set("playerInventory", inventory);
+        
+        // Play Item Get ME
+        import('../systems/audioManager.js').then(module => {
+          module.audioManager.playME('me_item_get', { duckBGM: true });
+        });
+
         console.log(`BattleScene: Granted item reward ${itemId}`);
       }
     } else {
@@ -699,6 +769,12 @@ export class BattleScene extends Phaser.Scene {
 
     this.updateLog("배틀에서 승리했다!");
 
+    // Play Victory ME
+    import('../systems/audioManager.js').then(module => {
+      const victoryKey = this.isTrainer ? "me_victory_trainer" : "me_victory_wild";
+      module.audioManager.playME(victoryKey, { duckBGM: true });
+    });
+
     if (leveledUp) {
       this.time.delayedCall(1000, () => {
         this.playLevelUpAnimation(
@@ -740,6 +816,11 @@ export class BattleScene extends Phaser.Scene {
       onComplete: () => sparkle.destroy()
     });
 
+    // Play Level Up ME
+    import('../systems/audioManager.js').then(module => {
+      module.audioManager.playME('me_level_up', { duckBGM: true });
+    });
+
     // Bouncing text
     const levelUpText = this.add.text(this.playerSprite.x, this.playerSprite.y - 80, "레벨 업!", {
       font: 'bold 32px "Press Start 2P", Courier',
@@ -774,6 +855,11 @@ export class BattleScene extends Phaser.Scene {
     this.registry.set("playerParty", this.playerParty);
 
     this.updateLog(`${this.playerCat.name}가 쓰러졌다...`);
+    
+    // Play Game Over ME
+    import('../systems/audioManager.js').then(module => {
+      module.audioManager.playME('me_game_over', { duckBGM: true });
+    });
     
     this.time.delayedCall(1500, () => {
       if (this.trainerId === 'boss_hyunseok') {

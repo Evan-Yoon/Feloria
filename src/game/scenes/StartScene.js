@@ -13,6 +13,11 @@ export class StartScene extends Phaser.Scene {
   create() {
     const { width, height } = this.cameras.main;
 
+    // Play Title BGM
+    import('../systems/audioManager.js').then(module => {
+      module.audioManager.playBGM('bgm_title');
+    });
+
     // Background Image
     const background = this.add.image(width / 2, height / 2, 'bg_title_screen');
     const scale = Math.max(width / background.width, height / background.height);
@@ -129,7 +134,12 @@ export class StartScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
 
-    item.on("pointerover", () => item.setStyle({ fill: "#e74c3c" }));
+    item.on("pointerover", () => {
+      item.setStyle({ fill: "#e74c3c" });
+      import('../systems/audioManager.js').then(module => {
+        module.audioManager.playSE('se_cursor');
+      });
+    });
     item.on("pointerout", () => item.setStyle({ fill: "#ffffff" }));
     item.on("pointerdown", callback);
 

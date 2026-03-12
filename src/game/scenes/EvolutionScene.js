@@ -100,6 +100,11 @@ export class EvolutionScene extends Phaser.Scene {
   }
 
   revealNewCreature() {
+    // Play Evolution ME
+    import('../systems/audioManager.js').then(module => {
+      module.audioManager.playME('me_evolution', { duckBGM: true });
+    });
+
     // Huge flash
     this.cameras.main.flash(800, 255, 255, 255);
     

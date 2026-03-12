@@ -38,6 +38,11 @@ export const shopSystem = {
         message: `${item.name} x${quantity} 획득!`,
         color: 0x27ae60 
       });
+
+      // Play Item Get ME
+      import('./audioManager.js').then(module => {
+        module.audioManager.playME('me_item_get', { duckBGM: true });
+      });
     }
 
     return { success: true, message: `Bought ${quantity}x ${item.name}!` };
