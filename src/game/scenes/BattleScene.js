@@ -830,7 +830,7 @@ export class BattleScene extends Phaser.Scene {
 
     let yPos = height / 2 - 80;
 
-    if (result === "Victory") {
+    if (result === "Victory" || result === "Captured" || result === "승리") {
       let line = `경험치 획득: +${expGained}`;
       if (goldGain > 0) line += ` | 골드: +${goldGain}`;
 

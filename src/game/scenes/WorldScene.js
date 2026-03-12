@@ -86,6 +86,7 @@ export class WorldScene extends Phaser.Scene {
     // Menu Key (ESC or ENTER)
     this.input.keyboard.on("keydown-ESC", () => this.openMenu());
     this.input.keyboard.on("keydown-ENTER", () => this.openMenu());
+    this.input.keyboard.on("keydown-C", () => this.openCodex());
 
     // 6. Camera Follow
     this.cameras.main.startFollow(this.player, true);
@@ -187,6 +188,13 @@ export class WorldScene extends Phaser.Scene {
     this.events.emit('hideMapName');
     this.scene.pause();
     this.scene.launch("MenuScene");
+  }
+
+  openCodex() {
+    if (this.isDialogueActive || this.isMoving) return;
+    this.events.emit('hideMapName');
+    this.scene.pause();
+    this.scene.launch("CodexScene");
   }
 
   /**

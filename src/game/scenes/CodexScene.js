@@ -1,104 +1,220 @@
 import Phaser from 'phaser';
 import { CREATURES } from '../data/creatures.js';
 import { codexSystem } from '../systems/codexSystem.js';
+import { ASSETS } from '../config/assetPaths.js';
+import { SKILLS } from '../data/skills.js';
 
+/**
+ * CodexScene
+ * Displays discovered and captured creatures.
+ */
 export class CodexScene extends Phaser.Scene {
   constructor() {
     super({ key: 'CodexScene' });
   }
 
+  init() {
+    this.creatureList = Object.values(CREATURES).sort((a, b) => a.id.localeCompare(b.id));
+    this.selectedIndex = 0;
+    this.filter = 'ALL'; // ALL, SEEN, CAPTURED
+    this.filteredList = [];
+    this.itemsPerPage = 10;
+    this.scrollOffset = 0;
+  }
+
   create() {
     const { width, height } = this.cameras.main;
-    const padding = 40;
 
-    // Elegant Dim background
-    this.add.rectangle(0, 0, width, height, 0x000000, 0.85).setOrigin(0);
+    // Background
+    this.add.rectangle(0, 0, width, height, 0x000000, 0.9).setOrigin(0);
 
-    const mWidth = 760;
-    const mHeight = 560;
-    const panelX = width / 2;
-    const panelY = height / 2;
+    const mWidth = 1100;
+    const mHeight = 620;
+    this.panelX = width / 2;
+    this.panelY = height / 2;
 
-    this.add.rectangle(panelX, panelY, mWidth, mHeight, 0x1a252f).setOrigin(0.5);
-    this.add.rectangle(panelX, panelY, mWidth, mHeight).setStrokeStyle(4, 0x3498db).setOrigin(0.5);
+    this.add.rectangle(this.panelX, this.panelY, mWidth, mHeight, 0x1a252f).setOrigin(0.5);
+    this.add.rectangle(this.panelX, this.panelY, mWidth, mHeight).setStrokeStyle(4, 0x3498db).setOrigin(0.5);
 
-    this.add.text(panelX - 120, panelY - 230, '도감', { 
-        font: 'bold 36px "Press Start 2P", Courier, monospace', fill: '#f1c40f',
-        shadow: { offsetX: 2, offsetY: 2, color: '#000', blur: 0, fill: true }
+    this.add.text(this.panelX, this.panelY - 270, "몬스터 도감", {
+      font: 'bold 36px "Press Start 2P", Courier, monospace', fill: '#f1c40f',
+      shadow: { offsetX: 2, offsetY: 2, color: '#000', blur: 0, fill: true }
     }).setOrigin(0.5);
 
-    // Scrollable Container
-    this.listContainer = this.add.container(panelX - mWidth/2, panelY - 180);
-    
-    // Mask logic to prevent overflow
-    const maskShape = this.make.graphics();
-    maskShape.fillStyle(0xffffff);
-    maskShape.fillRect(panelX - mWidth/2 + 10, panelY - 180, mWidth - 20, mHeight - 110);
-    const mask = maskShape.createGeometryMask();
-    this.listContainer.setMask(mask);
+    // Filter Buttons
+    const filters = [
+      { id: 'ALL', text: '전체' },
+      { id: 'SEEN', text: '발견' },
+      { id: 'CAPTURED', text: '포획' }
+    ];
 
-    let yPos = 10;
-    
-    // Convert to array of entries
-    const entries = Object.values(CREATURES);
-
-    let seenCount = 0;
-    let caughtCount = 0;
-
-    entries.forEach((creature) => {
-      const isSeen = codexSystem.hasSeen(this.registry, creature.id);
-      const isCaught = codexSystem.hasCaught(this.registry, creature.id);
-
-      if (isCaught) caughtCount++;
-      if (isSeen) seenCount++;
-
-      // Row background
-      const rowBg = this.add.rectangle(mWidth/2, yPos + 50, mWidth - 60, 110, 0x2c3e50).setOrigin(0.5).setStrokeStyle(2, 0x34495e);
-      this.listContainer.add(rowBg);
-
-      if (isSeen) {
-        // Creature Sprite (If caught draw full alpha, if seen draw silhouette or tint)
-        const spriteKey = creature.id.toLowerCase();
-        const creatureSprite = this.add.sprite(80, yPos + 50, spriteKey);
-        if (!isCaught) creatureSprite.setTint(0x000000); // Silhouette if not caught
-        this.listContainer.add(creatureSprite);
-
-        // Display full info
-        this.listContainer.add(this.add.text(140, yPos + 20, `${creature.name} (${creature.type})`, { font: 'bold 24px Arial', fill: isCaught ? '#2ecc71' : '#f1c40f' }).setOrigin(0, 0.5));
-        this.listContainer.add(this.add.text(140, yPos + 45, `서식지: ${creature.habitat || '알 수 없음'}`, { font: '18px Arial', fill: '#bdc3c7' }).setOrigin(0, 0.5));
-        this.listContainer.add(this.add.text(140, yPos + 75, creature.description, { font: '16px Arial', fill: '#ffffff' }).setOrigin(0, 0.5));
-        
-        if (isCaught) {
-           this.listContainer.add(this.add.text(580, yPos + 20, '포획 완료', { font: 'bold 20px Arial', fill: '#2ecc71' }).setOrigin(0.5));
-           this.listContainer.add(this.add.text(580, yPos + 50, `HP: ${creature.baseHp} | ATK: ${creature.baseAttack} | DEF: ${creature.baseDefense}`, { font: '16px Arial', fill: '#ecf0f1' }).setOrigin(0.5));
-        }
-      } else {
-        // Display unknown
-        this.listContainer.add(this.add.text(mWidth/2, yPos + 50, '???', { font: 'bold 32px Arial', fill: '#7f8c8d' }).setOrigin(0.5));
-      }
+    filters.forEach((f, i) => {
+      const btn = this.add.rectangle(this.panelX - 450 + (i * 120), this.panelY - 210, 110, 40, 0x2c3e50)
+        .setInteractive({ useHandCursor: true })
+        .setStrokeStyle(2, 0x34495e);
       
-      yPos += 130;
+      const txt = this.add.text(this.panelX - 450 + (i * 120), this.panelY - 210, f.text, { font: 'bold 18px Arial', fill: '#ffffff' }).setOrigin(0.5);
+      
+      btn.on('pointerdown', () => {
+        if (this.filter !== f.id) {
+          this.filter = f.id;
+          this.selectedIndex = 0;
+          this.scrollOffset = 0;
+          this.refreshList();
+        }
+      });
+
+      f.btn = btn; // Store ref to button for re-styling
     });
+    this.filterButtons = filters;
 
-    this.maxScroll = -Math.max(0, yPos - (mHeight - 110));
+    // List Panel (Left)
+    this.listContainer = this.add.container(this.panelX - 350, this.panelY - 180);
+    
+    // Detail Panel (Right)
+    this.detailContainer = this.add.container(this.panelX + 200, this.panelY);
+    
+    this.refreshList();
+    this.setupInputs();
 
-    this.add.text(panelX + 160, panelY - 230, `발견: ${seenCount} | 포획: ${caughtCount}`, { font: 'bold 24px Arial', fill: '#ffffff' }).setOrigin(0.5);
-    this.add.text(panelX, panelY + 250, '휠을 굴려 스크롤 • ESC를 눌러 돌아가기', { font: '20px Arial', fill: '#95a5a6' }).setOrigin(0.5);
+    this.add.text(this.panelX, this.panelY + 280, "방향키: 이동 | ENTER: 상세 정보 | ESC: 종료", { 
+      font: '18px Arial', fill: '#bdc3c7' 
+    }).setOrigin(0.5);
+  }
 
-    // Scroll Logic
-    this.input.on('wheel', (pointer, gameObjects, deltaX, deltaY, deltaZ) => {
-        this.listContainer.y -= deltaY;
-        // Clamp
-        const topLimit = panelY - 180;
-        const bottomLimit = topLimit + this.maxScroll;
-        
-        if (this.listContainer.y > topLimit) this.listContainer.y = topLimit;
-        if (this.listContainer.y < bottomLimit) this.listContainer.y = bottomLimit;
-    });
-
+  setupInputs() {
     this.input.keyboard.on('keydown-ESC', () => {
       this.scene.stop();
-      this.scene.resume('MenuScene');
+      if (this.scene.isActive('MenuScene')) {
+        this.scene.resume('MenuScene');
+      } else {
+        this.scene.resume('WorldScene');
+      }
     });
+
+    this.input.keyboard.on('keydown-UP', () => {
+      if (this.selectedIndex > 0) {
+        this.selectedIndex--;
+        if (this.selectedIndex < this.scrollOffset) {
+          this.scrollOffset--;
+        }
+        this.refreshList();
+      }
+    });
+
+    this.input.keyboard.on('keydown-DOWN', () => {
+      if (this.selectedIndex < this.filteredList.length - 1) {
+        this.selectedIndex++;
+        if (this.selectedIndex >= this.scrollOffset + this.itemsPerPage) {
+          this.scrollOffset++;
+        }
+        this.refreshList();
+      }
+    });
+  }
+
+  refreshList() {
+    this.filterButtons.forEach(f => {
+      if (f.id === this.filter) f.btn.setStrokeStyle(4, 0xf1c40f);
+      else f.btn.setStrokeStyle(2, 0x34495e);
+    });
+
+    this.filteredList = this.creatureList.filter(c => {
+      if (this.filter === 'ALL') return true;
+      if (this.filter === 'SEEN') return codexSystem.hasSeen(this.registry, c.id);
+      if (this.filter === 'CAPTURED') return codexSystem.hasCaught(this.registry, c.id);
+      return true;
+    });
+
+    if (this.selectedIndex >= this.filteredList.length) {
+      this.selectedIndex = Math.max(0, this.filteredList.length - 1);
+    }
+
+    this.renderList();
+    this.renderDetails();
+  }
+
+  renderList() {
+    this.listContainer.removeAll(true);
+    
+    const displayList = this.filteredList.slice(this.scrollOffset, this.scrollOffset + this.itemsPerPage);
+    
+    displayList.forEach((c, i) => {
+      const idx = this.scrollOffset + i;
+      const isSelected = idx === this.selectedIndex;
+      const hasSeen = codexSystem.hasSeen(this.registry, c.id);
+      const hasCaught = codexSystem.hasCaught(this.registry, c.id);
+      
+      const y = i * 45;
+      
+      const bg = this.add.rectangle(0, y, 400, 40, isSelected ? 0x34495e : 0x2c3e50).setOrigin(0, 0.5);
+      if (isSelected) bg.setStrokeStyle(2, 0xf1c40f);
+      
+      const statusIcon = hasCaught ? '💎' : (hasSeen ? '👁️' : '❓');
+      const nameText = hasSeen ? c.name : '?????';
+      
+      const txt = this.add.text(10, y, `${statusIcon} ${nameText}`, {
+        font: isSelected ? 'bold 20px Arial' : '20px Arial',
+        fill: isSelected ? '#ffffff' : '#bdc3c7'
+      }).setOrigin(0, 0.5);
+      
+      this.listContainer.add([bg, txt]);
+    });
+
+    // Scroll Indicator
+    if (this.filteredList.length > this.itemsPerPage) {
+      const scrollBarBg = this.add.rectangle(410, 0, 10, this.itemsPerPage * 45 - 5, 0x1a252f).setOrigin(0, 0);
+      const handleSize = (this.itemsPerPage / this.filteredList.length) * (this.itemsPerPage * 45 - 5);
+      const handleY = (this.scrollOffset / this.filteredList.length) * (this.itemsPerPage * 45 - 5);
+      const handle = this.add.rectangle(410, handleY, 10, handleSize, 0x3498db).setOrigin(0, 0);
+      this.listContainer.add([scrollBarBg, handle]);
+    }
+  }
+
+  renderDetails() {
+    this.detailContainer.removeAll(true);
+    
+    const creature = this.filteredList[this.selectedIndex];
+    if (!creature) return;
+
+    const hasSeen = codexSystem.hasSeen(this.registry, creature.id);
+    const hasCaught = codexSystem.hasCaught(this.registry, creature.id);
+
+    // Sprite
+    let sprite;
+    if (hasSeen) {
+      sprite = this.add.image(0, -100, creature.spriteKey || 'creature_leafkit').setScale(hasCaught ? 1.5 : 1.5);
+      if (!hasCaught) sprite.setTint(0x000000).setAlpha(0.6); // Silhouette
+    } else {
+      sprite = this.add.image(0, -100, 'creature_leafkit').setScale(1.5).setTint(0x000000).setAlpha(0.6);
+    }
+    this.detailContainer.add(sprite);
+
+    // Info
+    const name = hasSeen ? creature.name : '?????';
+    const type = hasCaught ? creature.type : '?????';
+    const cls = hasCaught ? creature.class : '?????';
+    const desc = hasCaught ? creature.description : '데이터 없음 (포획 후 확인 가능)';
+
+    const nameTxt = this.add.text(0, 50, name, { font: 'bold 32px Arial', fill: '#f1c40f' }).setOrigin(0.5);
+    const typeTxt = this.add.text(0, 90, `타입: ${type} | 등급: ${cls}`, { font: '20px Arial', fill: '#ffffff' }).setOrigin(0.5);
+    
+    const descTxt = this.add.text(0, 140, desc, { 
+      font: '18px Arial', fill: '#ecf0f1', align: 'center', wordWrap: { width: 450 } 
+    }).setOrigin(0.5);
+
+    this.detailContainer.add([nameTxt, typeTxt, descTxt]);
+
+    // Skills
+    if (hasCaught) {
+      this.add.text(0, 200, "보유 기술", { font: 'bold 22px Arial', fill: '#3498db' }).setOrigin(0.5);
+      let sy = 235;
+      (creature.skills || []).forEach(sid => {
+        const skill = SKILLS[sid] || { name: sid };
+        const sTxt = this.add.text(0, sy, `• ${skill.name}`, { font: '18px Arial', fill: '#bdc3c7' }).setOrigin(0.5);
+        this.detailContainer.add(sTxt);
+        sy += 25;
+      });
+    }
   }
 }
