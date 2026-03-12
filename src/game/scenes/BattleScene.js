@@ -107,8 +107,47 @@ export class BattleScene extends Phaser.Scene {
     // --- UI SETUP ---
     this.createBattleUI(width, height);
 
-    // --- INITIAL LOG ---
-    this.updateLog(`A wild ${this.enemyCat.name} appeared!`);
+    // Hide UI initially for the start transition
+    this.playerUI.setVisible(false);
+    this.enemyUI.setVisible(false);
+    this.logBg.setVisible(false);
+    this.logText.setVisible(false);
+    this.menuUI.setVisible(false);
+
+    // --- BATTLE START EFFECT ---
+    const startSprite = this.add.image(width / 2, height / 2, ASSETS.SYSTEM.BATTLE_START.KEY)
+      .setOrigin(0.5)
+      .setScale(0)
+      .setDepth(1000)
+      .setAlpha(0);
+
+    this.tweens.add({
+      targets: startSprite,
+      scale: 1,
+      alpha: 1,
+      duration: 800,
+      ease: 'Back.easeOut',
+      onComplete: () => {
+        this.time.delayedCall(1200, () => {
+          this.tweens.add({
+            targets: startSprite,
+            scale: 1.2,
+            alpha: 0,
+            duration: 400,
+            ease: 'Power2',
+            onComplete: () => {
+              startSprite.destroy();
+              // Reveal UI and start turn
+              this.playerUI.setVisible(true);
+              this.enemyUI.setVisible(true);
+              this.logBg.setVisible(true);
+              this.logText.setVisible(true);
+              this.updateLog(`A wild ${this.enemyCat.name} appeared!`);
+            }
+          });
+        });
+      }
+    });
   }
 
   createBattleUI(width, height) {
@@ -328,7 +367,7 @@ export class BattleScene extends Phaser.Scene {
   playerAttack() {
     this.canInput = false;
     this.updateLog(`${this.playerCat.name} used Scratch!`);
-    skillEffectSystem.playEffect(this, this.enemySprite, "slash");
+    skillEffectSystem.playEffect(this, this.enemySprite, "scratch", "노말");
 
     const damage = battleSystem.calculateDamage(
       this.playerCat,
@@ -352,7 +391,7 @@ export class BattleScene extends Phaser.Scene {
     if (!skill) return;
 
     this.updateLog(`${this.playerCat.name} used ${skill.name}!`);
-    skillEffectSystem.playEffect(this, this.enemySprite, skill.effectType);
+    skillEffectSystem.playEffect(this, this.enemySprite, skillId, skill.type);
 
     const damage = battleSystem.calculateDamage(
       this.playerCat,
@@ -481,7 +520,7 @@ export class BattleScene extends Phaser.Scene {
       const skill = SKILLS[skillId];
       if (skill) {
         this.updateLog(`${this.enemyCat.name} used ${skill.name}!`);
-        skillEffectSystem.playEffect(this, this.playerSprite, skill.effectType);
+        skillEffectSystem.playEffect(this, this.playerSprite, skillId, skill.type);
         const damage = battleSystem.calculateDamage(this.enemyCat, this.playerCat, skillId);
 
         this.time.delayedCall(1000, () => {
@@ -498,7 +537,7 @@ export class BattleScene extends Phaser.Scene {
 
     // Fallback to basic attack
     this.updateLog(`${this.enemyCat.name} used Scratch!`);
-    skillEffectSystem.playEffect(this, this.playerSprite, "slash");
+    skillEffectSystem.playEffect(this, this.playerSprite, "scratch", "노말");
     const damage = battleSystem.calculateDamage(
       this.enemyCat,
       this.playerCat,

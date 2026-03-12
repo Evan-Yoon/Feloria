@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { ASSETS } from '../config/assetPaths.js';
+import { animationConfig } from '../config/animationConfig.js';
 import { CREATURES } from '../data/creatures.js';
 import { pixelArtGenerator } from '../systems/pixelArtGenerator.js';
 import bgContinent from '../data/graphics/startscene/펠로리아 대륙.png';
@@ -25,7 +26,7 @@ export class PreloadScene extends Phaser.Scene {
     this.createLoadingUI();
 
     // 1. Generic Image Assets (Faces, Battlebacks, Parallaxes, Tilesets)
-    const imageCats = ['BATTLEBACKS1', 'BATTLEBACKS2', 'PARALLAXES', 'TILESETS'];
+    const imageCats = ['BATTLEBACKS1', 'BATTLEBACKS2', 'PARALLAXES', 'TILESETS', 'SYSTEM'];
     imageCats.forEach(cat => {
       Object.values(ASSETS[cat]).forEach(asset => {
         this.load.image(asset.KEY, asset.PATH);
@@ -36,15 +37,26 @@ export class PreloadScene extends Phaser.Scene {
     // 2. Spritesheets (Characters, Animations, Faces, Monster Fallbacks)
     const sheetCats = ['CHARACTERS', 'ANIMATIONS', 'FACES', 'SPRITES'];
     sheetCats.forEach(cat => {
-      Object.values(ASSETS[cat]).forEach(asset => {
+      Object.entries(ASSETS[cat]).forEach(([name, asset]) => {
         if (asset.FRAME_CONFIG) {
           this.load.spritesheet(asset.KEY, asset.PATH, asset.FRAME_CONFIG);
+        } else if (cat === 'ANIMATIONS') {
+          // Normalize name: FIRE1 -> Fire1
+          const configKey = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+          const config = animationConfig[configKey];
+          
+          if (config) {
+            this.load.spritesheet(asset.KEY, asset.PATH, { 
+              frameWidth: config.frameWidth, 
+              frameHeight: config.frameHeight 
+            });
+          } else if (asset.grid) {
+            this.load.spritesheet(asset.KEY, asset.PATH, { frameWidth: 192, frameHeight: 192 });
+          } else {
+            this.load.image(asset.KEY, asset.PATH);
+          }
         } else if (asset.grid) {
-          // Calculate frame dimensions assuming 192x192 for animations (Standard RPG Maker size)
-          // or use a smarter default.
-          const fw = 192;
-          const fh = 192;
-          this.load.spritesheet(asset.KEY, asset.PATH, { frameWidth: fw, frameHeight: fh });
+          this.load.spritesheet(asset.KEY, asset.PATH, { frameWidth: 192, frameHeight: 192 });
         } else {
           this.load.image(asset.KEY, asset.PATH);
         }

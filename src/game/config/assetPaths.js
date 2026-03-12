@@ -17,7 +17,7 @@ export const ASSETS = {
     ATTACK8: { KEY: 'anim_attack8', PATH: '/assets/animations/Attack8.png', grid: { cols: 5, rows: 3 }, blendAdd: false },
     ATTACK9: { KEY: 'anim_attack9', PATH: '/assets/animations/Attack9.png', grid: { cols: 5, rows: 3 }, blendAdd: false },
     ATTACK10: { KEY: 'anim_attack10', PATH: '/assets/animations/Attack10.png', grid: { cols: 5, rows: 3 }, blendAdd: false },
-    ATTACK11: { KEY: 'anim_attack11', PATH: '/assets/animations/Attack11.png', grid: { cols: 1, rows: 1 }, blendAdd: false },
+    ATTACK11: { KEY: 'anim_attack11', PATH: '/assets/animations/Attack11.png', grid: { cols: 5, rows: 3 }, blendAdd: false },
     ATTACK12: { KEY: 'anim_attack12', PATH: '/assets/animations/Attack12.png', grid: { cols: 5, rows: 3 }, blendAdd: false },
 
     BLOW1: { KEY: 'anim_blow1', PATH: '/assets/animations/Blow1.png', grid: { cols: 5, rows: 2 }, blendAdd: false },
@@ -26,9 +26,9 @@ export const ASSETS = {
 
     DARKNESS1: { KEY: 'anim_darkness1', PATH: '/assets/animations/Darkness1.png', grid: { cols: 5, rows: 2 }, blendAdd: false },
     DARKNESS2: { KEY: 'anim_darkness2', PATH: '/assets/animations/Darkness2.png', grid: { cols: 5, rows: 6 }, blendAdd: false },
-    DARKNESS3: { KEY: 'anim_darkness3', PATH: '/assets/animations/Darkness3.png', grid: { cols: 1, rows: 1 }, blendAdd: false },
+    DARKNESS3: { KEY: 'anim_darkness3', PATH: '/assets/animations/Darkness3.png', grid: { cols: 5, rows: 6 }, blendAdd: false },
 
-    DEATH1: { KEY: 'anim_death1', PATH: '/assets/animations/Death1.png', grid: { cols: 1, rows: 1 }, blendAdd: false },
+    DEATH1: { KEY: 'anim_death1', PATH: '/assets/animations/Death1.png', grid: { cols: 5, rows: 3 }, blendAdd: false },
 
     EARTH1: { KEY: 'anim_earth1', PATH: '/assets/animations/Earth1.png', grid: { cols: 5, rows: 2 }, blendAdd: false },
     EARTH2: { KEY: 'anim_earth2', PATH: '/assets/animations/Earth2.png', grid: { cols: 5, rows: 2 }, blendAdd: false },
@@ -37,6 +37,10 @@ export const ASSETS = {
     FIRE1: { KEY: 'anim_fire1', PATH: '/assets/animations/Fire1.png', grid: { cols: 5, rows: 2 }, blendAdd: false },
     FIRE2: { KEY: 'anim_fire2', PATH: '/assets/animations/Fire2.png', grid: { cols: 5, rows: 2 }, blendAdd: false },
     FIRE3: { KEY: 'anim_fire3', PATH: '/assets/animations/Fire3.png', grid: { cols: 5, rows: 5 }, blendAdd: false },
+    FIRE4: { KEY: 'anim_fire4', PATH: '/assets/animations/Fire4.png', grid: { cols: 5, rows: 6 }, blendAdd: false },
+
+    GUN1: { KEY: 'anim_gun1', PATH: '/assets/animations/Gun1.png', grid: { cols: 5, rows: 2 }, blendAdd: false },
+    GUN2: { KEY: 'anim_gun2', PATH: '/assets/animations/Gun2.png', grid: { cols: 5, rows: 6 }, blendAdd: false },
 
     HEAL1: { KEY: 'anim_heal1', PATH: '/assets/animations/Heal1.png', grid: { cols: 5, rows: 2 }, blendAdd: false },
     HEAL2: { KEY: 'anim_heal2', PATH: '/assets/animations/Heal2.png', grid: { cols: 5, rows: 2 }, blendAdd: false },
@@ -48,6 +52,8 @@ export const ASSETS = {
     ICE1: { KEY: 'anim_ice1', PATH: '/assets/animations/Ice1.png', grid: { cols: 4, rows: 1 }, blendAdd: false },
     ICE2: { KEY: 'anim_ice2', PATH: '/assets/animations/Ice2.png', grid: { cols: 4, rows: 1 }, blendAdd: false },
     ICE3: { KEY: 'anim_ice3', PATH: '/assets/animations/Ice3.png', grid: { cols: 4, rows: 1 }, blendAdd: false },
+    ICE4: { KEY: 'anim_ice4', PATH: '/assets/animations/Ice4.png', grid: { cols: 5, rows: 4 }, blendAdd: false },
+    ICE5: { KEY: 'anim_ice5', PATH: '/assets/animations/Ice5.png', grid: { cols: 5, rows: 6 }, blendAdd: false },
 
     LIGHT1: { KEY: 'anim_light1', PATH: '/assets/animations/Light1.png', grid: { cols: 5, rows: 2 }, blendAdd: false },
     LIGHT2: { KEY: 'anim_light2', PATH: '/assets/animations/Light2.png', grid: { cols: 5, rows: 2 }, blendAdd: false },
@@ -56,6 +62,61 @@ export const ASSETS = {
     LIGHT5: { KEY: 'anim_light5', PATH: '/assets/animations/Light5.png', grid: { cols: 5, rows: 2 }, blendAdd: false },
     LIGHT6: { KEY: 'anim_light6', PATH: '/assets/animations/Light6.png', grid: { cols: 5, rows: 2 }, blendAdd: false },
     LIGHT7: { KEY: 'anim_light7', PATH: '/assets/animations/Light7.png', grid: { cols: 5, rows: 6 }, blendAdd: false },
+
+    METEOR: { KEY: 'anim_meteor', PATH: '/assets/animations/Meteor.png', grid: { cols: 5, rows: 3 }, blendAdd: false },
+
+    SPEAR1: { KEY: 'anim_spear1', PATH: '/assets/animations/Spear1.png', grid: { cols: 3, rows: 1 }, blendAdd: false },
+    SPEAR2: { KEY: 'anim_spear2', PATH: '/assets/animations/Spear2.png', grid: { cols: 5, rows: 2 }, blendAdd: false },
+    SPEAR3: { KEY: 'anim_spear3', PATH: '/assets/animations/Spear3.png', grid: { cols: 5, rows: 6 }, blendAdd: false },
+
+    SPECIAL1: { KEY: 'anim_special1', PATH: '/assets/animations/Special1.png', grid: { cols: 5, rows: 3 }, blendAdd: false },
+    SPECIAL2: { KEY: 'anim_special2', PATH: '/assets/animations/Special2.png', grid: { cols: 5, rows: 3 }, blendAdd: false },
+    SPECIAL3: { KEY: 'anim_special3', PATH: '/assets/animations/Special3.png', grid: { cols: 5, rows: 3 }, blendAdd: false },
+    SPECIAL4: { KEY: 'anim_special4', PATH: '/assets/animations/Special4.png', grid: { cols: 5, rows: 3 }, blendAdd: false },
+    SPECIAL5: { KEY: 'anim_special5', PATH: '/assets/animations/Special5.png', grid: { cols: 5, rows: 3 }, blendAdd: false },
+    SPECIAL6: { KEY: 'anim_special6', PATH: '/assets/animations/Special6.png', grid: { cols: 5, rows: 2 }, blendAdd: false },
+    SPECIAL7: { KEY: 'anim_special7', PATH: '/assets/animations/Special7.png', grid: { cols: 3, rows: 1 }, blendAdd: false },
+    SPECIAL8: { KEY: 'anim_special8', PATH: '/assets/animations/Special8.png', grid: { cols: 5, rows: 2 }, blendAdd: false },
+    SPECIAL9: { KEY: 'anim_special9', PATH: '/assets/animations/Special9.png', grid: { cols: 5, rows: 2 }, blendAdd: false },
+    SPECIAL10: { KEY: 'anim_special10', PATH: '/assets/animations/Special10.png', grid: { cols: 5, rows: 3 }, blendAdd: false },
+    SPECIAL11: { KEY: 'anim_special11', PATH: '/assets/animations/Special11.png', grid: { cols: 5, rows: 6 }, blendAdd: false },
+    SPECIAL12: { KEY: 'anim_special12', PATH: '/assets/animations/Special12.png', grid: { cols: 5, rows: 6 }, blendAdd: false },
+    SPECIAL13: { KEY: 'anim_special13', PATH: '/assets/animations/Special13.png', grid: { cols: 5, rows: 6 }, blendAdd: false },
+    SPECIAL14: { KEY: 'anim_special14', PATH: '/assets/animations/Special14.png', grid: { cols: 5, rows: 6 }, blendAdd: false },
+    SPECIAL15: { KEY: 'anim_special15', PATH: '/assets/animations/Special15.png', grid: { cols: 5, rows: 5 }, blendAdd: false },
+    SPECIAL16: { KEY: 'anim_special16', PATH: '/assets/animations/Special16.png', grid: { cols: 5, rows: 4 }, blendAdd: false },
+    SPECIAL17: { KEY: 'anim_special17', PATH: '/assets/animations/Special17.png', grid: { cols: 5, rows: 6 }, blendAdd: false },
+
+    STATE1: { KEY: 'anim_state1', PATH: '/assets/animations/State1.png', grid: { cols: 5, rows: 3 }, blendAdd: false },
+    STATE2: { KEY: 'anim_state2', PATH: '/assets/animations/State2.png', grid: { cols: 5, rows: 3 }, blendAdd: false },
+    STATE3: { KEY: 'anim_state3', PATH: '/assets/animations/State3.png', grid: { cols: 5, rows: 3 }, blendAdd: false },
+    STATE4: { KEY: 'anim_state4', PATH: '/assets/animations/State4.png', grid: { cols: 5, rows: 3 }, blendAdd: false },
+    STATE5: { KEY: 'anim_state5', PATH: '/assets/animations/State5.png', grid: { cols: 5, rows: 3 }, blendAdd: false },
+    STATE6: { KEY: 'anim_state6', PATH: '/assets/animations/State6.png', grid: { cols: 5, rows: 3 }, blendAdd: false },
+
+    SWORD1: { KEY: 'anim_sword1', PATH: '/assets/animations/Sword1.png', grid: { cols: 3, rows: 1 }, blendAdd: false },
+    SWORD2: { KEY: 'anim_sword2', PATH: '/assets/animations/Sword2.png', grid: { cols: 5, rows: 3 }, blendAdd: false },
+    SWORD3: { KEY: 'anim_sword3', PATH: '/assets/animations/Sword3.png', grid: { cols: 5, rows: 3 }, blendAdd: false },
+    SWORD4: { KEY: 'anim_sword4', PATH: '/assets/animations/Sword4.png', grid: { cols: 5, rows: 4 }, blendAdd: false },
+    SWORD5: { KEY: 'anim_sword5', PATH: '/assets/animations/Sword5.png', grid: { cols: 5, rows: 6 }, blendAdd: false },
+    SWORD6: { KEY: 'anim_sword6', PATH: '/assets/animations/Sword6.png', grid: { cols: 5, rows: 3 }, blendAdd: false },
+    SWORD7: { KEY: 'anim_sword7', PATH: '/assets/animations/Sword7.png', grid: { cols: 5, rows: 6 }, blendAdd: false },
+    SWORD8: { KEY: 'anim_sword8', PATH: '/assets/animations/Sword8.png', grid: { cols: 5, rows: 6 }, blendAdd: false },
+    SWORD9: { KEY: 'anim_sword9', PATH: '/assets/animations/Sword9.png', grid: { cols: 5, rows: 4 }, blendAdd: false },
+    SWORD10: { KEY: 'anim_sword10', PATH: '/assets/animations/Sword10.png', grid: { cols: 5, rows: 6 }, blendAdd: false },
+
+    THUNDER1: { KEY: 'anim_thunder1', PATH: '/assets/animations/Thunder1.png', grid: { cols: 5, rows: 2 }, blendAdd: false },
+    THUNDER2: { KEY: 'anim_thunder2', PATH: '/assets/animations/Thunder2.png', grid: { cols: 5, rows: 2 }, blendAdd: false },
+    THUNDER3: { KEY: 'anim_thunder3', PATH: '/assets/animations/Thunder3.png', grid: { cols: 5, rows: 2 }, blendAdd: false },
+    THUNDER4: { KEY: 'anim_thunder4', PATH: '/assets/animations/Thunder4.png', grid: { cols: 5, rows: 4 }, blendAdd: false },
+
+    WATER1: { KEY: 'anim_water1', PATH: '/assets/animations/Water1.png', grid: { cols: 5, rows: 3 }, blendAdd: false },
+    WATER2: { KEY: 'anim_water2', PATH: '/assets/animations/Water2.png', grid: { cols: 5, rows: 4 }, blendAdd: false },
+    WATER3: { KEY: 'anim_water3', PATH: '/assets/animations/Water3.png', grid: { cols: 5, rows: 6 }, blendAdd: false },
+
+    WIND1: { KEY: 'anim_wind1', PATH: '/assets/animations/Wind1.png', grid: { cols: 5, rows: 3 }, blendAdd: false },
+    WIND2: { KEY: 'anim_wind2', PATH: '/assets/animations/Wind2.png', grid: { cols: 5, rows: 4 }, blendAdd: false },
+    WIND3: { KEY: 'anim_wind3', PATH: '/assets/animations/Wind3.png', grid: { cols: 5, rows: 6 }, blendAdd: false },
 
   },
   BATTLEBACKS1: {
@@ -347,5 +408,8 @@ export const ASSETS = {
     VINEFANG: { KEY: 'creature_vinefang', PATH: '/assets/sprites/creatures/VINEFANG.png' },
     VOIDLYNX: { KEY: 'creature_voidlynx', PATH: '/assets/sprites/creatures/VOIDLYNX.png' },
     WHISPERKIT: { KEY: 'creature_whisperkit', PATH: '/assets/sprites/creatures/WHISPERKIT.png' }
+  },
+  SYSTEM: {
+    BATTLE_START: { KEY: 'battle_start', PATH: '/assets/system/BattleStart.png' }
   }
 };
