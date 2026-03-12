@@ -77,6 +77,13 @@ export class BattleScene extends Phaser.Scene {
     this.isPlayerTurn = true;
     this.isBattleOver = false;
     this.canInput = true;
+
+    // Get Trainer Name for UI
+    this.trainerName = "";
+    if (this.isTrainer && this.trainerId) {
+      const trainerData = TRAINERS[this.trainerId];
+      this.trainerName = trainerData.name;
+    }
   }
 
   create() {
@@ -114,6 +121,14 @@ export class BattleScene extends Phaser.Scene {
     this.logText.setVisible(false);
     this.menuUI.setVisible(false);
 
+    // Trainer Name Display (Top Left)
+    this.trainerNameText = this.add.text(20, 20, this.trainerName, {
+      font: 'bold 24px "Press Start 2P", Courier',
+      fill: '#f1c40f',
+      stroke: '#000',
+      strokeThickness: 4
+    }).setVisible(false);
+
     // --- BATTLE START EFFECT ---
     const startSprite = this.add.image(width / 2, height / 2, ASSETS.SYSTEM.BATTLE_START.KEY)
       .setOrigin(0.5)
@@ -144,6 +159,10 @@ export class BattleScene extends Phaser.Scene {
               this.enemyUI.setVisible(true);
               this.logBg.setVisible(true);
               this.logText.setVisible(true);
+              
+              if (this.isTrainer) {
+                this.trainerNameText.setVisible(true);
+              }
 
               // --- Play Battle BGM ---
               import('../systems/audioManager.js').then(module => {
@@ -1054,5 +1073,7 @@ export class BattleScene extends Phaser.Scene {
         onBattleCompletelyDone();
       }
     });
+
+    if (this.trainerNameText) this.trainerNameText.setVisible(false);
   }
 }
