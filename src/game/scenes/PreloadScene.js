@@ -41,18 +41,25 @@ export class PreloadScene extends Phaser.Scene {
         if (asset.FRAME_CONFIG) {
           this.load.spritesheet(asset.KEY, asset.PATH, asset.FRAME_CONFIG);
         } else if (cat === 'ANIMATIONS') {
-          // Normalize name: FIRE1 -> Fire1
+          // Use Case-Sensitive Name (e.g., FIRE1 -> Fire1)
           const configKey = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
           const config = animationConfig[configKey];
           
           if (config) {
+            this.load.spritesheet(configKey, asset.PATH, { 
+              frameWidth: config.frameWidth, 
+              frameHeight: config.frameHeight 
+            });
+            // Also load as .KEY for any systems that might use it
             this.load.spritesheet(asset.KEY, asset.PATH, { 
               frameWidth: config.frameWidth, 
               frameHeight: config.frameHeight 
             });
           } else if (asset.grid) {
+            this.load.spritesheet(configKey, asset.PATH, { frameWidth: 192, frameHeight: 192 });
             this.load.spritesheet(asset.KEY, asset.PATH, { frameWidth: 192, frameHeight: 192 });
           } else {
+            this.load.image(configKey, asset.PATH);
             this.load.image(asset.KEY, asset.PATH);
           }
         } else if (asset.grid) {
@@ -75,7 +82,9 @@ export class PreloadScene extends Phaser.Scene {
     }
 
     // 4. Creature Sprites
-    Object.values(ASSETS.CREATURES).forEach(asset => {
+    Object.entries(ASSETS.CREATURES).forEach(([id, asset]) => {
+      this.load.image(id.toLowerCase(), asset.PATH);
+      // Also load with .KEY for consistency in some systems
       this.load.image(asset.KEY, asset.PATH);
     });
 

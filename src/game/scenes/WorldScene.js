@@ -32,6 +32,7 @@ export class WorldScene extends Phaser.Scene {
 
     // Interaction lock
     this.isDialogueActive = false;
+    this.isEncounterTriggered = false;
   }
 
   preload() {
@@ -336,7 +337,7 @@ export class WorldScene extends Phaser.Scene {
   }
 
   update(time, delta) {
-    if (this.isMoving || this.isDialogueActive) return;
+    if (this.isMoving || this.isDialogueActive || this.isEncounterTriggered) return;
 
     let dx = 0;
     let dy = 0;
@@ -680,6 +681,10 @@ export class WorldScene extends Phaser.Scene {
     this.registry.set("world_spawnX", this.player.tileX);
     this.registry.set("world_spawnY", this.player.tileY);
 
+    this.isEncounterTriggered = true;
+    this.player.stop();
+    this.player.setFrame(this.player.animFrames[this.playerDir][1]);
+
     this.events.emit('hideMapName');
     this.cameras.main.flash(500, 255, 0, 0); // Red flash
 
@@ -702,6 +707,10 @@ export class WorldScene extends Phaser.Scene {
     this.registry.set("world_mapId", this.mapId);
     this.registry.set("world_spawnX", this.player.tileX);
     this.registry.set("world_spawnY", this.player.tileY);
+
+    this.isEncounterTriggered = true;
+    this.player.stop();
+    this.player.setFrame(this.player.animFrames[this.playerDir][1]);
 
     this.events.emit('hideMapName');
     this.cameras.main.flash(500, 255, 255, 255);

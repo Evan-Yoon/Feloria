@@ -121,9 +121,11 @@ export class BattleScene extends Phaser.Scene {
       .setDepth(1000)
       .setAlpha(0);
 
+    const targetScale = Math.max(width / startSprite.width, height / startSprite.height);
+
     this.tweens.add({
       targets: startSprite,
-      scale: 1,
+      scale: targetScale,
       alpha: 1,
       duration: 800,
       ease: 'Back.easeOut',
@@ -131,7 +133,7 @@ export class BattleScene extends Phaser.Scene {
         this.time.delayedCall(1200, () => {
           this.tweens.add({
             targets: startSprite,
-            scale: 1.2,
+            scale: targetScale * 1.2,
             alpha: 0,
             duration: 400,
             ease: 'Power2',
@@ -192,12 +194,14 @@ export class BattleScene extends Phaser.Scene {
       this.playerHpBg,
       this.playerHpBar,
     ]);
+    this.playerSprite.setTexture(this.playerCat.id.toLowerCase());
 
     // 2. Enemy UI (Top Left)
     this.enemyUI = this.add.container(width * 0.3, height * 0.25);
     this.enemySprite = this.add
       .sprite(0, 0, ASSETS.SPRITES.MONSTER_FALLBACK.KEY)
       .setScale(3);
+    this.enemySprite.setTexture(this.enemyCat.id.toLowerCase());
 
     this.enemyBg = this.add
       .rectangle(0, 120, 300, 100, 0x1a252f)
@@ -367,15 +371,17 @@ export class BattleScene extends Phaser.Scene {
   playerAttack() {
     this.canInput = false;
     this.updateLog(`${this.playerCat.name} used Scratch!`);
-    skillEffectSystem.playEffect(this, this.enemySprite, "scratch", "노말");
-
-    const damage = battleSystem.calculateDamage(
+    
+    const { damage, multiplier } = battleSystem.calculateDamage(
       this.playerCat,
       this.enemyCat,
       "scratch",
     );
 
+    skillEffectSystem.playEffect(this, this.enemySprite, "scratch", "노말", multiplier);
+
     this.time.delayedCall(800, () => {
+      this.displayTypeFeedback(multiplier);
       this.applyDamage(this.enemyCat, damage, "enemy");
       if (this.enemyCat.currentHp <= 0) {
         this.victory();
@@ -391,15 +397,17 @@ export class BattleScene extends Phaser.Scene {
     if (!skill) return;
 
     this.updateLog(`${this.playerCat.name} used ${skill.name}!`);
-    skillEffectSystem.playEffect(this, this.enemySprite, skillId, skill.type);
-
-    const damage = battleSystem.calculateDamage(
+    
+    const { damage, multiplier } = battleSystem.calculateDamage(
       this.playerCat,
       this.enemyCat,
       skillId,
     );
 
+    skillEffectSystem.playEffect(this, this.enemySprite, skillId, skill.type, multiplier);
+
     this.time.delayedCall(800, () => {
+      this.displayTypeFeedback(multiplier);
       this.applyDamage(this.enemyCat, damage, "enemy");
       if (this.enemyCat.currentHp <= 0) {
         this.victory();
@@ -520,10 +528,12 @@ export class BattleScene extends Phaser.Scene {
       const skill = SKILLS[skillId];
       if (skill) {
         this.updateLog(`${this.enemyCat.name} used ${skill.name}!`);
-        skillEffectSystem.playEffect(this, this.playerSprite, skillId, skill.type);
-        const damage = battleSystem.calculateDamage(this.enemyCat, this.playerCat, skillId);
+        
+        const { damage, multiplier } = battleSystem.calculateDamage(this.enemyCat, this.playerCat, skillId);
+        skillEffectSystem.playEffect(this, this.playerSprite, skillId, skill.type, multiplier);
 
         this.time.delayedCall(1000, () => {
+          this.displayTypeFeedback(multiplier);
           this.applyDamage(this.playerCat, damage, "player");
           if (this.playerCat.currentHp <= 0) {
             this.defeat();
@@ -537,14 +547,16 @@ export class BattleScene extends Phaser.Scene {
 
     // Fallback to basic attack
     this.updateLog(`${this.enemyCat.name} used Scratch!`);
-    skillEffectSystem.playEffect(this, this.playerSprite, "scratch", "노말");
-    const damage = battleSystem.calculateDamage(
+    
+    const { damage, multiplier } = battleSystem.calculateDamage(
       this.enemyCat,
       this.playerCat,
       "scratch",
     );
+    skillEffectSystem.playEffect(this, this.playerSprite, "scratch", "노말", multiplier);
 
     this.time.delayedCall(1000, () => {
+      this.displayTypeFeedback(multiplier);
       this.applyDamage(this.playerCat, damage, "player");
       if (this.playerCat.currentHp <= 0) {
         this.defeat();
@@ -768,6 +780,16 @@ export class BattleScene extends Phaser.Scene {
 
   updateLog(msg) {
     this.logText.setText(msg);
+  }
+
+  displayTypeFeedback(multiplier) {
+    if (multiplier >= 2) {
+      this.updateLog("효과가 굉장하다!");
+    } else if (multiplier > 0 && multiplier <= 0.5) {
+      this.updateLog("효과가 별로인 것 같다...");
+    } else if (multiplier === 0) {
+      this.updateLog("효과가 없다!");
+    }
   }
 
   showSummaryPanel(

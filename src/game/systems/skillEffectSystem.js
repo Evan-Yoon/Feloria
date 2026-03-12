@@ -10,7 +10,7 @@ export const skillEffectSystem = {
    * @param {string} skillId - The ID of the skill being used
    * @param {string} type - The type of the skill or creature (for fallback)
    */
-  playEffect(scene, targetSprite, skillId, type) {
+  playEffect(scene, targetSprite, skillId, type, multiplier = 1) {
     if (!scene || !targetSprite) return;
 
     const animKeyName = getAnimationKey(skillId, type);
@@ -22,18 +22,18 @@ export const skillEffectSystem = {
     if (!assetEntry) {
       console.warn(`skillEffectSystem: No asset found for animation key ${animKeyName}`);
       // Fallback to ATTACK1
-      this.playAnimEffect(scene, targetSprite, "Attack1", ASSETS.ANIMATIONS.ATTACK1.KEY);
+      this.playAnimEffect(scene, targetSprite, "Attack1", ASSETS.ANIMATIONS.ATTACK1.KEY, multiplier);
       return;
     }
 
     const [name, asset] = assetEntry;
-    this.playAnimEffect(scene, targetSprite, animKeyName, asset.KEY);
+    this.playAnimEffect(scene, targetSprite, animKeyName, asset.KEY, multiplier);
   },
 
   /**
    * Plays a sprite-based animation using our configuration system.
    */
-  playAnimEffect(scene, targetSprite, configKey, assetKey) {
+  playAnimEffect(scene, targetSprite, configKey, assetKey, multiplier = 1) {
     if (!scene.textures.exists(assetKey)) {
       console.warn(`skillEffectSystem: Texture ${assetKey} not found.`);
       return;
@@ -77,17 +77,25 @@ export const skillEffectSystem = {
     x += (config.offsetX || 0);
     y += (config.offsetY || 0);
 
+    // Apply effectiveness scaling
+    let baseScale = config.scale || 1;
+    if (multiplier >= 2) baseScale *= 1.5;
+    else if (multiplier <= 0.5) baseScale *= 0.7;
+
     const sprite = scene.add.sprite(x, y, assetKey)
-      .setScale(config.scale || 1)
+      .setScale(baseScale)
       .setOrigin(config.originX ?? 0.5, config.originY ?? 0.5)
       .setDepth(50);
 
     sprite.play(animName);
     sprite.on('animationcomplete', () => sprite.destroy());
 
-    // Screen shake for certain effects if desired, or based on impact
-    if (configKey.includes("Fire") || configKey.includes("Spear") || configKey.includes("Thunder")) {
-      scene.cameras.main.shake(150, 0.01);
+    // Screen shake for certain effects
+    let intensity = 0.01;
+    if (multiplier >= 2) intensity = 0.025; // Stronger shake for critical efficiency
+
+    if (configKey.includes("Fire") || configKey.includes("Spear") || configKey.includes("Thunder") || multiplier >= 2) {
+      scene.cameras.main.shake(150, intensity);
     }
   }
 };

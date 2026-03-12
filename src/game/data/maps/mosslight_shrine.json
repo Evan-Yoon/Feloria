@@ -214,8 +214,8 @@
         2,
         2,
         2,
-        6,
-        6,
+        2,
+        2,
         6,
         6,
         6,
@@ -229,8 +229,8 @@
         2,
         2,
         2,
-        6,
-        6,
+        2,
+        2,
         6,
         6,
         6
@@ -674,8 +674,8 @@
         0,
         0,
         0,
-        4,
-        4,
+        0,
+        0,
         4,
         4,
         4,
@@ -689,8 +689,8 @@
         0,
         0,
         0,
-        4,
-        4,
+        0,
+        0,
         4,
         4,
         4
@@ -715,38 +715,31 @@
   ],
   "warps": [
     {
-      "x": 5,
-      "y": 14,
-      "targetMap": "ancient_forest",
-      "targetX": 12,
-      "targetY": 1
-    },
-    {
-      "x": 6,
-      "y": 14,
-      "targetMap": "ancient_forest",
-      "targetX": 13,
-      "targetY": 1
-    },
-    {
-      "x": 7,
-      "y": 14,
-      "targetMap": "ancient_forest",
-      "targetX": 14,
-      "targetY": 1
-    },
-    {
       "x": 8,
       "y": 14,
       "targetMap": "ancient_forest",
-      "targetX": 15,
+      "targetX": 8,
       "targetY": 1
     },
     {
       "x": 9,
       "y": 14,
       "targetMap": "ancient_forest",
-      "targetX": 16,
+      "targetX": 9,
+      "targetY": 1
+    },
+    {
+      "x": 10,
+      "y": 14,
+      "targetMap": "ancient_forest",
+      "targetX": 10,
+      "targetY": 1
+    },
+    {
+      "x": 11,
+      "y": 14,
+      "targetMap": "ancient_forest",
+      "targetX": 11,
       "targetY": 1
     }
   ]

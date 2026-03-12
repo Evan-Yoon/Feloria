@@ -1269,28 +1269,28 @@
       "x": 8,
       "y": 0,
       "targetMap": "greenpaw_forest",
-      "targetX": 7,
+      "targetX": 8,
       "targetY": 23
     },
     {
       "x": 9,
       "y": 0,
       "targetMap": "greenpaw_forest",
-      "targetX": 8,
+      "targetX": 9,
       "targetY": 23
     },
     {
       "x": 10,
       "y": 0,
       "targetMap": "greenpaw_forest",
-      "targetX": 9,
+      "targetX": 10,
       "targetY": 23
     },
     {
       "x": 11,
       "y": 0,
       "targetMap": "greenpaw_forest",
-      "targetX": 10,
+      "targetX": 11,
       "targetY": 23
     }
   ]

@@ -1,5 +1,6 @@
 import { CREATURES } from "../data/creatures.js";
 import { SKILLS } from "../data/skills.js";
+import { TYPE_CHART, TYPE_MAPPING } from "../data/typeChart.js";
 
 /**
  * battleSystem.js - Core logic for turn-based battles.
@@ -81,29 +82,51 @@ export const battleSystem = {
   },
 
   /**
+   * Returns the type effectiveness multiplier.
+   */
+  getTypeMultiplier: (skillType, targetTypeStr) => {
+    if (!skillType || !targetTypeStr) return 1.0;
+
+    const sType = (TYPE_MAPPING[skillType] || skillType).toLowerCase();
+    const tTypes = targetTypeStr.toLowerCase().split("/").map(t => TYPE_MAPPING[t] || t);
+
+    let multiplier = 1.0;
+    tTypes.forEach(tType => {
+      if (TYPE_CHART[sType] && TYPE_CHART[sType][tType] !== undefined) {
+        multiplier *= TYPE_CHART[sType][tType];
+      }
+    });
+
+    return multiplier;
+  },
+
+  /**
    * Calculates damage dealt from an attacker to a target using a skill.
    */
   calculateDamage: (attacker, target, skillId) => {
     const atk = attacker.stats.attack;
     const def = target.stats.defense;
 
-    // Basic Attack check (IDs used by SNAGPUSS and others as basics or fallbacks)
+    let baseDamage = 0;
+    let skillType = "normal";
+
+    // Basic Attack check
     if (!skillId || skillId === "attack" || skillId === "scratch") {
-      // Basic Attack is intentionally weak
-      return Math.max(1, Math.floor(atk * 0.5 - def * 0.2));
+      baseDamage = Math.max(1, atk * 0.5 - def * 0.2);
+      skillType = "노말"; // scratch is normal
+    } else {
+      const skill = SKILLS[skillId];
+      if (!skill) return { damage: 0, multiplier: 1 };
+
+      skillType = skill.type;
+      const powerMultiplier = (skill.power || 50) / 50;
+      baseDamage = atk * powerMultiplier - def * 0.5;
     }
 
-    const skill = SKILLS[skillId];
-    if (!skill) return 0;
+    const multiplier = battleSystem.getTypeMultiplier(skillType, target.type);
+    const finalDamage = Math.max(1, Math.floor(baseDamage * multiplier));
 
-    // Skill Damage
-    // Scaling: skill.power 50 is base (1.0x attack)
-    const powerMultiplier = (skill.power || 50) / 50;
-
-    // Damage = (Attack * Multiplier) - (Defense * 0.5)
-    let damage = atk * powerMultiplier - def * 0.5;
-
-    return Math.max(1, Math.floor(damage));
+    return { damage: finalDamage, multiplier };
   },
 
   /**
