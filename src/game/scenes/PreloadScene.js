@@ -62,6 +62,11 @@ export class PreloadScene extends Phaser.Scene {
       }
     }
 
+    // 4. Creature Sprites
+    Object.values(ASSETS.CREATURES).forEach(asset => {
+      this.load.image(asset.KEY, asset.PATH);
+    });
+
     // Error handling: if an asset fails to load, it won't crash the scene
     this.load.on('loaderror', (file) => {
       console.warn(`Failed to load asset: ${file.key} at ${file.src}`);
@@ -223,36 +228,6 @@ export class PreloadScene extends Phaser.Scene {
       '....KK....KK....', '....KK....KK....', '....00....00....', '....00....00....'
     ];
     pixelArtGenerator.createTexture(this, 'npc_trainer', trainerFrame, 2);
-
-    // ----------------------------------------------------------------
-    // 4. CREATURE SPRITES
-    // ----------------------------------------------------------------
-    // Map existing types to basic letters for the generator palette
-    const typeLetters = {
-      'Forest': 'G', 'Grass': 'g', 'Fire': 'R', 'Water': 'B', 'Rock': '2',
-      'Shadow': '1', 'Ice': 's', 'Storm': 'Y', 'Spirit': 'D', 'Mystic': 'B',
-      'Ice/Mystic': 'c', 'Fire/Storm': 'p', 'Forest/Spirit': 'l', 'Spirit/Shadow': '1'
-    };
-
-    Object.keys(CREATURES).forEach(key => {
-        const cat = CREATURES[key];
-        const clr = typeLetters[cat.type] || '4'; // Default to white
-        
-        // Dynamically build a detailed frame using the mapped color character
-        const cFrame = [
-          `....${clr}......${clr}....`, `...${clr}${clr}${clr}....${clr}${clr}${clr}...`,
-          `...${clr}${clr}${clr}${clr}${clr}${clr}${clr}${clr}${clr}${clr}...`, `..${clr}${clr}${clr}${clr}${clr}${clr}${clr}${clr}${clr}${clr}${clr}${clr}..`,
-          `..${clr}${clr}${clr}44${clr}${clr}44${clr}${clr}${clr}..`, `..${clr}${clr}${clr}${clr}${clr}${clr}${clr}${clr}${clr}${clr}${clr}${clr}..`,
-          `..${clr}${clr}${clr}${clr}1111${clr}${clr}${clr}${clr}..`, `...${clr}${clr}${clr}${clr}${clr}${clr}${clr}${clr}${clr}${clr}...`,
-          `....${clr}${clr}${clr}${clr}${clr}${clr}${clr}${clr}....`, `...${clr}${clr}${clr}${clr}${clr}${clr}${clr}${clr}${clr}${clr}...`,
-          `..${clr}${clr}${clr}${clr}${clr}${clr}${clr}${clr}${clr}${clr}${clr}..`, `..${clr}${clr}${clr}${clr}${clr}${clr}${clr}${clr}${clr}${clr}${clr}..`,
-          `..${clr}${clr}...${clr}${clr}...${clr}${clr}..`, `..${clr}${clr}...${clr}${clr}...${clr}${clr}..`,
-          `..${clr}${clr}...${clr}${clr}...${clr}${clr}..`, `...........${clr}${clr}${clr}..`
-        ];
-        
-        // We use pixelSize 4 for creatures so they are 64x64 on screen natively before scaling
-        pixelArtGenerator.createTexture(this, key.toLowerCase(), cFrame, 4);
-    });
 
     const uiFrameGraphics = this.make.graphics({ x: 0, y: 0, add: false });
     uiFrameGraphics.fillStyle(0x000000, 0.9).fillRect(0, 0, 64, 64);

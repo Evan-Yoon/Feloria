@@ -17,7 +17,11 @@ export const CREATURES = {
     evolution: {
       target: "BRAMBLECAT",
       level: 10
-    }
+    },
+    spriteKey: "creature_leafkit",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "starwhisk_village"
   },
   BRAMBLECAT: {
     id: "BRAMBLECAT",
@@ -30,11 +34,15 @@ export const CREATURES = {
     baseDefense: 10,
     catchRate: 0.5,
     skills: [
-      "thorn_whip",
-      "root_snare",
-      "nature_roar"
+      "vine_swipe",
+      "leaf_dart",
+      "forest_guard"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_bramblecat",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "starwhisk_village"
   },
   EMBERPAW: {
     id: "EMBERPAW",
@@ -54,7 +62,11 @@ export const CREATURES = {
     evolution: {
       target: "CINDERCLAW",
       level: 10
-    }
+    },
+    spriteKey: "creature_emberpaw",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "starwhisk_village"
   },
   CINDERCLAW: {
     id: "CINDERCLAW",
@@ -67,11 +79,15 @@ export const CREATURES = {
     baseDefense: 8,
     catchRate: 0.5,
     skills: [
-      "inferno_slash",
-      "blazing_pounce",
-      "firestorm"
+      "ember_bite",
+      "flame_dash",
+      "heat_claw"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_cinderclaw",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "starwhisk_village"
   },
   MISTTAIL: {
     id: "MISTTAIL",
@@ -91,7 +107,11 @@ export const CREATURES = {
     evolution: {
       target: "DEWTAIL",
       level: 10
-    }
+    },
+    spriteKey: "creature_misttail",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "starwhisk_village"
   },
   DEWTAIL: {
     id: "DEWTAIL",
@@ -104,11 +124,15 @@ export const CREATURES = {
     baseDefense: 14,
     catchRate: 0.5,
     skills: [
-      "aqua_fang",
-      "tidal_crash",
-      "ocean_wrath"
+      "water_slash",
+      "mist_burst",
+      "tidal_wave"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_dewtail",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "starwhisk_village"
   },
   SNAGPUSS: {
     id: "SNAGPUSS",
@@ -121,14 +145,18 @@ export const CREATURES = {
     baseDefense: 5,
     catchRate: 0.8,
     skills: [
-      "scratch",
       "vine_swipe",
-      "leaf_dart"
+      "leaf_dart",
+      "forest_guard"
     ],
     evolution: {
       target: "THISTLEFUR",
       level: 12
-    }
+    },
+    spriteKey: "creature_snagpuss",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "greenpaw_forest"
   },
   THISTLEFUR: {
     id: "THISTLEFUR",
@@ -141,11 +169,15 @@ export const CREATURES = {
     baseDefense: 13,
     catchRate: 0.4,
     skills: [
-      "bite",
-      "thorn_whip",
-      "root_snare"
+      "filler_skill_1",
+      "filler_skill_2",
+      "filler_skill_3"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_thistlefur",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "greenpaw_forest"
   },
   MOSSLYNX: {
     id: "MOSSLYNX",
@@ -158,14 +190,18 @@ export const CREATURES = {
     baseDefense: 4,
     catchRate: 0.7,
     skills: [
-      "quick_strike",
       "vine_swipe",
+      "leaf_dart",
       "forest_guard"
     ],
     evolution: {
       target: "VERDANTLYNX",
       level: 14
-    }
+    },
+    spriteKey: "creature_mosslynx",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "greenpaw_forest"
   },
   VERDANTLYNX: {
     id: "VERDANTLYNX",
@@ -178,12 +214,16 @@ export const CREATURES = {
     baseDefense: 30,
     catchRate: 0.01,
     skills: [
+      "world_tree_root",
       "nature_roar",
-      "phantom_claw",
-      "soul_reap",
-      "world_tree_root"
+      "abyssal_devour",
+      "dream_eater"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_verdantlynx",
+    activeNow: false,
+    reservedForFuture: false,
+    plannedRegion: "ancient_forest"
   },
   THORNKIT: {
     id: "THORNKIT",
@@ -196,14 +236,18 @@ export const CREATURES = {
     baseDefense: 3,
     catchRate: 0.8,
     skills: [
-      "scratch",
       "vine_swipe",
-      "root_snare"
+      "leaf_dart",
+      "forest_guard"
     ],
     evolution: {
       target: "THORNMANE",
       level: 12
-    }
+    },
+    spriteKey: "creature_thornkit",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "greenpaw_forest"
   },
   THORNMANE: {
     id: "THORNMANE",
@@ -216,11 +260,15 @@ export const CREATURES = {
     baseDefense: 8,
     catchRate: 0.2,
     skills: [
-      "pounce",
       "thorn_whip",
+      "root_snare",
       "nature_roar"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_thornmane",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "mosslight_path"
   },
   FERNCLAW: {
     id: "FERNCLAW",
@@ -233,14 +281,18 @@ export const CREATURES = {
     baseDefense: 3,
     catchRate: 0.7,
     skills: [
-      "scratch",
+      "vine_swipe",
       "leaf_dart",
-      "vine_swipe"
+      "forest_guard"
     ],
     evolution: {
       target: "VINEFANG",
       level: 13
-    }
+    },
+    spriteKey: "creature_fernclaw",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "greenpaw_forest"
   },
   VINEFANG: {
     id: "VINEFANG",
@@ -253,11 +305,15 @@ export const CREATURES = {
     baseDefense: 8,
     catchRate: 0.3,
     skills: [
-      "bite",
-      "root_snare",
-      "thorn_whip"
+      "filler_skill_4",
+      "filler_skill_5",
+      "filler_skill_6"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_vinefang",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "greenpaw_forest"
   },
   BARKPELT: {
     id: "BARKPELT",
@@ -270,14 +326,18 @@ export const CREATURES = {
     baseDefense: 8,
     catchRate: 0.8,
     skills: [
-      "scratch",
-      "forest_guard",
-      "leaf_dart"
+      "vine_swipe",
+      "leaf_dart",
+      "forest_guard"
     ],
     evolution: {
       target: "IRONBARK",
       level: 15
-    }
+    },
+    spriteKey: "creature_barkpelt",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "greenpaw_forest"
   },
   IRONBARK: {
     id: "IRONBARK",
@@ -290,11 +350,15 @@ export const CREATURES = {
     baseDefense: 20,
     catchRate: 0.3,
     skills: [
-      "pounce",
-      "nature_roar",
-      "root_snare"
+      "thorn_whip",
+      "root_snare",
+      "nature_roar"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_ironbark",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "greenpaw_forest"
   },
   THISTLEKIT: {
     id: "THISTLEKIT",
@@ -307,14 +371,18 @@ export const CREATURES = {
     baseDefense: 2,
     catchRate: 0.9,
     skills: [
-      "quick_strike",
       "vine_swipe",
-      "leaf_dart"
+      "leaf_dart",
+      "forest_guard"
     ],
     evolution: {
       target: "THORNPROWLER",
       level: 11
-    }
+    },
+    spriteKey: "creature_thistlekit",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "greenpaw_forest"
   },
   THORNPROWLER: {
     id: "THORNPROWLER",
@@ -327,11 +395,15 @@ export const CREATURES = {
     baseDefense: 7,
     catchRate: 0.4,
     skills: [
-      "flurry",
-      "thorn_whip",
-      "root_snare"
+      "filler_skill_7",
+      "filler_skill_8",
+      "filler_skill_9"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_thornprowler",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "greenpaw_forest"
   },
   SPARKPAW: {
     id: "SPARKPAW",
@@ -343,10 +415,19 @@ export const CREATURES = {
     baseAttack: 6,
     baseDefense: 3,
     catchRate: 0.8,
+    skills: [
+      "ember_bite",
+      "flame_dash",
+      "heat_claw"
+    ],
     evolution: {
       target: "BLAZECLAW",
       level: 14
-    }
+    },
+    spriteKey: "creature_sparkpaw",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "mosslight_path"
   },
   BLAZECLAW: {
     id: "BLAZECLAW",
@@ -358,7 +439,16 @@ export const CREATURES = {
     baseAttack: 16,
     baseDefense: 9,
     catchRate: 0.3,
-    evolution: null
+    skills: [
+      "filler_skill_10",
+      "filler_skill_11",
+      "filler_skill_12"
+    ],
+    evolution: null,
+    spriteKey: "creature_blazeclaw",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "mosslight_path"
   },
   CINDERCAT: {
     id: "CINDERCAT",
@@ -370,10 +460,19 @@ export const CREATURES = {
     baseAttack: 5,
     baseDefense: 5,
     catchRate: 0.7,
+    skills: [
+      "ember_bite",
+      "flame_dash",
+      "heat_claw"
+    ],
     evolution: {
       target: "INFERMANE",
       level: 16
-    }
+    },
+    spriteKey: "creature_cindercat",
+    activeNow: false,
+    reservedForFuture: true,
+    plannedRegion: "volcano"
   },
   INFERMANE: {
     id: "INFERMANE",
@@ -385,7 +484,16 @@ export const CREATURES = {
     baseAttack: 14,
     baseDefense: 12,
     catchRate: 0.2,
-    evolution: null
+    skills: [
+      "inferno_slash",
+      "blazing_pounce",
+      "nature_roar"
+    ],
+    evolution: null,
+    spriteKey: "creature_infermane",
+    activeNow: false,
+    reservedForFuture: true,
+    plannedRegion: "volcano"
   },
   ASHLYNX: {
     id: "ASHLYNX",
@@ -397,10 +505,19 @@ export const CREATURES = {
     baseAttack: 7,
     baseDefense: 4,
     catchRate: 0.7,
+    skills: [
+      "ember_bite",
+      "flame_dash",
+      "heat_claw"
+    ],
     evolution: {
       target: "PYROLYNX",
       level: 15
-    }
+    },
+    spriteKey: "creature_ashlynx",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "mosslight_path"
   },
   PYROLYNX: {
     id: "PYROLYNX",
@@ -412,7 +529,16 @@ export const CREATURES = {
     baseAttack: 18,
     baseDefense: 8,
     catchRate: 0.3,
-    evolution: null
+    skills: [
+      "filler_skill_13",
+      "filler_skill_14",
+      "filler_skill_15"
+    ],
+    evolution: null,
+    spriteKey: "creature_pyrolynx",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "mosslight_path"
   },
   RIPPLEPAW: {
     id: "RIPPLEPAW",
@@ -425,14 +551,18 @@ export const CREATURES = {
     baseDefense: 5,
     catchRate: 0.8,
     skills: [
-      "scratch",
       "water_slash",
-      "mist_burst"
+      "mist_burst",
+      "tidal_wave"
     ],
     evolution: {
       target: "TIDALCLAW",
       level: 13
-    }
+    },
+    spriteKey: "creature_ripplepaw",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "greenpaw_forest"
   },
   TIDALCLAW: {
     id: "TIDALCLAW",
@@ -444,7 +574,16 @@ export const CREATURES = {
     baseAttack: 13,
     baseDefense: 13,
     catchRate: 0.4,
-    evolution: null
+    skills: [
+      "filler_skill_16",
+      "filler_skill_17",
+      "filler_skill_18"
+    ],
+    evolution: null,
+    spriteKey: "creature_tidalclaw",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "greenpaw_forest"
   },
   STREAMTAIL: {
     id: "STREAMTAIL",
@@ -457,14 +596,18 @@ export const CREATURES = {
     baseDefense: 4,
     catchRate: 0.7,
     skills: [
-      "quick_strike",
       "water_slash",
-      "mist_burst"
+      "mist_burst",
+      "tidal_wave"
     ],
     evolution: {
       target: "FLOODLYNX",
       level: 15
-    }
+    },
+    spriteKey: "creature_streamtail",
+    activeNow: false,
+    reservedForFuture: true,
+    plannedRegion: "ocean"
   },
   FLOODLYNX: {
     id: "FLOODLYNX",
@@ -476,7 +619,16 @@ export const CREATURES = {
     baseAttack: 15,
     baseDefense: 10,
     catchRate: 0.3,
-    evolution: null
+    skills: [
+      "nature_roar",
+      "bite",
+      "pounce"
+    ],
+    evolution: null,
+    spriteKey: "creature_floodlynx",
+    activeNow: false,
+    reservedForFuture: true,
+    plannedRegion: "ocean"
   },
   DEWKIT: {
     id: "DEWKIT",
@@ -489,14 +641,18 @@ export const CREATURES = {
     baseDefense: 6,
     catchRate: 0.9,
     skills: [
-      "scratch",
+      "water_slash",
       "mist_burst",
-      "water_slash"
+      "tidal_wave"
     ],
     evolution: {
       target: "MISTLYNX",
       level: 12
-    }
+    },
+    spriteKey: "creature_dewkit",
+    activeNow: false,
+    reservedForFuture: true,
+    plannedRegion: "ancient_forest"
   },
   MISTLYNX: {
     id: "MISTLYNX",
@@ -508,7 +664,16 @@ export const CREATURES = {
     baseAttack: 10,
     baseDefense: 15,
     catchRate: 0.4,
-    evolution: null
+    skills: [
+      "filler_skill_19",
+      "filler_skill_20",
+      "filler_skill_21"
+    ],
+    evolution: null,
+    spriteKey: "creature_mistlynx",
+    activeNow: false,
+    reservedForFuture: true,
+    plannedRegion: "ancient_forest"
   },
   PEBBLEPAW: {
     id: "PEBBLEPAW",
@@ -521,14 +686,18 @@ export const CREATURES = {
     baseDefense: 7,
     catchRate: 0.8,
     skills: [
-      "scratch",
       "pebble_toss",
-      "bite"
+      "rock_smash",
+      "stone_throw"
     ],
     evolution: {
       target: "STONECLAW",
       level: 14
-    }
+    },
+    spriteKey: "creature_pebblepaw",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "mosslight_path"
   },
   STONECLAW: {
     id: "STONECLAW",
@@ -540,7 +709,16 @@ export const CREATURES = {
     baseAttack: 14,
     baseDefense: 16,
     catchRate: 0.3,
-    evolution: null
+    skills: [
+      "bite",
+      "pounce",
+      "flurry"
+    ],
+    evolution: null,
+    spriteKey: "creature_stoneclaw",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "mosslight_path"
   },
   GRANITECAT: {
     id: "GRANITECAT",
@@ -553,14 +731,18 @@ export const CREATURES = {
     baseDefense: 9,
     catchRate: 0.7,
     skills: [
-      "quick_strike",
       "pebble_toss",
-      "rock_smash"
+      "rock_smash",
+      "stone_throw"
     ],
     evolution: {
       target: "TITANPELT",
       level: 16
-    }
+    },
+    spriteKey: "creature_granitecat",
+    activeNow: false,
+    reservedForFuture: true,
+    plannedRegion: "rock_mountains"
   },
   TITANPELT: {
     id: "TITANPELT",
@@ -572,7 +754,16 @@ export const CREATURES = {
     baseAttack: 10,
     baseDefense: 22,
     catchRate: 0.2,
-    evolution: null
+    skills: [
+      "bite",
+      "pounce",
+      "flurry"
+    ],
+    evolution: null,
+    spriteKey: "creature_titanpelt",
+    activeNow: false,
+    reservedForFuture: true,
+    plannedRegion: "rock_mountains"
   },
   BOULDERLYNX: {
     id: "BOULDERLYNX",
@@ -585,14 +776,18 @@ export const CREATURES = {
     baseDefense: 14,
     catchRate: 0.3,
     skills: [
-      "flurry",
       "pebble_toss",
-      "rock_smash"
+      "rock_smash",
+      "stone_throw"
     ],
     evolution: {
       target: "CLIFFMAW",
       level: 25
-    }
+    },
+    spriteKey: "creature_boulderlynx",
+    activeNow: false,
+    reservedForFuture: true,
+    plannedRegion: "rock_mountains"
   },
   CLIFFMAW: {
     id: "CLIFFMAW",
@@ -604,7 +799,16 @@ export const CREATURES = {
     baseAttack: 22,
     baseDefense: 18,
     catchRate: 0.1,
-    evolution: null
+    skills: [
+      "bite",
+      "pounce",
+      "flurry"
+    ],
+    evolution: null,
+    spriteKey: "creature_cliffmaw",
+    activeNow: false,
+    reservedForFuture: true,
+    plannedRegion: "rock_mountains"
   },
   NIGHTKIT: {
     id: "NIGHTKIT",
@@ -617,14 +821,18 @@ export const CREATURES = {
     baseDefense: 3,
     catchRate: 0.8,
     skills: [
-      "scratch",
       "shadow_sneak",
-      "bite"
+      "dark_pulse",
+      "void_strike"
     ],
     evolution: {
       target: "NIGHTPELT",
       level: 15
-    }
+    },
+    spriteKey: "creature_nightkit",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "shadowfen_swamp"
   },
   NIGHTPELT: {
     id: "NIGHTPELT",
@@ -637,11 +845,15 @@ export const CREATURES = {
     baseDefense: 8,
     catchRate: 0.3,
     skills: [
-      "pounce",
-      "dark_pulse",
-      "shadow_sneak"
+      "filler_skill_22",
+      "filler_skill_23",
+      "filler_skill_24"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_nightkit_evolution",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "shadowfen_swamp"
   },
   DUSKPAW: {
     id: "DUSKPAW",
@@ -654,14 +866,18 @@ export const CREATURES = {
     baseDefense: 4,
     catchRate: 0.7,
     skills: [
-      "scratch",
       "shadow_sneak",
-      "dark_pulse"
+      "dark_pulse",
+      "void_strike"
     ],
     evolution: {
       target: "UMBRAFANG",
       level: 16
-    }
+    },
+    spriteKey: "creature_duskpaw",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "shadowfen_swamp"
   },
   UMBRAFANG: {
     id: "UMBRAFANG",
@@ -674,12 +890,16 @@ export const CREATURES = {
     baseDefense: 22,
     catchRate: 0.01,
     skills: [
-      "dark_pulse",
-      "shadow_sneak",
-      "void_strike",
-      "abyssal_devour"
+      "abyssal_devour",
+      "dream_eater",
+      "supernova",
+      "astral_judgment"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_umbrafang",
+    activeNow: false,
+    reservedForFuture: false,
+    plannedRegion: "shadowfen_swamp"
   },
   SHADECLAW: {
     id: "SHADECLAW",
@@ -692,14 +912,18 @@ export const CREATURES = {
     baseDefense: 3,
     catchRate: 0.6,
     skills: [
-      "quick_strike",
       "shadow_sneak",
-      "dark_pulse"
+      "dark_pulse",
+      "void_strike"
     ],
     evolution: {
       target: "VOIDLYNX",
       level: 18
-    }
+    },
+    spriteKey: "creature_shadeclaw",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "shadowfen_swamp"
   },
   VOIDLYNX: {
     id: "VOIDLYNX",
@@ -712,11 +936,15 @@ export const CREATURES = {
     baseDefense: 7,
     catchRate: 0.2,
     skills: [
-      "quick_strike",
-      "phantom_claw",
-      "dark_pulse"
+      "bite",
+      "pounce",
+      "flurry"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_shadeclaw_evolution",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "shadowfen_swamp"
   },
   FROSTKIT: {
     id: "FROSTKIT",
@@ -729,14 +957,18 @@ export const CREATURES = {
     baseDefense: 5,
     catchRate: 0.8,
     skills: [
-      "scratch",
       "ice_shard",
-      "frost_breath"
+      "frost_breath",
+      "blizzard_claw"
     ],
     evolution: {
       target: "GLACIERPAW",
       level: 15
-    }
+    },
+    spriteKey: "creature_frostkit",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "frostpeak_mountains"
   },
   GLACIERPAW: {
     id: "GLACIERPAW",
@@ -749,11 +981,15 @@ export const CREATURES = {
     baseDefense: 13,
     catchRate: 0.3,
     skills: [
-      "bite",
-      "ice_shard",
-      "blizzard_claw"
+      "filler_skill_25",
+      "filler_skill_26",
+      "filler_skill_27"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_frostkit_evolution",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "frostpeak_mountains"
   },
   SNOWPELT: {
     id: "SNOWPELT",
@@ -766,14 +1002,18 @@ export const CREATURES = {
     baseDefense: 4,
     catchRate: 0.7,
     skills: [
-      "quick_strike",
       "ice_shard",
-      "frost_breath"
+      "frost_breath",
+      "blizzard_claw"
     ],
     evolution: {
       target: "BLIZZARDFANG",
       level: 16
-    }
+    },
+    spriteKey: "creature_snowpelt",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "frostpeak_mountains"
   },
   BLIZZARDFANG: {
     id: "BLIZZARDFANG",
@@ -786,11 +1026,15 @@ export const CREATURES = {
     baseDefense: 16,
     catchRate: 0.2,
     skills: [
-      "scratch",
-      "blizzard_claw",
-      "absolute_zero"
+      "bite",
+      "pounce",
+      "flurry"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_snowpelt_evolution",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "frostpeak_mountains"
   },
   STORMKIT: {
     id: "STORMKIT",
@@ -803,14 +1047,18 @@ export const CREATURES = {
     baseDefense: 3,
     catchRate: 0.7,
     skills: [
-      "scratch",
       "spark_strike",
-      "gust"
+      "thunder_paw",
+      "storm_call"
     ],
     evolution: {
       target: "THUNDERLYNX",
       level: 16
-    }
+    },
+    spriteKey: "creature_stormkit",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "skyreach_plateau"
   },
   THUNDERLYNX: {
     id: "THUNDERLYNX",
@@ -823,11 +1071,15 @@ export const CREATURES = {
     baseDefense: 8,
     catchRate: 0.3,
     skills: [
-      "bite",
-      "spark_strike",
-      "thunder_paw"
+      "filler_skill_28",
+      "filler_skill_29",
+      "filler_skill_30"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_stormkit_evolution",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "skyreach_plateau"
   },
   GALECLAW: {
     id: "GALECLAW",
@@ -840,14 +1092,18 @@ export const CREATURES = {
     baseDefense: 4,
     catchRate: 0.6,
     skills: [
-      "flurry",
-      "gust",
-      "spark_strike"
+      "spark_strike",
+      "thunder_paw",
+      "storm_call"
     ],
     evolution: {
       target: "TEMPESTFANG",
       level: 18
-    }
+    },
+    spriteKey: "creature_galeclaw",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "skyreach_plateau"
   },
   TEMPESTFANG: {
     id: "TEMPESTFANG",
@@ -860,11 +1116,15 @@ export const CREATURES = {
     baseDefense: 7,
     catchRate: 0.2,
     skills: [
-      "flurry",
-      "thunder_paw",
-      "storm_call"
+      "filler_skill_31",
+      "filler_skill_32",
+      "filler_skill_33"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_galeclaw_evolution",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "skyreach_plateau"
   },
   WHISPERKIT: {
     id: "WHISPERKIT",
@@ -877,14 +1137,18 @@ export const CREATURES = {
     baseDefense: 7,
     catchRate: 0.7,
     skills: [
-      "scratch",
-      "shadow_sneak",
-      "phantom_claw"
+      "phantom_claw",
+      "soul_reap",
+      "void_strike"
     ],
     evolution: {
       target: "SOULPELT",
       level: 19
-    }
+    },
+    spriteKey: "creature_whisperkit",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "whispering_woods"
   },
   SOULPELT: {
     id: "SOULPELT",
@@ -897,11 +1161,15 @@ export const CREATURES = {
     baseDefense: 18,
     catchRate: 0.3,
     skills: [
-      "bite",
-      "phantom_claw",
-      "soul_reap"
+      "filler_skill_34",
+      "filler_skill_35",
+      "filler_skill_36"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_soulpelt",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "whispering_woods"
   },
   PHANTOMLYNX: {
     id: "PHANTOMLYNX",
@@ -914,14 +1182,18 @@ export const CREATURES = {
     baseDefense: 4,
     catchRate: 0.5,
     skills: [
-      "quick_strike",
-      "shadow_sneak",
-      "phantom_claw"
+      "phantom_claw",
+      "soul_reap",
+      "void_strike"
     ],
     evolution: {
       target: "SPECTRALCLAW",
       level: 21
-    }
+    },
+    spriteKey: "creature_phantomlynx",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "whispering_woods"
   },
   SPECTRALCLAW: {
     id: "SPECTRALCLAW",
@@ -934,11 +1206,15 @@ export const CREATURES = {
     baseDefense: 10,
     catchRate: 0.2,
     skills: [
-      "phantom_claw",
-      "soul_reap",
-      "spectral_strike"
+      "bite",
+      "pounce",
+      "flurry"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_spectralclaw",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "whispering_woods"
   },
   RUNECLAW: {
     id: "RUNECLAW",
@@ -951,14 +1227,18 @@ export const CREATURES = {
     baseDefense: 5,
     catchRate: 0.6,
     skills: [
-      "scratch",
-      "mana_burst",
-      "star_fall"
+      "star_fall",
+      "cosmic_roar",
+      "aether_blast"
     ],
     evolution: {
       target: "ARCANEFANG",
       level: 20
-    }
+    },
+    spriteKey: "creature_runeclaw",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "celestial_sanctuary"
   },
   ARCANEFANG: {
     id: "ARCANEFANG",
@@ -971,11 +1251,15 @@ export const CREATURES = {
     baseDefense: 12,
     catchRate: 0.2,
     skills: [
-      "bite",
-      "star_fall",
-      "cosmic_roar"
+      "mana_burst",
+      "celestial_strike",
+      "star_fall"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_arcanefang",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "celestial_sanctuary"
   },
   STARLIGHTKIT: {
     id: "STARLIGHTKIT",
@@ -988,14 +1272,18 @@ export const CREATURES = {
     baseDefense: 6,
     catchRate: 0.7,
     skills: [
-      "scratch",
-      "mana_burst",
-      "solar_beam"
+      "star_fall",
+      "cosmic_roar",
+      "aether_blast"
     ],
     evolution: {
       target: "CELESTIPELT",
       level: 22
-    }
+    },
+    spriteKey: "creature_starlightkit",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "celestial_sanctuary"
   },
   CELESTIPELT: {
     id: "CELESTIPELT",
@@ -1008,11 +1296,15 @@ export const CREATURES = {
     baseDefense: 16,
     catchRate: 0.2,
     skills: [
-      "star_fall",
-      "cosmic_roar",
-      "celestial_strike"
+      "mana_burst",
+      "celestial_strike",
+      "star_fall"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_celestipelt",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "celestial_sanctuary"
   },
   AURORACAT: {
     id: "AURORACAT",
@@ -1025,11 +1317,15 @@ export const CREATURES = {
     baseDefense: 18,
     catchRate: 0.05,
     skills: [
-      "ice_shard",
-      "mana_burst",
-      "solar_beam"
+      "bite",
+      "pounce",
+      "flurry"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_auroracat",
+    activeNow: false,
+    reservedForFuture: true,
+    plannedRegion: "celestial_sanctuary"
   },
   EMBERLYNX: {
     id: "EMBERLYNX",
@@ -1043,10 +1339,14 @@ export const CREATURES = {
     catchRate: 0.05,
     skills: [
       "inferno_slash",
-      "storm_call",
-      "blazing_pounce"
+      "blazing_pounce",
+      "nature_roar"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_emberlynx",
+    activeNow: false,
+    reservedForFuture: true,
+    plannedRegion: "volcano"
   },
   VERDANTCLAW: {
     id: "VERDANTCLAW",
@@ -1059,11 +1359,15 @@ export const CREATURES = {
     baseDefense: 22,
     catchRate: 0.05,
     skills: [
-      "vine_whip",
-      "nature_roar",
-      "spirit_drain"
+      "thorn_whip",
+      "root_snare",
+      "nature_roar"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_verdantclaw",
+    activeNow: false,
+    reservedForFuture: true,
+    plannedRegion: "ancient_forest"
   },
   SOLARION: {
     id: "SOLARION",
@@ -1076,12 +1380,16 @@ export const CREATURES = {
     baseDefense: 25,
     catchRate: 0.01,
     skills: [
-      "solar_beam",
-      "firestorm",
-      "holy_smite",
-      "supernova"
+      "supernova",
+      "genesis_light",
+      "astral_judgment",
+      "typhoon_fury"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_solarion",
+    activeNow: false,
+    reservedForFuture: false,
+    plannedRegion: "sunstone_desert"
   },
   GLACIARA: {
     id: "GLACIARA",
@@ -1094,12 +1402,16 @@ export const CREATURES = {
     baseDefense: 35,
     catchRate: 0.01,
     skills: [
-      "ice_shard",
-      "blizzard_claw",
-      "absolute_zero",
-      "permafrost"
+      "permafrost",
+      "tsunami_burst",
+      "abyssal_devour",
+      "dream_eater"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_glaciara",
+    activeNow: false,
+    reservedForFuture: false,
+    plannedRegion: "frostpeak_mountains"
   },
   TEMPESTCLAW: {
     id: "TEMPESTCLAW",
@@ -1112,12 +1424,16 @@ export const CREATURES = {
     baseDefense: 25,
     catchRate: 0.01,
     skills: [
-      "thunder_paw",
-      "storm_call",
-      "hurricane_strike",
-      "typhoon_fury"
+      "typhoon_fury",
+      "supernova",
+      "astral_judgment",
+      "abyssal_devour"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_tempestclaw",
+    activeNow: false,
+    reservedForFuture: false,
+    plannedRegion: "skyreach_plateau"
   },
   AQUARION: {
     id: "AQUARION",
@@ -1130,12 +1446,16 @@ export const CREATURES = {
     baseDefense: 28,
     catchRate: 0.01,
     skills: [
-      "aqua_fang",
-      "tidal_crash",
-      "ocean_wrath",
-      "tsunami_burst"
+      "tsunami_burst",
+      "typhoon_fury",
+      "abyssal_devour",
+      "dream_eater"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_aquarion",
+    activeNow: false,
+    reservedForFuture: false,
+    plannedRegion: "ocean"
   },
   TERRACLAW: {
     id: "TERRACLAW",
@@ -1148,12 +1468,16 @@ export const CREATURES = {
     baseDefense: 45,
     catchRate: 0.01,
     skills: [
-      "stone_throw",
-      "earth_shatter",
-      "mountain_shield",
-      "tectonic_slam"
+      "tectonic_slam",
+      "abyssal_devour",
+      "dream_eater",
+      "world_tree_root"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_terraclaw",
+    activeNow: false,
+    reservedForFuture: false,
+    plannedRegion: "rock_mountains"
   },
   LUMINA: {
     id: "LUMINA",
@@ -1166,12 +1490,16 @@ export const CREATURES = {
     baseDefense: 25,
     catchRate: 0.01,
     skills: [
-      "light_beam",
-      "radiant_burst",
-      "divine_glow",
-      "genesis_light"
+      "genesis_light",
+      "supernova",
+      "astral_judgment",
+      "world_tree_root"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_lumina",
+    activeNow: false,
+    reservedForFuture: false,
+    plannedRegion: "celestial_sanctuary"
   },
   AETHERION: {
     id: "AETHERION",
@@ -1184,12 +1512,16 @@ export const CREATURES = {
     baseDefense: 35,
     catchRate: 0.01,
     skills: [
-      "cosmic_roar",
-      "star_fall",
-      "aether_blast",
-      "astral_judgment"
+      "astral_judgment",
+      "genesis_light",
+      "supernova",
+      "abyssal_devour"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_aetherion",
+    activeNow: false,
+    reservedForFuture: false,
+    plannedRegion: "celestial_sanctuary"
   },
   NOCTYRA: {
     id: "NOCTYRA",
@@ -1202,12 +1534,16 @@ export const CREATURES = {
     baseDefense: 30,
     catchRate: 0.01,
     skills: [
-      "soul_reap",
-      "dark_pulse",
-      "phantom_claw",
-      "dream_eater"
+      "dream_eater",
+      "abyssal_devour",
+      "astral_judgment",
+      "supernova"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_noctyra",
+    activeNow: false,
+    reservedForFuture: false,
+    plannedRegion: "shadowfen_swamp"
   },
   RUSSIAN_BLUE: {
     id: "RUSSIAN_BLUE",
@@ -1220,11 +1556,15 @@ export const CREATURES = {
     baseDefense: 8,
     catchRate: 0.55,
     skills: [
-      "ice_claw_g3",
-      "silver_gaze_g3",
-      "cold_step_g3"
+      "filler_skill_37",
+      "filler_skill_38",
+      "filler_skill_39"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_russian_blue",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "frostpeak_mountains"
   },
   SIAMESE: {
     id: "SIAMESE",
@@ -1237,11 +1577,15 @@ export const CREATURES = {
     baseDefense: 5,
     catchRate: 0.6,
     skills: [
-      "heat_bite_g3",
-      "ember_tail_g3",
-      "sun_stare_g3"
+      "filler_skill_40",
+      "filler_skill_41",
+      "filler_skill_42"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_siamese",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "sunstone_desert"
   },
   PERSIAN: {
     id: "PERSIAN",
@@ -1254,11 +1598,15 @@ export const CREATURES = {
     baseDefense: 9,
     catchRate: 0.6,
     skills: [
-      "light_paw_g3",
-      "silk_guard_g3",
-      "glow_breath_g3"
+      "filler_skill_43",
+      "filler_skill_1",
+      "filler_skill_2"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_persian",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "celestial_sanctuary"
   },
   MAINE_COON: {
     id: "MAINE_COON",
@@ -1271,11 +1619,15 @@ export const CREATURES = {
     baseDefense: 10,
     catchRate: 0.45,
     skills: [
-      "earth_paw_g3",
-      "heavy_push_g3",
-      "wild_roar_g3"
+      "filler_skill_3",
+      "filler_skill_4",
+      "filler_skill_5"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_maine_coon",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "rock_mountains"
   },
   BENGAL: {
     id: "BENGAL",
@@ -1288,11 +1640,15 @@ export const CREATURES = {
     baseDefense: 5,
     catchRate: 0.55,
     skills: [
-      "spark_claw_g3",
-      "quick_pounce_g3",
-      "flash_tail_g3"
+      "filler_skill_6",
+      "filler_skill_7",
+      "filler_skill_8"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_bengal",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "skyreach_plateau"
   },
   RAGDOLL: {
     id: "RAGDOLL",
@@ -1305,11 +1661,15 @@ export const CREATURES = {
     baseDefense: 9,
     catchRate: 0.65,
     skills: [
-      "water_touch_g3",
-      "soft_wave_g3",
-      "mist_wrap_g3"
+      "filler_skill_9",
+      "filler_skill_10",
+      "filler_skill_11"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_ragdoll",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "ocean"
   },
   SCOTTISH_FOLD: {
     id: "SCOTTISH_FOLD",
@@ -1322,11 +1682,15 @@ export const CREATURES = {
     baseDefense: 8,
     catchRate: 0.65,
     skills: [
-      "leaf_step_g3",
-      "vine_bat_g3",
-      "nature_hide_g3"
+      "filler_skill_12",
+      "filler_skill_13",
+      "filler_skill_14"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_scottish_fold",
+    activeNow: false,
+    reservedForFuture: true,
+    plannedRegion: "ancient_forest"
   },
   NORWEGIAN_FOREST: {
     id: "NORWEGIAN_FOREST",
@@ -1339,11 +1703,15 @@ export const CREATURES = {
     baseDefense: 11,
     catchRate: 0.45,
     skills: [
-      "snow_claw_g3",
-      "frost_tail_g3",
-      "winter_guard_g3"
+      "filler_skill_15",
+      "filler_skill_16",
+      "filler_skill_17"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_norwegian_forest",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "frostpeak_mountains"
   },
   SPHYNX: {
     id: "SPHYNX",
@@ -1356,11 +1724,15 @@ export const CREATURES = {
     baseDefense: 6,
     catchRate: 0.5,
     skills: [
-      "mind_wave_g3",
-      "arcane_touch_g3",
-      "mystic_blink_g3"
+      "filler_skill_18",
+      "filler_skill_19",
+      "filler_skill_20"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_sphynx",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "celestial_sanctuary"
   },
   BRITISH_SHORTHAIR: {
     id: "BRITISH_SHORTHAIR",
@@ -1373,11 +1745,15 @@ export const CREATURES = {
     baseDefense: 12,
     catchRate: 0.5,
     skills: [
-      "stone_paw_g3",
-      "solid_stance_g3",
-      "rock_nudge_g3"
+      "filler_skill_21",
+      "filler_skill_22",
+      "filler_skill_23"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_british_shorthair",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "rock_mountains"
   },
   ABYSSINIAN: {
     id: "ABYSSINIAN",
@@ -1390,11 +1766,15 @@ export const CREATURES = {
     baseDefense: 5,
     catchRate: 0.6,
     skills: [
-      "sand_heat_g3",
-      "fire_dash_g3",
-      "sun_bite_g3"
+      "filler_skill_24",
+      "filler_skill_25",
+      "filler_skill_26"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_abyssinian",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "sunstone_desert"
   },
   TURKISH_ANGORA: {
     id: "TURKISH_ANGORA",
@@ -1407,11 +1787,15 @@ export const CREATURES = {
     baseDefense: 7,
     catchRate: 0.6,
     skills: [
-      "light_slash_g3",
-      "gleam_tail_g3",
-      "halo_step_g3"
+      "filler_skill_27",
+      "filler_skill_28",
+      "filler_skill_29"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_turkish_angora",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "celestial_sanctuary"
   },
   SAVANNAH: {
     id: "SAVANNAH",
@@ -1424,11 +1808,15 @@ export const CREATURES = {
     baseDefense: 4,
     catchRate: 0.5,
     skills: [
-      "gust_pounce_g3",
-      "storm_step_g3",
-      "claw_rush_g3"
+      "filler_skill_30",
+      "filler_skill_31",
+      "filler_skill_32"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_savannah",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "skyreach_plateau"
   },
   MUNCHKIN: {
     id: "MUNCHKIN",
@@ -1441,11 +1829,15 @@ export const CREATURES = {
     baseDefense: 6,
     catchRate: 0.7,
     skills: [
-      "tiny_dash_g3",
-      "mana_nudge_g3",
-      "lucky_paw_g3"
+      "filler_skill_33",
+      "filler_skill_34",
+      "filler_skill_35"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_munchkin",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "celestial_sanctuary"
   },
   BIRMAN: {
     id: "BIRMAN",
@@ -1458,11 +1850,15 @@ export const CREATURES = {
     baseDefense: 8,
     catchRate: 0.55,
     skills: [
-      "holy_paw_g3",
-      "soft_glow_g3",
-      "blessing_tail_g3"
+      "filler_skill_36",
+      "filler_skill_37",
+      "filler_skill_38"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_birman",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "celestial_sanctuary"
   },
   DEVON_REX: {
     id: "DEVON_REX",
@@ -1475,11 +1871,15 @@ export const CREATURES = {
     baseDefense: 5,
     catchRate: 0.65,
     skills: [
-      "spark_roll_g3",
-      "zigzag_claw_g3",
-      "wind_nip_g3"
+      "filler_skill_39",
+      "filler_skill_40",
+      "filler_skill_41"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_devon_rex",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "skyreach_plateau"
   },
   CORNISH_REX: {
     id: "CORNISH_REX",
@@ -1492,11 +1892,15 @@ export const CREATURES = {
     baseDefense: 5,
     catchRate: 0.65,
     skills: [
-      "air_slice_g3",
-      "quick_turn_g3",
-      "whirl_step_g3"
+      "filler_skill_42",
+      "filler_skill_43",
+      "filler_skill_1"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_cornish_rex",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "skyreach_plateau"
   },
   ORIENTAL_SHORTHAIR: {
     id: "ORIENTAL_SHORTHAIR",
@@ -1509,11 +1913,15 @@ export const CREATURES = {
     baseDefense: 6,
     catchRate: 0.6,
     skills: [
-      "focus_stare_g3",
-      "mana_spike_g3",
-      "mind_tap_g3"
+      "filler_skill_2",
+      "filler_skill_3",
+      "filler_skill_4"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_oriental_shorthair",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "celestial_sanctuary"
   },
   AMERICAN_SHORTHAIR: {
     id: "AMERICAN_SHORTHAIR",
@@ -1526,11 +1934,15 @@ export const CREATURES = {
     baseDefense: 8,
     catchRate: 0.65,
     skills: [
-      "steady_claw_g3",
-      "earth_step_g3",
-      "plain_strike_g3"
+      "filler_skill_5",
+      "filler_skill_6",
+      "filler_skill_7"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_american_shorthair",
+    activeNow: false,
+    reservedForFuture: true,
+    plannedRegion: "rock_mountains"
   },
   EGYPTIAN_MAU: {
     id: "EGYPTIAN_MAU",
@@ -1543,11 +1955,15 @@ export const CREATURES = {
     baseDefense: 5,
     catchRate: 0.55,
     skills: [
-      "sun_mark_g3",
-      "relic_claw_g3",
-      "flash_dash_g3"
+      "filler_skill_8",
+      "filler_skill_9",
+      "filler_skill_10"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_egyptian_mau",
+    activeNow: false,
+    reservedForFuture: true,
+    plannedRegion: "sunstone_desert"
   },
   TURKISH_VAN: {
     id: "TURKISH_VAN",
@@ -1560,11 +1976,15 @@ export const CREATURES = {
     baseDefense: 7,
     catchRate: 0.6,
     skills: [
-      "lake_splash_g3",
-      "wet_claw_g3",
-      "wave_turn_g3"
+      "filler_skill_11",
+      "filler_skill_12",
+      "filler_skill_13"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_turkish_van",
+    activeNow: false,
+    reservedForFuture: true,
+    plannedRegion: "ocean"
   },
   MANX: {
     id: "MANX",
@@ -1577,11 +1997,15 @@ export const CREATURES = {
     baseDefense: 9,
     catchRate: 0.55,
     skills: [
-      "tail_less_rush_g3",
-      "stone_jump_g3",
-      "hard_push_g3"
+      "filler_skill_14",
+      "filler_skill_15",
+      "filler_skill_16"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_manx",
+    activeNow: false,
+    reservedForFuture: true,
+    plannedRegion: "rock_mountains"
   },
   NEBELUNG: {
     id: "NEBELUNG",
@@ -1594,11 +2018,15 @@ export const CREATURES = {
     baseDefense: 6,
     catchRate: 0.55,
     skills: [
-      "mist_shadow_g3",
-      "dark_swipe_g3",
-      "night_step_g3"
+      "filler_skill_17",
+      "filler_skill_18",
+      "filler_skill_19"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_nebelung",
+    activeNow: false,
+    reservedForFuture: true,
+    plannedRegion: "shadowfen_swamp"
   },
   HAVANA_BROWN: {
     id: "HAVANA_BROWN",
@@ -1611,11 +2039,15 @@ export const CREATURES = {
     baseDefense: 6,
     catchRate: 0.6,
     skills: [
-      "warm_bite_g3",
-      "ember_swipe_g3",
-      "brown_flare_g3"
+      "filler_skill_20",
+      "filler_skill_21",
+      "filler_skill_22"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_havana_brown",
+    activeNow: false,
+    reservedForFuture: true,
+    plannedRegion: "sunstone_desert"
   },
   RAGAMUFFIN: {
     id: "RAGAMUFFIN",
@@ -1628,11 +2060,15 @@ export const CREATURES = {
     baseDefense: 9,
     catchRate: 0.65,
     skills: [
-      "healing_drop_g3",
-      "soft_wave_g3",
-      "calm_tail_g3"
+      "filler_skill_23",
+      "filler_skill_24",
+      "filler_skill_25"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_ragamuffin",
+    activeNow: false,
+    reservedForFuture: true,
+    plannedRegion: "ocean"
   },
   CHARTREUX: {
     id: "CHARTREUX",
@@ -1645,11 +2081,15 @@ export const CREATURES = {
     baseDefense: 8,
     catchRate: 0.55,
     skills: [
-      "sky_claw_g3",
-      "silent_step_g3",
-      "blue_gust_g3"
+      "filler_skill_26",
+      "filler_skill_27",
+      "filler_skill_28"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_chartreux",
+    activeNow: false,
+    reservedForFuture: true,
+    plannedRegion: "skyreach_plateau"
   },
   SINGAPURA: {
     id: "SINGAPURA",
@@ -1662,11 +2102,15 @@ export const CREATURES = {
     baseDefense: 4,
     catchRate: 0.75,
     skills: [
-      "tiny_spark_g3",
-      "electric_nip_g3",
-      "flash_step_g3"
+      "filler_skill_29",
+      "filler_skill_30",
+      "filler_skill_31"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_singapura",
+    activeNow: false,
+    reservedForFuture: true,
+    plannedRegion: "skyreach_plateau"
   },
   SOMALI: {
     id: "SOMALI",
@@ -1679,11 +2123,15 @@ export const CREATURES = {
     baseDefense: 5,
     catchRate: 0.6,
     skills: [
-      "red_claw_g3",
-      "fire_rush_g3",
-      "ember_roar_g3"
+      "filler_skill_32",
+      "filler_skill_33",
+      "filler_skill_34"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_somali",
+    activeNow: false,
+    reservedForFuture: true,
+    plannedRegion: "sunstone_desert"
   },
   TOYGER: {
     id: "TOYGER",
@@ -1696,11 +2144,15 @@ export const CREATURES = {
     baseDefense: 7,
     catchRate: 0.55,
     skills: [
-      "stripe_pounce_g3",
-      "earth_roar_g3",
-      "hunter_step_g3"
+      "filler_skill_35",
+      "filler_skill_36",
+      "filler_skill_37"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_toyger",
+    activeNow: false,
+    reservedForFuture: true,
+    plannedRegion: "rock_mountains"
   },
   BURMILLA: {
     id: "BURMILLA",
@@ -1713,11 +2165,15 @@ export const CREATURES = {
     baseDefense: 7,
     catchRate: 0.6,
     skills: [
-      "silver_flash_g3",
-      "light_bite_g3",
-      "mirror_tail_g3"
+      "filler_skill_38",
+      "filler_skill_39",
+      "filler_skill_40"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_burmilla",
+    activeNow: false,
+    reservedForFuture: true,
+    plannedRegion: "celestial_sanctuary"
   },
   SELKIRK_REX: {
     id: "SELKIRK_REX",
@@ -1730,10 +2186,266 @@ export const CREATURES = {
     baseDefense: 10,
     catchRate: 0.55,
     skills: [
-      "curl_guard_g3",
-      "stone_roll_g3",
-      "rough_paw_g3"
+      "filler_skill_41",
+      "filler_skill_42",
+      "filler_skill_43"
     ],
-    evolution: null
+    evolution: null,
+    spriteKey: "creature_selkirk_rex",
+    activeNow: false,
+    reservedForFuture: true,
+    plannedRegion: "rock_mountains"
+  },
+  EGYPTIAN_MAU: {
+    id: "EGYPTIAN_MAU",
+    class: "레어",
+    name: "이집션 마우",
+    type: "빛",
+    description: "고대 유적의 비밀을 품고 있다는 전설의 고양이.",
+    baseHp: 20,
+    baseAttack: 9,
+    baseDefense: 5,
+    catchRate: 0.55,
+    skills: [
+      "filler_skill_1",
+      "filler_skill_2",
+      "filler_skill_3"
+    ],
+    evolution: null,
+    spriteKey: "creature_egyptian_mau",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "sunstone_desert"
+  },
+  TURKISH_VAN: {
+    id: "TURKISH_VAN",
+    class: "레어",
+    name: "터키시 반",
+    type: "물",
+    description: "물을 두려워하지 않고 헤엄치는 호수의 고양이.",
+    baseHp: 23,
+    baseAttack: 7,
+    baseDefense: 7,
+    catchRate: 0.6,
+    skills: [
+      "filler_skill_4",
+      "filler_skill_5",
+      "filler_skill_6"
+    ],
+    evolution: null,
+    spriteKey: "creature_turkish_van",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "ocean"
+  },
+  MANX: {
+    id: "MANX",
+    class: "레어",
+    name: "맹크스",
+    type: "바위",
+    description: "짧은 꼬리와 단단한 하체로 지면을 박차는 고양이.",
+    baseHp: 25,
+    baseAttack: 8,
+    baseDefense: 9,
+    catchRate: 0.55,
+    skills: [
+      "filler_skill_7",
+      "filler_skill_8",
+      "filler_skill_9"
+    ],
+    evolution: null,
+    spriteKey: "creature_manx",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "rock_mountains"
+  },
+  NEBELUNG: {
+    id: "NEBELUNG",
+    class: "레어",
+    name: "네벨룽",
+    type: "어둠",
+    description: "안개처럼 흐릿한 털빛을 가진 그림자 고양이.",
+    baseHp: 21,
+    baseAttack: 8,
+    baseDefense: 6,
+    catchRate: 0.55,
+    skills: [
+      "filler_skill_10",
+      "filler_skill_11",
+      "filler_skill_12"
+    ],
+    evolution: null,
+    spriteKey: "creature_nebelung",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "shadowfen_swamp"
+  },
+  HAVANA_BROWN: {
+    id: "HAVANA_BROWN",
+    class: "레어",
+    name: "하바나 브라운",
+    type: "불",
+    description: "짙은 갈색 털에 은근한 열기를 품은 고양이.",
+    baseHp: 21,
+    baseAttack: 8,
+    baseDefense: 6,
+    catchRate: 0.6,
+    skills: [
+      "filler_skill_13",
+      "filler_skill_14",
+      "filler_skill_15"
+    ],
+    evolution: null,
+    spriteKey: "creature_havana_brown",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "sunstone_desert"
+  },
+  RAGAMUFFIN: {
+    id: "RAGAMUFFIN",
+    class: "레어",
+    name: "라가머핀",
+    type: "물",
+    description: "온화한 성격과 넓은 품을 지닌 회복형 고양이.",
+    baseHp: 27,
+    baseAttack: 5,
+    baseDefense: 9,
+    catchRate: 0.65,
+    skills: [
+      "filler_skill_16",
+      "filler_skill_17",
+      "filler_skill_18"
+    ],
+    evolution: null,
+    spriteKey: "creature_ragamuffin",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "ocean"
+  },
+  CHARTREUX: {
+    id: "CHARTREUX",
+    class: "레어",
+    name: "차트뢰",
+    type: "바람",
+    description: "푸른 회색 털과 조용한 움직임이 특징인 고양이.",
+    baseHp: 23,
+    baseAttack: 7,
+    baseDefense: 8,
+    catchRate: 0.55,
+    skills: [
+      "filler_skill_19",
+      "filler_skill_20",
+      "filler_skill_21"
+    ],
+    evolution: null,
+    spriteKey: "creature_chartreux",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "skyreach_plateau"
+  },
+  SINGAPURA: {
+    id: "SINGAPURA",
+    class: "레어",
+    name: "싱가푸라",
+    type: "번개",
+    description: "작지만 엄청난 에너지를 품은 도시형 고양이.",
+    baseHp: 17,
+    baseAttack: 8,
+    baseDefense: 4,
+    catchRate: 0.75,
+    skills: [
+      "filler_skill_22",
+      "filler_skill_23",
+      "filler_skill_24"
+    ],
+    evolution: null,
+    spriteKey: "creature_singapura",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "skyreach_plateau"
+  },
+  SOMALI: {
+    id: "SOMALI",
+    class: "레어",
+    name: "소말리",
+    type: "불",
+    description: "붉은 털과 뜨거운 야성을 지닌 사냥꾼 고양이.",
+    baseHp: 20,
+    baseAttack: 9,
+    baseDefense: 5,
+    catchRate: 0.6,
+    skills: [
+      "filler_skill_25",
+      "filler_skill_26",
+      "filler_skill_27"
+    ],
+    evolution: null,
+    spriteKey: "creature_somali",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "sunstone_desert"
+  },
+  TOYGER: {
+    id: "TOYGER",
+    class: "레어",
+    name: "토이거",
+    type: "땅",
+    description: "작은 호랑이처럼 보이는 줄무늬 고양이.",
+    baseHp: 24,
+    baseAttack: 9,
+    baseDefense: 7,
+    catchRate: 0.55,
+    skills: [
+      "filler_skill_28",
+      "filler_skill_29",
+      "filler_skill_30"
+    ],
+    evolution: null,
+    spriteKey: "creature_toyger",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "rock_mountains"
+  },
+  BURMILLA: {
+    id: "BURMILLA",
+    class: "레어",
+    name: "버밀라",
+    type: "빛",
+    description: "은은하게 반짝이는 털빛을 가진 우아한 고양이.",
+    baseHp: 22,
+    baseAttack: 7,
+    baseDefense: 7,
+    catchRate: 0.6,
+    skills: [
+      "filler_skill_31",
+      "filler_skill_32",
+      "filler_skill_33"
+    ],
+    evolution: null,
+    spriteKey: "creature_burmilla",
+    activeNow: true,
+    reservedForFuture: false,
+    plannedRegion: "celestial_sanctuary"
+  },
+  SELKIRK_REX: {
+    id: "SELKIRK_REX",
+    class: "레어",
+    name: "셀커크 렉스",
+    type: "바위",
+    description: "곱슬 털과 묵직한 체구를 동시에 지닌 독특한 고양이.",
+    baseHp: 26,
+    baseAttack: 7,
+    baseDefense: 10,
+    catchRate: 0.55,
+    skills: [
+      "filler_skill_34",
+      "filler_skill_35",
+      "filler_skill_36"
+    ],
+    evolution: null,
+    spriteKey: "creature_ironbark",
+    activeNow: false,
+    reservedForFuture: true,
+    plannedRegion: "ancient_forest"
   }
 };

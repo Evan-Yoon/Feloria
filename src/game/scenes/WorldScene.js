@@ -320,14 +320,14 @@ export class WorldScene extends Phaser.Scene {
       }
     });
 
-    // Dynamically inject Legendary Spawns
+    // Dynamically inject Legendary Spawns (Foreshadowing only for now)
     if (this.mapId === 'ancient_forest' && legendarySystem.canSpawnLegendary(this.registry, 'VERDANTLYNX')) {
       const lx = 20; // Deep in the forest
       const ly = 12;
 
-      const legSprite = this.add.sprite(lx * 32 + 16, ly * 32 + 16, 'verdantlynx');
-      // Tint the sprite so we don't have to load a separate overworld atlas right now
-      legSprite.setTintFill(0x2ecc71);
+      // Use the newly registered creature sprite asset
+      const legSprite = this.add.sprite(lx * 32 + 16, (ly + 1) * 32, 'creature_verdantlynx');
+      legSprite.setOrigin(0.5, 1);
       legSprite.npcId = 'legendary_verdantlynx';
       legSprite.tileX = lx;
       legSprite.tileY = ly;
@@ -632,17 +632,27 @@ export class WorldScene extends Phaser.Scene {
 
     await cutsceneSystem.restoreCameraToPlayer(this, 1000);
 
+    // Cinematic Sequence (Foreshadowing)
+    await cutsceneSystem.delay(this, 1000);
+
+    // Fade out the legendary sprite (it vanishes into the forest)
+    this.tweens.add({
+      targets: sprite,
+      alpha: 0,
+      y: sprite.y - 20,
+      duration: 1000,
+      onComplete: () => {
+        sprite.destroy();
+      }
+    });
+
+    await cutsceneSystem.delay(this, 1000);
+
     this.isDialogueActive = false;
     cutsceneSystem.unlockInput(this);
 
-    // Force battle with legendary stats
-    this.events.emit('hideMapName');
-    this.scene.pause();
-    this.scene.launch("BattleScene", {
-      isWild: true,
-      enemyPool: [{ creatureId: legendaryId, level: 50 }], // Forced Lv 50 Boss
-      background: this.mapId
-    });
+    // Note: Battle Scene is NOT launched here for foreshadowing
+    console.log(`WorldScene: Legendary ${legendaryId} foreshadowed. No battle triggered in Chapter 1.`);
   }
 
   healParty() {

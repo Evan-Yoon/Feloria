@@ -3,16 +3,19 @@
  */
 export const ENCOUNTER_TABLES = {
   starwhisk_village: {
-    pool: [],
-    levelRange: [1, 1]
+    pool: ['SNAGPUSS', 'THISTLEKIT', 'MOSSLYNX', 'FERNCLAW'],
+    levelRange: [1, 3]
   },
   greenpaw_forest: {
-    // 3 unique wild cats for Greenpaw Forest
-    pool: ['SNAGPUSS', 'FERNCLAW', 'THISTLEFUR'],
-    levelRange: [2, 5]
+    pool: ['SNAGPUSS', 'THISTLEKIT', 'MOSSLYNX', 'FERNCLAW', 'THORNKIT', 'BARKPELT', 'RIPPLEPAW'],
+    levelRange: [2, 6]
+  },
+  mosslight_path: {
+    pool: ['THORNMANE', 'VINEFANG', 'SPARKPAW', 'ASHLYNX', 'PEBBLEPAW', 'NIGHTKIT'],
+    levelRange: [6, 10]
   },
   ancient_forest: {
-    pool: ['THORNKIT', 'MOSSLYNX', 'VINEFANG', 'THORNMANE'],
-    levelRange: [8, 12]
+    pool: ['THORNPROWLER', 'NIGHTPELT', 'MISTLYNX', 'FROSTKIT', 'STORMKIT'],
+    levelRange: [9, 14]
   }
 };
