@@ -15,19 +15,33 @@ export const skillEffectSystem = {
 
     const animKeyName = getAnimationKey(skillId, type);
     // Find the asset key from ASSETS.ANIMATIONS
-    const assetEntry = Object.entries(ASSETS.ANIMATIONS).find(([name]) => 
-      name.toLowerCase() === animKeyName.toLowerCase()
+    const assetEntry = Object.entries(ASSETS.ANIMATIONS).find(
+      ([name]) => name.toLowerCase() === animKeyName.toLowerCase(),
     );
 
     if (!assetEntry) {
-      console.warn(`skillEffectSystem: No asset found for animation key ${animKeyName}`);
+      console.warn(
+        `skillEffectSystem: No asset found for animation key ${animKeyName}`,
+      );
       // Fallback to ATTACK1
-      this.playAnimEffect(scene, targetSprite, "Attack1", ASSETS.ANIMATIONS.ATTACK1.KEY, multiplier);
+      this.playAnimEffect(
+        scene,
+        targetSprite,
+        "Attack1",
+        ASSETS.ANIMATIONS.ATTACK1.KEY,
+        multiplier,
+      );
       return;
     }
 
     const [name, asset] = assetEntry;
-    this.playAnimEffect(scene, targetSprite, animKeyName, asset.KEY, multiplier);
+    this.playAnimEffect(
+      scene,
+      targetSprite,
+      animKeyName,
+      asset.KEY,
+      multiplier,
+    );
   },
 
   /**
@@ -46,7 +60,7 @@ export const skillEffectSystem = {
       originY: 0.5,
       offsetX: 0,
       offsetY: 0,
-      anchorType: "center"
+      anchorType: "center",
     };
 
     const animName = `${assetKey}_play`;
@@ -55,7 +69,7 @@ export const skillEffectSystem = {
         key: animName,
         frames: scene.anims.generateFrameNumbers(assetKey),
         frameRate: config.frameRate || 15,
-        hideOnComplete: true
+        hideOnComplete: true,
       });
     }
 
@@ -65,7 +79,7 @@ export const skillEffectSystem = {
     // Handle Anchor Rules
     if (config.anchorType === "feet") {
       // Position at the bottom of the target sprite
-      y = targetSprite.y + (targetSprite.displayHeight / 2);
+      y = targetSprite.y + targetSprite.displayHeight / 2;
     } else if (config.anchorType === "screen center") {
       // Position at the center of the screen
       x = scene.cameras.main.width / 2;
@@ -74,28 +88,34 @@ export const skillEffectSystem = {
     // "center" is default (targetSprite.x, targetSprite.y)
 
     // Apply Offsets
-    x += (config.offsetX || 0);
-    y += (config.offsetY || 0);
+    x += config.offsetX || 0;
+    y += config.offsetY || 0;
 
     // Apply effectiveness scaling
     let baseScale = config.scale || 1;
     if (multiplier >= 2) baseScale *= 1.5;
     else if (multiplier <= 0.5) baseScale *= 0.7;
 
-    const sprite = scene.add.sprite(x, y, assetKey)
+    const sprite = scene.add
+      .sprite(x, y, assetKey)
       .setScale(baseScale)
       .setOrigin(config.originX ?? 0.5, config.originY ?? 0.5)
       .setDepth(50);
 
     sprite.play(animName);
-    sprite.on('animationcomplete', () => sprite.destroy());
+    sprite.on("animationcomplete", () => sprite.destroy());
 
     // Screen shake for certain effects
     let intensity = 0.01;
     if (multiplier >= 2) intensity = 0.025; // Stronger shake for critical efficiency
 
-    if (configKey.includes("Fire") || configKey.includes("Spear") || configKey.includes("Thunder") || multiplier >= 2) {
+    if (
+      configKey.includes("Fire") ||
+      configKey.includes("Spear") ||
+      configKey.includes("Thunder") ||
+      multiplier >= 2
+    ) {
       scene.cameras.main.shake(150, intensity);
     }
-  }
+  },
 };
