@@ -132,11 +132,7 @@ export class CodexScene extends Phaser.Scene {
   setupInputs() {
     this.input.keyboard.on("keydown-ESC", () => {
       this.scene.stop();
-      if (this.scene.isActive("MenuScene")) {
-        this.scene.resume("MenuScene");
-      } else {
-        this.scene.resume("WorldScene");
-      }
+      this.scene.resume("MenuScene");
     });
 
     this.input.keyboard.on("keydown-UP", () => this.moveSelection(-this.cols));
@@ -274,9 +270,18 @@ export class CodexScene extends Phaser.Scene {
     // Detail elements container (local 0,0 is center of container at panelX - 250, panelY)
 
     // Sprite (Silhouette if not caught)
-    const sprite = this.add
-      .image(0, -180, creature.spriteKey || "creature_leafkit")
-      .setScale(2);
+    const sprite = this.add.image(
+      0,
+      -180,
+      creature.spriteKey || "creature_leafkit",
+    );
+
+    // Unified Scaling (Normalization): Legendaries vs Others
+    const targetSize = creature.class === "전설" ? 250 : 190;
+    const currentMax = Math.max(sprite.width, sprite.height);
+    if (currentMax > 0) {
+      sprite.setScale(targetSize / currentMax);
+    }
     if (!hasCaught) {
       sprite.setTint(0x000000); // Black silhouette
       sprite.setAlpha(0.8);

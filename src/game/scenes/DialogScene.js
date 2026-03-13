@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { ASSETS } from "../config/assetPaths.js";
+import { CREATURES } from "../data/creatures.js";
 
 /**
  * DialogScene
@@ -92,7 +93,12 @@ export class DialogScene extends Phaser.Scene {
 
       // 3. 최종적으로 UI 컨테이너 안의 목표 위치에 배치합니다.
       this.faceSprite.setPosition(facePadding, portraitY);
-      this.faceSprite.setScale(0.75);
+      
+      // Determine Scale based on class (Legendary vs others)
+      const creatureInfo = Object.values(CREATURES).find(c => c.name === nameText);
+      const targetSize = (creatureInfo && creatureInfo.class === "전설") ? 110 : 85;
+      
+      this.faceSprite.setScale(targetSize / faceW);
       // -------------------------------------------------------------
 
       box.add(this.faceSprite);
@@ -100,8 +106,8 @@ export class DialogScene extends Phaser.Scene {
       console.warn(`DialogScene: Portrait texture '${this.faceKey}' not found!`);
     }
 
-    // Content Text (Adjusted for 144x144 portrait, now scaled 0.75 = 108x108)
-    const portraitSize = 144 * 0.75;
+    // Content Text (Adjusted for 144x144 portrait, now scaled based on class)
+    const portraitSize = this.faceSprite ? 144 * this.faceSprite.scaleX : 0;
     const textX = this.faceSprite ? facePadding + portraitSize + 25 : 30;
     const textY = 60;
     const textWidth = width - (padding * 2) - textX - 40;

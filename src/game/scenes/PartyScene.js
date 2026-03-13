@@ -104,7 +104,7 @@ export class PartyScene extends Phaser.Scene {
       const card = this.createCreatureCard(
         member,
         cardX,
-        120 + index * 130,
+        140 + index * 165,
         true,
         index === 0,
       );
@@ -123,7 +123,7 @@ export class PartyScene extends Phaser.Scene {
         const card = this.createCreatureCard(
           member,
           width * 0.75,
-          120 + index * 130,
+          140 + index * 165,
           false,
           false,
         );
@@ -149,7 +149,7 @@ export class PartyScene extends Phaser.Scene {
   createCreatureCard(creature, x, y, isParty, isActive) {
     const card = this.add.container(x, y);
     const bgWidth = 540;
-    const bgHeight = 140;
+    const bgHeight = 150;
 
     const bgColor = isActive ? 0x27ae60 : isParty ? 0x2980b9 : 0x34495e;
     const borderColor = isActive ? 0x2ecc71 : 0x3498db;
@@ -166,19 +166,25 @@ export class PartyScene extends Phaser.Scene {
     // Creature Sprite
     const spriteKey = creature.id.toLowerCase();
     const creatureSprite = this.add
-      .sprite(-bgWidth / 2 + 75, -20, spriteKey)
-      .setScale(1.2);
+      .sprite(-bgWidth / 2 + 75, -20, spriteKey);
+    
+    // Unified Scaling (Normalization): Legendaries vs Others
+    const targetSize = (creature.class === "전설") ? 140 : 110;
+    const currentMax = Math.max(creatureSprite.width, creatureSprite.height);
+    if (currentMax > 0) {
+      creatureSprite.setScale(targetSize / currentMax);
+    }
 
     // Details Text
-    const nameText = this.add.text(-bgWidth / 2 + 75, 30, creature.name, {
-      font: "bold 24px Arial",
+    const nameText = this.add.text(-bgWidth / 2 + 75, 35, creature.name, {
+      font: "bold 22px Arial",
       fill: "#ffffff",
     }).setOrigin(0.5, 0);
 
     const detailX = -bgWidth / 2 + 160;
     const lvlText = this.add.text(
       detailX,
-      -50,
+      -55,
       `LEVEL ${creature.level}`,
       { font: "bold 22px Arial", fill: "#f1c40f" }
     );
@@ -187,14 +193,14 @@ export class PartyScene extends Phaser.Scene {
     const barWidth = 180;
     const hpPercent = Math.max(0, creature.currentHp / creature.maxHp);
     
-    this.add.text(detailX, -22, "HP", { font: "bold 14px Arial", fill: "#ff7979" }).setOrigin(0, 0.5);
-    const hpBg = this.add.rectangle(detailX + 30, -22, barWidth, 12, 0x000000, 0.5).setOrigin(0, 0.5);
-    const hpFill = this.add.rectangle(detailX + 30, -22, barWidth * hpPercent, 10, 0xff4757).setOrigin(0, 0.5);
+    this.add.text(detailX, -18, "HP", { font: "bold 14px Arial", fill: "#ff7979" }).setOrigin(0, 0.5);
+    const hpBg = this.add.rectangle(detailX + 30, -18, barWidth, 12, 0x000000, 0.5).setOrigin(0, 0.5);
+    const hpFill = this.add.rectangle(detailX + 30, -18, barWidth * hpPercent, 10, 0xff4757).setOrigin(0, 0.5);
     card.add([hpBg, hpFill]);
 
     const hpValueText = this.add.text(
       detailX + 30 + barWidth + 10,
-      -22,
+      -18,
       `${creature.currentHp}/${creature.maxHp}`,
       { font: "bold 16px Arial", fill: "#ff7979" }
     ).setOrigin(0, 0.5);
@@ -203,20 +209,20 @@ export class PartyScene extends Phaser.Scene {
     const expNeeded = creature.level * 50;
     const expPercent = Math.min(1, creature.exp / expNeeded);
 
-    this.add.text(detailX, 10, "XP", { font: "bold 14px Arial", fill: "#81ecec" }).setOrigin(0, 0.5);
-    const expBg = this.add.rectangle(detailX + 30, 10, barWidth, 12, 0x000000, 0.5).setOrigin(0, 0.5);
-    const expFill = this.add.rectangle(detailX + 30, 10, barWidth * expPercent, 10, 0x2ecc71).setOrigin(0, 0.5);
+    this.add.text(detailX, 18, "XP", { font: "bold 14px Arial", fill: "#81ecec" }).setOrigin(0, 0.5);
+    const expBg = this.add.rectangle(detailX + 30, 18, barWidth, 12, 0x000000, 0.5).setOrigin(0, 0.5);
+    const expFill = this.add.rectangle(detailX + 30, 18, barWidth * expPercent, 10, 0x2ecc71).setOrigin(0, 0.5);
     card.add([expBg, expFill]);
 
     const expValueText = this.add.text(
       detailX + 30 + barWidth + 10,
-      10,
+      18,
       `${creature.exp}/${expNeeded}`,
       { font: "bold 16px Arial", fill: "#81ecec" }
     ).setOrigin(0, 0.5);
 
     // Action Buttons
-    const btnContainer = this.add.container(bgWidth / 2 - 100, 0);
+    const btnContainer = this.add.container(bgWidth / 2 - 80, 0);
 
     if (this.isTargetMode) {
       if (isParty) {
@@ -230,7 +236,7 @@ export class PartyScene extends Phaser.Scene {
         if (!isActive) {
           const makeActiveBtn = this.createButton(
             0,
-            -30,
+            -35,
             "대표 설정",
             0xf39c12,
             () => this.makeActive(creature),
@@ -238,7 +244,7 @@ export class PartyScene extends Phaser.Scene {
           btnContainer.add(makeActiveBtn);
         }
         if (this.party.length > 1) {
-          const removeBtn = this.createButton(0, 30, "제외", 0xc0392b, () =>
+          const removeBtn = this.createButton(0, 35, "제외", 0xc0392b, () =>
             this.removeFromParty(creature),
           );
           btnContainer.add(removeBtn);
@@ -266,8 +272,8 @@ export class PartyScene extends Phaser.Scene {
 
   createButton(x, y, text, color, callback) {
     const container = this.add.container(x, y);
-    const bW = 150;
-    const bH = 40;
+    const bW = 120;
+    const bH = 36;
 
     const btnG = this.add.graphics();
     btnG.fillStyle(color, 0.8);
@@ -276,7 +282,7 @@ export class PartyScene extends Phaser.Scene {
     btnG.strokeRoundedRect(-bW / 2, -bH / 2, bW, bH, 10);
 
     const label = this.add
-      .text(0, 0, text, { font: "bold 18px Arial", fill: "#ffffff" })
+      .text(0, 0, text, { font: "bold 16px Arial", fill: "#ffffff" })
       .setOrigin(0.5);
 
     const hitArea = this.add.rectangle(0, 0, bW, bH, 0x000000, 0)
