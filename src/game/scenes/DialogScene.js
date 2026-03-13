@@ -76,6 +76,7 @@ export class DialogScene extends Phaser.Scene {
 
       // 3. 최종적으로 UI 컨테이너 안의 목표 위치에 배치합니다.
       this.faceSprite.setPosition(facePadding, portraitY);
+      this.faceSprite.setScale(0.75);
       // -------------------------------------------------------------
 
       box.add(this.faceSprite);
@@ -83,8 +84,9 @@ export class DialogScene extends Phaser.Scene {
       console.warn(`DialogScene: Portrait texture '${this.faceKey}' not found!`);
     }
 
-    // Content Text (Adjusted for 144x144 portrait)
-    const textX = this.faceSprite ? facePadding + 144 + 25 : 30;
+    // Content Text (Adjusted for 144x144 portrait, now scaled 0.75 = 108x108)
+    const portraitSize = 144 * 0.75;
+    const textX = this.faceSprite ? facePadding + portraitSize + 25 : 30;
     const textY = 60;
     const textWidth = width - (padding * 2) - textX - 40;
 

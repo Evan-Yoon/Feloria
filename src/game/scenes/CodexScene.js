@@ -279,12 +279,12 @@ export class CodexScene extends Phaser.Scene {
     if (hasSeen) {
       sprite = this.add
         .image(0, -100, creature.spriteKey || "creature_leafkit")
-        .setScale(hasCaught ? 1.5 : 1.5);
+        .setScale(hasCaught ? 1.2 : 1.2);
       if (!hasCaught) sprite.setTint(0x000000).setAlpha(0.6); // Silhouette
     } else {
       sprite = this.add
         .image(0, -100, "creature_leafkit")
-        .setScale(1.5)
+        .setScale(1.2)
         .setTint(0x000000)
         .setAlpha(0.6);
     }

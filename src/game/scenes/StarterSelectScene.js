@@ -70,7 +70,7 @@ export class StarterSelectScene extends Phaser.Scene {
     const height = this.cameras.main.height;
     const container = this.add.container(data.x, height / 2);
 
-    const sprite = this.add.sprite(0, -60, data.id).setScale(2);
+    const sprite = this.add.sprite(0, -60, data.id).setScale(1.5);
     const label = this.add.text(0, 130, data.name, { font: 'bold 24px Arial', fill: data.color }).setOrigin(0.5);
     const typeLabel = this.add.text(0, 160, data.type, { font: '16px Arial', fill: '#ffffff' }).setOrigin(0.5);
 
@@ -79,8 +79,8 @@ export class StarterSelectScene extends Phaser.Scene {
     const hitArea = this.add.rectangle(0, 0, 150, 200, 0xffffff, 0).setInteractive({ useHandCursor: true });
     container.add(hitArea);
 
-    hitArea.on('pointerover', () => { sprite.setScale(2.5); label.setScale(1.1); });
-    hitArea.on('pointerout', () => { if (this.selectedId !== data.id) { sprite.setScale(2); label.setScale(1); } });
+    hitArea.on('pointerover', () => { sprite.setScale(1.8); label.setScale(1.1); });
+    hitArea.on('pointerout', () => { if (this.selectedId !== data.id) { sprite.setScale(1.5); label.setScale(1); } });
 
     hitArea.on('pointerdown', () => {
       this.selectedId = data.id;
