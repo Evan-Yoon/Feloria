@@ -222,7 +222,7 @@ export class PartyScene extends Phaser.Scene {
     ).setOrigin(0, 0.5);
 
     // Action Buttons
-    const btnContainer = this.add.container(bgWidth / 2 - 80, 0);
+    const btnContainer = this.add.container(bgWidth / 2 - 55, 0);
 
     if (this.isTargetMode) {
       if (isParty) {
@@ -272,8 +272,8 @@ export class PartyScene extends Phaser.Scene {
 
   createButton(x, y, text, color, callback) {
     const container = this.add.container(x, y);
-    const bW = 120;
-    const bH = 36;
+    const bW = 90;
+    const bH = 28;
 
     const btnG = this.add.graphics();
     btnG.fillStyle(color, 0.8);
@@ -282,7 +282,7 @@ export class PartyScene extends Phaser.Scene {
     btnG.strokeRoundedRect(-bW / 2, -bH / 2, bW, bH, 10);
 
     const label = this.add
-      .text(0, 0, text, { font: "bold 16px Arial", fill: "#ffffff" })
+      .text(0, 0, text, { font: "bold 14px Arial", fill: "#ffffff" })
       .setOrigin(0.5);
 
     const hitArea = this.add.rectangle(0, 0, bW, bH, 0x000000, 0)
