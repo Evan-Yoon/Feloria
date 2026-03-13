@@ -63,18 +63,23 @@ export class WorldScene extends Phaser.Scene {
     }
 
     // 2. Set Camera Bounds
-    this.cameras.main.setBounds(
-      0,
-      0,
-      this.mapData.widthInPixels,
-      this.mapData.heightInPixels,
-    );
+    if (this.mapData.widthInPixels && this.mapData.heightInPixels) {
+      this.cameras.main.setBounds(
+        0,
+        0,
+        this.mapData.widthInPixels,
+        this.mapData.heightInPixels,
+      );
+    }
 
     // 3. Create Player
     this.createPlayer();
 
     // 4. Create NPCs
     this.createNPCs();
+
+    // 4.5. Initialize Indicator Group
+    this.indicatorGroup = this.add.group();
 
     // 5. Input Handling
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -133,6 +138,11 @@ export class WorldScene extends Phaser.Scene {
 
   checkStoryTriggers(data) {
     const introDone = this.registry.get("intro_done");
+
+    // Start first quest automatically if not done
+    if (!introDone && !this.registry.get("intro_started")) {
+      questSystem.startQuest(this.registry, "first_steps");
+    }
 
     // 1. Initial Intro (Talk to Chief)
     if (
@@ -203,6 +213,11 @@ export class WorldScene extends Phaser.Scene {
 
         if (npcId === "elder_hyunseok") {
           this.registry.set("intro_started", true);
+          questSystem.completeObjective(
+            this.registry,
+            "first_steps",
+            "talk_mira",
+          );
           this.scene.start("StarterSelectScene");
         } else if (npcId === "elder_hyunseok_gift") {
           // Give crystals
@@ -374,7 +389,7 @@ export class WorldScene extends Phaser.Scene {
         const npcData = NPCS[npcId];
 
         if (!npcData) {
-          console.warn(`WorldScene: No data for NPC '${npcId}' in createNPCs`);
+          console.warn(`WorldScene: No data for NPC '${npcId}' in createNPCs. Skipping.`);
           return;
         }
 
@@ -455,6 +470,7 @@ export class WorldScene extends Phaser.Scene {
           config.KEY,
           startFrame,
         );
+        npc.animFrames = frames;
         npc.setOrigin(0.5, 1);
         npc.npcId = spawn.id;
         npc.tileX = nx;
@@ -492,10 +508,19 @@ export class WorldScene extends Phaser.Scene {
   }
 
   updateQuestIndicators() {
-    if (this.indicatorGroup) this.indicatorGroup.clear(true, true);
-    this.indicatorGroup = this.add.group();
+    if (!this.indicatorGroup || !this.indicatorGroup.scene) {
+      this.indicatorGroup = this.add.group();
+    } else {
+      try {
+        this.indicatorGroup.clear(true, true);
+      } catch (e) {
+        console.warn("WorldScene: Failed to clear indicatorGroup, recreating...", e);
+        this.indicatorGroup = this.add.group();
+      }
+    }
 
     const activeQuests = this.registry.get("activeQuests") || {};
+    if (!this.npcs) return;
 
     this.npcs.getChildren().forEach((npcSprite) => {
       if (npcSprite.isHerb || npcSprite.npcId === "lost_cat") return;
@@ -1127,16 +1152,14 @@ export class WorldScene extends Phaser.Scene {
   }
 
   startQuest(id) {
-    const quests = this.registry.get("activeQuests") || {};
-    if (quests[id]) return;
-    quests[id] = { ...questSystem.QUEST_DATA[id] };
-    this.registry.set("activeQuests", quests);
-    this.events.emit("updateQuests");
-    this.events.emit("notifyItem", {
-      message: `새로운 퀘스트: ${quests[id].title}`,
-      color: 0xf1c40f,
-    });
-    this.updateQuestIndicators();
+    if (questSystem.startQuest(this.registry, id)) {
+      const q = questSystem.getQuest(this.registry, id);
+      this.events.emit("notifyItem", {
+        message: `새로운 퀘스트: ${q.title}`,
+        color: 0xf1c40f,
+      });
+      this.updateQuestIndicators();
+    }
   }
 
   async triggerLostCatEvent() {

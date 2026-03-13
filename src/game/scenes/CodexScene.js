@@ -6,7 +6,7 @@ import { SKILLS } from "../data/skills.js";
 
 /**
  * CodexScene
- * Displays discovered and captured creatures.
+ * Displays discovered and captured creatures in a Grid + Detail layout.
  */
 export class CodexScene extends Phaser.Scene {
   constructor() {
@@ -20,8 +20,12 @@ export class CodexScene extends Phaser.Scene {
     this.selectedIndex = 0;
     this.filter = "ALL"; // ALL, SEEN, CAPTURED
     this.filteredList = [];
-    this.itemsPerPage = 9; // Reduced to fit better
-    this.scrollOffset = 0;
+
+    // Grid settings
+    this.cols = 6;
+    this.rows = 5;
+    this.itemsPerPage = this.cols * this.rows; // 30 items
+    this.scrollRowOffset = 0; // Tracks which row is at the top
   }
 
   create() {
@@ -33,8 +37,9 @@ export class CodexScene extends Phaser.Scene {
     const mWidth = 1100;
     const mHeight = 620;
     this.panelX = width / 2;
-    this.panelY = height / 2 + 30; // Shift down slightly
+    this.panelY = height / 2 + 30;
 
+    // Main Panel Background
     this.panelBg = this.add
       .rectangle(this.panelX, this.panelY, mWidth, mHeight, 0x1a252f)
       .setOrigin(0.5);
@@ -43,6 +48,7 @@ export class CodexScene extends Phaser.Scene {
       .setStrokeStyle(4, 0x3498db)
       .setOrigin(0.5);
 
+    // Title
     this.add
       .text(this.panelX, this.panelY - 285, "몬스터 도감", {
         font: 'bold 36px "Press Start 2P", Courier, monospace',
@@ -51,7 +57,7 @@ export class CodexScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    // Filter Buttons
+    // Filter Buttons (Moved slightly to fit the new layout)
     const filters = [
       { id: "ALL", text: "전체" },
       { id: "SEEN", text: "발견" },
@@ -81,40 +87,29 @@ export class CodexScene extends Phaser.Scene {
         if (this.filter !== f.id) {
           this.filter = f.id;
           this.selectedIndex = 0;
-          this.scrollOffset = 0;
+          this.scrollRowOffset = 0;
           this.refreshList();
         }
       });
 
-      f.btn = btn; // Store ref to button for re-styling
+      f.btn = btn;
     });
     this.filterButtons = filters;
 
-    // List Panel (Left)
-    this.listContainer = this.add.container(
-      this.panelX - 350,
-      this.panelY - 140, // Lowered to clear tabs
+    // --- Layout Containers ---
+    // Detail Panel (Left)
+    this.detailContainer = this.add.container(this.panelX - 250, this.panelY);
+
+    // Grid Panel (Right)
+    this.gridContainer = this.add.container(
+      this.panelX + 100,
+      this.panelY - 140,
     );
-
-    // Add Mask to List Container
-    const maskRect = this.add.rectangle(
-      this.panelX - 150, // Center of the 400px wide list (x - 350 + 200)
-      this.panelY + 50,  // Center of the 450px high area
-      450, // Width (slightly wider than 400 to accommodate highlights)
-      405, // Height (9 items * 45px)
-      0x000000,
-      0
-    ).setVisible(false);
-
-    const mask = maskRect.createGeometryMask();
-    this.listContainer.setMask(mask);
-
-    // Detail Panel (Right)
-    this.detailContainer = this.add.container(this.panelX + 200, this.panelY);
 
     this.refreshList();
     this.setupInputs();
 
+    // Footer Text
     this.add
       .text(
         this.panelX,
@@ -129,8 +124,9 @@ export class CodexScene extends Phaser.Scene {
 
     // Mouse Wheel Support
     this.input.on("wheel", (pointer, gameObjects, deltaX, deltaY, deltaZ) => {
-      if (deltaY > 0) this.scrollDown();
-      else if (deltaY < 0) this.scrollUp();
+      if (deltaY > 0)
+        this.moveSelection(this.cols); // Move down one row
+      else if (deltaY < 0) this.moveSelection(-this.cols); // Move up one row
     });
   }
 
@@ -144,26 +140,26 @@ export class CodexScene extends Phaser.Scene {
       }
     });
 
-    this.input.keyboard.on("keydown-UP", () => this.scrollUp());
-    this.input.keyboard.on("keydown-DOWN", () => this.scrollDown());
+    this.input.keyboard.on("keydown-UP", () => this.moveSelection(-this.cols));
+    this.input.keyboard.on("keydown-DOWN", () => this.moveSelection(this.cols));
+    this.input.keyboard.on("keydown-LEFT", () => this.moveSelection(-1));
+    this.input.keyboard.on("keydown-RIGHT", () => this.moveSelection(1));
   }
 
-  scrollUp() {
-    if (this.selectedIndex > 0) {
-      this.selectedIndex--;
-      if (this.selectedIndex < this.scrollOffset) {
-        this.scrollOffset--;
-      }
-      this.refreshList();
-    }
-  }
+  moveSelection(amount) {
+    const newIndex = this.selectedIndex + amount;
 
-  scrollDown() {
-    if (this.selectedIndex < this.filteredList.length - 1) {
-      this.selectedIndex++;
-      if (this.selectedIndex >= this.scrollOffset + this.itemsPerPage) {
-        this.scrollOffset++;
+    if (newIndex >= 0 && newIndex < this.filteredList.length) {
+      this.selectedIndex = newIndex;
+
+      // Auto-scroll logic
+      const currentRow = Math.floor(this.selectedIndex / this.cols);
+      if (currentRow < this.scrollRowOffset) {
+        this.scrollRowOffset = currentRow; // Scroll up
+      } else if (currentRow >= this.scrollRowOffset + this.rows) {
+        this.scrollRowOffset = currentRow - this.rows + 1; // Scroll down
       }
+
       this.refreshList();
     }
   }
@@ -187,81 +183,77 @@ export class CodexScene extends Phaser.Scene {
       this.selectedIndex = Math.max(0, this.filteredList.length - 1);
     }
 
-    this.renderList();
+    this.renderGrid();
     this.renderDetails();
   }
 
-  renderList() {
-    this.listContainer.removeAll(true);
+  renderGrid() {
+    this.gridContainer.removeAll(true);
 
-    const displayList = this.filteredList.slice(
-      this.scrollOffset,
-      this.scrollOffset + this.itemsPerPage,
+    const cellSize = 65;
+    const padding = 10;
+    const startIdx = this.scrollRowOffset * this.cols;
+    const endIdx = Math.min(
+      startIdx + this.itemsPerPage,
+      this.filteredList.length,
     );
 
-    displayList.forEach((c, i) => {
-      const idx = this.scrollOffset + i;
-      const isSelected = idx === this.selectedIndex;
-      const hasSeen = codexSystem.hasSeen(this.registry, c.id);
+    // Draw grid background
+    const gridBgWidth = this.cols * (cellSize + padding) + padding;
+    const gridBgHeight = this.rows * (cellSize + padding) + padding;
+    const gridBg = this.add
+      .rectangle(-padding, -padding, gridBgWidth, gridBgHeight, 0x27ae60, 0.3)
+      .setOrigin(0);
+    this.gridContainer.add(gridBg);
+
+    for (let i = startIdx; i < endIdx; i++) {
+      const c = this.filteredList[i];
       const hasCaught = codexSystem.hasCaught(this.registry, c.id);
 
-      const y = i * 45;
+      // Calculate local x, y for the grid
+      const localIdx = i - startIdx;
+      const col = localIdx % this.cols;
+      const row = Math.floor(localIdx / this.cols);
 
-      const bg = this.add
-        .rectangle(0, y, 400, 40, isSelected ? 0x34495e : 0x2c3e50)
-        .setOrigin(0, 0.5);
-      if (isSelected) bg.setStrokeStyle(2, 0xf1c40f);
+      const x = col * (cellSize + padding) + cellSize / 2;
+      const y = row * (cellSize + padding) + cellSize / 2;
 
-      const statusIcon = hasCaught ? "💎" : hasSeen ? "👁️" : "❓";
-      const nameText = hasSeen ? c.name : "?????";
+      // Cell Background
+      const isSelected = i === this.selectedIndex;
+      const cellBg = this.add.rectangle(
+        x,
+        y,
+        cellSize,
+        cellSize,
+        0x2ecc71,
+        0.5,
+      );
+      if (isSelected) {
+        cellBg.setStrokeStyle(4, 0xf1c40f);
+      } else {
+        cellBg.setStrokeStyle(2, 0x27ae60);
+      }
+      this.gridContainer.add(cellBg);
 
-      const txt = this.add
-        .text(10, y, `${statusIcon} ${nameText}`, {
-          font: isSelected ? "bold 20px Arial" : "20px Arial",
-          fill: isSelected ? "#ffffff" : "#bdc3c7",
-        })
-        .setOrigin(0, 0.5);
+      // Icon logic: Show sprite if caught, else show '?'
+      if (hasCaught) {
+        const sprite = this.add.image(x, y, c.spriteKey || "creature_leafkit");
 
-      this.listContainer.add([bg, txt]);
-    });
-
-    // Scroll Indicator & Buttons
-    if (this.filteredList.length > this.itemsPerPage) {
-      const scrollY = -20;
-      const scrollHeight = this.itemsPerPage * 45 - 20;
-
-      const scrollBarBg = this.add
-        .rectangle(410, scrollY, 15, scrollHeight, 0x1a252f)
-        .setOrigin(0, 0);
-      const handleSize =
-        (this.itemsPerPage / this.filteredList.length) * scrollHeight;
-      const handleY =
-        scrollY + (this.scrollOffset / this.filteredList.length) * scrollHeight;
-      const handle = this.add
-        .rectangle(410, handleY, 15, handleSize, 0x3498db)
-        .setOrigin(0, 0);
-
-      // Up/Down Buttons
-      const upBtn = this.add
-        .rectangle(417.5, scrollY - 20, 30, 30, 0x34495e)
-        .setInteractive({ useHandCursor: true });
-      this.add
-        .text(417.5, scrollY - 20, "▲", { font: "16px Arial", fill: "#ffffff" })
-        .setOrigin(0.5);
-      upBtn.on("pointerdown", () => this.scrollUp());
-
-      const downBtn = this.add
-        .rectangle(417.5, scrollY + scrollHeight + 20, 30, 30, 0x34495e)
-        .setInteractive({ useHandCursor: true });
-      this.add
-        .text(417.5, scrollY + scrollHeight + 20, "▼", {
-          font: "16px Arial",
-          fill: "#ffffff",
-        })
-        .setOrigin(0.5);
-      downBtn.on("pointerdown", () => this.scrollDown());
-
-      this.listContainer.add([scrollBarBg, handle, upBtn, downBtn]);
+        // Scale down sprite to fit the cell
+        const maxDim = Math.max(sprite.width, sprite.height);
+        if (maxDim > cellSize - 10) {
+          sprite.setScale((cellSize - 10) / maxDim);
+        }
+        this.gridContainer.add(sprite);
+      } else {
+        const questionMark = this.add
+          .text(x, y, "?", {
+            font: "bold 32px Arial",
+            fill: "#ffffff",
+          })
+          .setOrigin(0.5);
+        this.gridContainer.add(questionMark);
+      }
     }
   }
 
@@ -271,49 +263,49 @@ export class CodexScene extends Phaser.Scene {
     const creature = this.filteredList[this.selectedIndex];
     if (!creature) return;
 
-    const hasSeen = codexSystem.hasSeen(this.registry, creature.id);
     const hasCaught = codexSystem.hasCaught(this.registry, creature.id);
 
-    // Sprite
-    let sprite;
-    if (hasSeen) {
-      sprite = this.add
-        .image(0, -100, creature.spriteKey || "creature_leafkit")
-        .setScale(hasCaught ? 1.2 : 1.2);
-      if (!hasCaught) sprite.setTint(0x000000).setAlpha(0.6); // Silhouette
-    } else {
-      sprite = this.add
-        .image(0, -100, "creature_leafkit")
-        .setScale(1.2)
-        .setTint(0x000000)
-        .setAlpha(0.6);
+    // Draw Left Panel Background
+    const detailBg = this.add
+      .rectangle(0, -10, 350, 480, 0x34495e)
+      .setOrigin(0.5);
+    detailBg.setStrokeStyle(4, 0x2980b9);
+    this.detailContainer.add(detailBg);
+
+    // Sprite (Silhouette if not caught)
+    const sprite = this.add
+      .image(0, -120, creature.spriteKey || "creature_leafkit")
+      .setScale(2);
+    if (!hasCaught) {
+      sprite.setTint(0x000000); // Black silhouette
+      sprite.setAlpha(0.8);
     }
     this.detailContainer.add(sprite);
 
     // Info
-    const name = hasSeen ? creature.name : "?????";
+    const name = hasCaught ? creature.name : "?????";
     const type = hasCaught ? creature.type : "?????";
     const cls = hasCaught ? creature.class : "?????";
     const desc = hasCaught
       ? creature.description
-      : "데이터 없음 (포획 후 확인 가능)";
+      : "포획하지 않은 몬스터입니다.\n야생에서 찾아보세요.";
 
     const nameTxt = this.add
-      .text(0, 50, name, { font: "bold 32px Arial", fill: "#f1c40f" })
+      .text(0, 30, name, { font: "bold 32px Arial", fill: "#f1c40f" })
       .setOrigin(0.5);
     const typeTxt = this.add
-      .text(0, 90, `타입: ${type} | 등급: ${cls}`, {
+      .text(0, 75, `타입: ${type} | 등급: ${cls}`, {
         font: "20px Arial",
         fill: "#ffffff",
       })
       .setOrigin(0.5);
 
     const descTxt = this.add
-      .text(0, 140, desc, {
+      .text(0, 130, desc, {
         font: "18px Arial",
         fill: "#ecf0f1",
         align: "center",
-        wordWrap: { width: 450 },
+        wordWrap: { width: 300 },
       })
       .setOrigin(0.5);
 
@@ -322,9 +314,12 @@ export class CodexScene extends Phaser.Scene {
     // Skills
     if (hasCaught) {
       this.add
-        .text(0, 200, "보유 기술", { font: "bold 22px Arial", fill: "#3498db" })
+        .text(0, 185, "- 보유 기술 -", {
+          font: "bold 20px Arial",
+          fill: "#3498db",
+        })
         .setOrigin(0.5);
-      let sy = 235;
+      let sy = 215;
       (creature.skills || []).forEach((sid) => {
         const skill = SKILLS[sid] || { name: sid };
         const sTxt = this.add

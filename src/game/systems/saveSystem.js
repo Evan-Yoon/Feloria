@@ -48,8 +48,8 @@ export const saveSystem = {
       seenCreatureIds: registry.get('seenCreatureIds') || [],
       caughtCreatureIds: registry.get('caughtCreatureIds') || [],
       defeatedTrainers: registry.get('defeatedTrainers') || [],
-      activeQuests: registry.get('activeQuests') || [],
-      completedQuests: registry.get('completedQuests') || [],
+      activeQuests: registry.get('activeQuests') || {},
+      completedQuests: registry.get('completedQuests') || {},
 
       // Story Flags
       intro_started: registry.get('intro_started') || false,
@@ -115,8 +115,8 @@ export const saveSystem = {
       registry.set('caughtCreatureIds', state.caughtCreatureIds || []);
       registry.set('defeatedTrainers', state.defeatedTrainers || []);
       
-      registry.set('activeQuests', state.activeQuests || []);
-      registry.set('completedQuests', state.completedQuests || []);
+      registry.set('activeQuests', state.activeQuests || {});
+      registry.set('completedQuests', state.completedQuests || {});
 
       // Load story flags
       registry.set('intro_started', state.intro_started || false);

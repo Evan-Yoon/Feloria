@@ -70,7 +70,7 @@ export const NPCS = {
       // Quest progression checks for first_steps
       if (!firstSteps || !firstSteps.objectives[1].completed) {
         return [
-          "어서 오너라, {playerName}아.",
+          "어서 오너라, {playerName}.",
           "요즘 숲의 기운이 조금 이상하단다. 모험을 도와줄 고양이 한마리를 입양하거라...",
         ];
       }
@@ -485,5 +485,15 @@ export const NPCS = {
         "안 돼! 내가 지배해야 할 전설들이 흩어지고 있다!",
       ];
     },
+  },
+  item_potion: {
+    id: "item_potion",
+    name: "비밀의 포션",
+    role: "item_pickup",
+    sprite: "people2",
+    characterIndex: 0,
+    faceKey: "face_people2",
+    faceIndex: 0,
+    getDialogue: () => ["무언가 반짝이는 물건을 발견했습니다!"],
   },
 };

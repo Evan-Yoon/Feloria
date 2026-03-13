@@ -129,8 +129,7 @@ export const questSystem = {
    * Updates the Phaser registry.
    */
   completeObjective: (registry, questId, objectiveId) => {
-    const activeQuests =
-      registry.get("activeQuests") || JSON.parse(JSON.stringify(QUEST_DATA));
+    const activeQuests = registry.get("activeQuests") || {};
 
     const quest = activeQuests[questId];
     if (!quest) return false;
@@ -151,7 +150,6 @@ export const questSystem = {
       registry.set("activeQuests", activeQuests);
 
       // Notify UI
-      // In Phaser 3, registry.parent is the Game instance. Game.scene is the SceneManager.
       const game = registry.parent;
       if (game && game.scene && typeof game.scene.get === "function") {
         const uiScene = game.scene.get("UIScene");
@@ -170,15 +168,38 @@ export const questSystem = {
   },
 
   /**
+   * Explicitly starts a quest if it hasn't been started yet.
+   */
+  startQuest: (registry, questId) => {
+    const activeQuests = registry.get("activeQuests") || {};
+    if (activeQuests[questId]) return true; // Already started
+
+    const questTemplate = QUEST_DATA[questId];
+    if (!questTemplate) {
+      console.warn(`questSystem: Quest template not found for ID: ${questId}`);
+      return false;
+    }
+
+    activeQuests[questId] = JSON.parse(JSON.stringify(questTemplate));
+    registry.set("activeQuests", activeQuests);
+
+    console.log(`Quest Started: ${activeQuests[questId].title}`);
+
+    // Notify UI
+    const game = registry.parent;
+    if (game && game.scene && typeof game.scene.get === "function") {
+      const uiScene = game.scene.get("UIScene");
+      if (uiScene) uiScene.events.emit("updateQuests");
+    }
+
+    return true;
+  },
+
+  /**
    * Gets the current state of a quest.
    */
   getQuest: (registry, questId) => {
-    const activeQuests =
-      registry.get("activeQuests") || JSON.parse(JSON.stringify(QUEST_DATA));
-    // Initialize if not present
-    if (!registry.has("activeQuests")) {
-      registry.set("activeQuests", activeQuests);
-    }
-    return activeQuests[questId];
+    const activeQuests = registry.get("activeQuests") || {};
+    return activeQuests[questId] || null;
   },
 };

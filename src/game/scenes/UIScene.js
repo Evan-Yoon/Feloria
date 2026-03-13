@@ -107,13 +107,9 @@ export class UIScene extends Phaser.Scene {
   }
 
   updateQuestTracker() {
-    const activeQuests = this.registry.get('activeQuests');
-    if (!activeQuests) {
-      if (this.questTracker) this.questTracker.setVisible(false);
-      return;
-    }
-
-    const firstQuest = Object.values(activeQuests).find(q => !q.completed);
+    const activeQuests = this.registry.get('activeQuests') || {};
+    
+    const firstQuest = Object.values(activeQuests).find(q => q && !q.completed);
     if (!firstQuest) {
       this.questTitleText.setText("퀘스트 완료!");
       this.questObjectivesText.setText("모든 주요 퀘스트를 완료했습니다.");
@@ -122,7 +118,7 @@ export class UIScene extends Phaser.Scene {
 
     this.questTitleText.setText(`[${firstQuest.title}]`);
     
-    const objectives = firstQuest.objectives
+    const objectives = (firstQuest.objectives || [])
       .map(o => `${o.completed ? '✓' : '○'} ${o.text}`)
       .join('\n');
     
