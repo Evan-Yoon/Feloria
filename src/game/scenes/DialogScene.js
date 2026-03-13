@@ -25,18 +25,34 @@ export class DialogScene extends Phaser.Scene {
     const padding = 20;
     const boxHeight = 240; // Increased to fit 144x144 face + name comfortably
 
-    // UI Box (Gray with white border)
-    const box = this.add.container(padding, height - boxHeight - padding);
+    // UI Box Container
+    const boxX = padding;
+    const boxY = height - boxHeight - padding;
+    const boxW = width - padding * 2;
+    const boxH = boxHeight;
 
-    const bg = this.add
-      .rectangle(0, 0, width - padding * 2, boxHeight, 0x000000, 0.9)
-      .setOrigin(0)
-      .setStrokeStyle(4, 0xffffff);
-    box.add(bg);
+    const box = this.add.container(boxX, boxY);
+    const boxG = this.add.graphics();
+    // Glassy background
+    boxG.fillStyle(0x011627, 0.85);
+    boxG.fillRoundedRect(0, 0, boxW, boxH, 20);
+    // Glowing border
+    boxG.lineStyle(4, 0x3498db, 1);
+    boxG.strokeRoundedRect(0, 0, boxW, boxH, 20);
+    box.add(boxG);
 
     // Speaker Name Box (Small header style)
     const nameText = this.dialogue.name || "???";
-    this.speakerName = this.add.text(20, 15, nameText, {
+    
+    // Add a small backing for the name
+    const nameBg = this.add.graphics();
+    nameBg.fillStyle(0x1a252f, 0.9);
+    nameBg.fillRoundedRect(20, -20, 200, 50, 10);
+    nameBg.lineStyle(2, 0xf1c40f, 0.8);
+    nameBg.strokeRoundedRect(20, -20, 200, 50, 10);
+    box.add(nameBg);
+
+    this.speakerName = this.add.text(35, -7, nameText, {
       font: 'bold 24px "Malgun Gothic", "Apple SD Gothic Neo", sans-serif',
       fill: "#f1c40f",
     });
@@ -91,17 +107,18 @@ export class DialogScene extends Phaser.Scene {
     const textWidth = width - (padding * 2) - textX - 40;
 
     this.contentText = this.add.text(textX, textY, "", {
-      font: 'bold 32px "Malgun Gothic", "Apple SD Gothic Neo", sans-serif',
+      font: 'bold 30px "Malgun Gothic", "Apple SD Gothic Neo", sans-serif',
       fill: "#ffffff",
       wordWrap: { width: textWidth },
-      lineSpacing: 10,
+      lineSpacing: 8,
     });
 
     // Continue Hint
     this.hintText = this.add
-      .text(width - padding * 3, boxHeight - 25, "Space를 눌러 계속", {
-        font: "italic 16px Arial",
-        fill: "#bdc3c7",
+      .text(width - padding * 3, boxHeight - 20, "SPACE를 눌러 계속", {
+        font: "bold 16px Arial",
+        fill: "#f1c40f",
+        shadow: { offsetX: 1, offsetY: 1, color: '#000', blur: 0, fill: true }
       })
       .setOrigin(1, 1);
 

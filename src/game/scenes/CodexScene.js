@@ -34,10 +34,10 @@ export class CodexScene extends Phaser.Scene {
     // Background
     this.add.rectangle(0, 0, width, height, 0x000000, 0.9).setOrigin(0);
 
-    const mWidth = 1200;
-    const mHeight = 660;
+    const mWidth = 1240; // Nearly full width
+    const mHeight = 700; // Increased height
     this.panelX = width / 2;
-    this.panelY = height / 2 + 15;
+    this.panelY = height / 2;
 
     // Main Panel Background
     this.panelBg = this.add
@@ -50,7 +50,7 @@ export class CodexScene extends Phaser.Scene {
 
     // Title
     this.add
-      .text(this.panelX, this.panelY - 305, "몬스터 도감", {
+      .text(this.panelX, this.panelY - 320, "몬스터 도감", {
         font: 'bold 36px "Press Start 2P", Courier, monospace',
         fill: "#f1c40f",
         shadow: { offsetX: 2, offsetY: 2, color: "#000", blur: 0, fill: true },
@@ -64,20 +64,18 @@ export class CodexScene extends Phaser.Scene {
       { id: "CAPTURED", text: "포획" },
     ];
 
+    // --- Filter Buttons Container (Shifted right to avoid detail panel) ---
+    this.filterContainer = this.add.container(this.panelX, this.panelY - 265);
+
     filters.forEach((f, i) => {
+      const x = i * 120;
       const btn = this.add
-        .rectangle(
-          this.panelX - 450 + i * 120,
-          this.panelY - 230,
-          110,
-          40,
-          0x2c3e50,
-        )
+        .rectangle(x, 0, 110, 40, 0x2c3e50)
         .setInteractive({ useHandCursor: true })
         .setStrokeStyle(2, 0x34495e);
 
       const txt = this.add
-        .text(this.panelX - 450 + i * 120, this.panelY - 230, f.text, {
+        .text(x, 0, f.text, {
           font: "bold 18px Arial",
           fill: "#ffffff",
         })
@@ -92,18 +90,19 @@ export class CodexScene extends Phaser.Scene {
         }
       });
 
+      this.filterContainer.add([btn, txt]);
       f.btn = btn;
     });
     this.filterButtons = filters;
 
     // --- Layout Containers ---
-    // Detail Panel (Left)
-    this.detailContainer = this.add.container(this.panelX - 250, this.panelY);
+    // Detail Panel (Far Left)
+    this.detailContainer = this.add.container(this.panelX - 425, this.panelY);
 
     // Grid Panel (Right)
     this.gridContainer = this.add.container(
-      this.panelX + 100,
-      this.panelY - 160,
+      this.panelX - 100,
+      this.panelY - 175,
     );
 
     this.refreshList();
@@ -113,7 +112,7 @@ export class CodexScene extends Phaser.Scene {
     this.add
       .text(
         this.panelX,
-        this.panelY + 305,
+        this.panelY + 325,
         "방향키/마우스 휠: 이동 | ENTER: 상세 정보 | ESC: 종료",
         {
           font: "18px Arial",
@@ -265,16 +264,18 @@ export class CodexScene extends Phaser.Scene {
 
     const hasCaught = codexSystem.hasCaught(this.registry, creature.id);
 
-    // Draw Left Panel Background
+    // Draw Left Panel Background (Increased height to fix overflow)
     const detailBg = this.add
-      .rectangle(0, -10, 350, 540, 0x34495e)
+      .rectangle(0, -10, 360, 620, 0x34495e)
       .setOrigin(0.5);
     detailBg.setStrokeStyle(4, 0x2980b9);
     this.detailContainer.add(detailBg);
 
+    // Detail elements container (local 0,0 is center of container at panelX - 250, panelY)
+
     // Sprite (Silhouette if not caught)
     const sprite = this.add
-      .image(0, -120, creature.spriteKey || "creature_leafkit")
+      .image(0, -180, creature.spriteKey || "creature_leafkit")
       .setScale(2);
     if (!hasCaught) {
       sprite.setTint(0x000000); // Black silhouette
@@ -291,35 +292,39 @@ export class CodexScene extends Phaser.Scene {
       : "포획하지 않은 몬스터입니다.\n야생에서 찾아보세요.";
 
     const nameTxt = this.add
-      .text(0, 30, name, { font: "bold 32px Arial", fill: "#f1c40f" })
+      .text(0, 10, name, { font: "bold 32px Arial", fill: "#f1c40f" })
       .setOrigin(0.5);
     const typeTxt = this.add
-      .text(0, 75, `타입: ${type} | 등급: ${cls}`, {
+      .text(0, 50, `타입: ${type} | 등급: ${cls}`, {
         font: "20px Arial",
         fill: "#ffffff",
       })
       .setOrigin(0.5);
 
+    this.detailContainer.add([nameTxt, typeTxt]);
+
     const descTxt = this.add
-      .text(0, 130, desc, {
+      .text(0, 105, desc, {
         font: "18px Arial",
         fill: "#ecf0f1",
         align: "center",
-        wordWrap: { width: 300 },
+        wordWrap: { width: 320 },
       })
       .setOrigin(0.5);
 
-    this.detailContainer.add([nameTxt, typeTxt, descTxt]);
+    this.detailContainer.add(descTxt);
 
     // Skills
     if (hasCaught) {
-      this.add
-        .text(0, 185, "- 보유 기술 -", {
+      const skillsHeader = this.add
+        .text(0, 175, "- 보유 기술 -", {
           font: "bold 20px Arial",
           fill: "#3498db",
         })
         .setOrigin(0.5);
-      let sy = 215;
+      this.detailContainer.add(skillsHeader);
+
+      let sy = 205;
       (creature.skills || []).forEach((sid) => {
         const skill = SKILLS[sid] || { name: sid };
         const sTxt = this.add
@@ -329,7 +334,7 @@ export class CodexScene extends Phaser.Scene {
           })
           .setOrigin(0.5);
         this.detailContainer.add(sTxt);
-        sy += 25;
+        sy += 28;
       });
     }
   }

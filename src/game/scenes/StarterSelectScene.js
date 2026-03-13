@@ -122,9 +122,10 @@ export class StarterSelectScene extends Phaser.Scene {
       }
     });
 
-    hitArea.on("pointerdown", () => {
+    hitArea.on("pointerdown", async () => {
       this.selectedId = data.id;
-      this.selectionDetail.setText(`${data.name}를 선택하셨습니다.`);
+      const { koreanUtils } = await import("../systems/koreanUtils.js");
+      this.selectionDetail.setText(`${koreanUtils.getPostPosition(data.name, '를')} 선택하셨습니다.`);
       this.confirmButton.setVisible(true);
 
       this.children.list.forEach((child) => {

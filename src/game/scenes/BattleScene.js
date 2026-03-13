@@ -9,6 +9,7 @@ import { cutsceneSystem } from '../systems/cutsceneSystem.js';
 import { SKILLS } from '../data/skills.js';
 import { skillEffectSystem } from '../systems/skillEffectSystem.js';
 import { legendarySystem } from '../systems/legendarySystem.js';
+import { koreanUtils } from '../systems/koreanUtils.js';
 /**
  * BattleScene
  * Handles the turn-based combat, capture logic, and results.
@@ -178,7 +179,7 @@ export class BattleScene extends Phaser.Scene {
                 module.audioManager.playBGM(bgmKey);
               });
 
-              this.updateLog(`야생의 ${this.enemyCat.name}(이)가 나타났다!`);
+              this.updateLog(`야생의 ${koreanUtils.getPostPosition(this.enemyCat.name, '이')} 나타났다!`);
               this.time.delayedCall(1500, () => this.nextTurn());
             }
           });
@@ -419,7 +420,7 @@ export class BattleScene extends Phaser.Scene {
 
   playerAttack() {
     this.canInput = false;
-    this.updateLog(`${this.playerCat.name}(이)가 할퀴기를 사용했다!`);
+    this.updateLog(`${koreanUtils.getPostPosition(this.playerCat.name, '이')} 할퀴기를 사용했다!`);
     
     const { damage, multiplier } = battleSystem.calculateDamage(
       this.playerCat,
@@ -434,7 +435,7 @@ export class BattleScene extends Phaser.Scene {
 
     skillEffectSystem.playEffect(this, this.enemySprite, "scratch", "노말", multiplier);
 
-    this.time.delayedCall(800, () => {
+    this.time.delayedCall(150, () => {
       this.displayTypeFeedback(multiplier);
       this.applyDamage(this.enemyCat, damage, "enemy");
       if (this.enemyCat.currentHp <= 0) {
@@ -450,7 +451,7 @@ export class BattleScene extends Phaser.Scene {
     const skill = SKILLS[skillId];
     if (!skill) return;
 
-    this.updateLog(`${this.playerCat.name}(이)가 ${skill.name}(을)를 사용했다!`);
+    this.updateLog(`${koreanUtils.getPostPosition(this.playerCat.name, '이')} ${koreanUtils.getPostPosition(skill.name, '을')} 사용했다!`);
     
     const { damage, multiplier } = battleSystem.calculateDamage(
       this.playerCat,
@@ -509,7 +510,7 @@ export class BattleScene extends Phaser.Scene {
 
     this.time.delayedCall(1000, () => {
       if (battleSystem.checkCapture(this.enemyCat)) {
-        this.updateLog("성공! 야생 고양이를 포획했다!");
+        this.updateLog(`성공! ${koreanUtils.getPostPosition(this.enemyCat.name, '을')} 포획했다!`);
 
         // Play Capture ME
         import('../systems/audioManager.js').then(module => {
@@ -532,6 +533,17 @@ export class BattleScene extends Phaser.Scene {
         this.time.delayedCall(2000, () => {
           // Add to collection
           const collection = this.registry.get("playerCollection") || [];
+          
+          // Reward EXP to all possessed cats
+          const expReward = Math.ceil(battleSystem.calculateExp(this.enemyCat) * 1.5);
+          collection.forEach(cat => {
+            const leveledUp = battleSystem.gainExp(cat, expReward);
+            if (leveledUp) {
+                this.updateLog(`${koreanUtils.getPostPosition(cat.name, '의')} 레벨이 올랐다! (Lv.${cat.level})`);
+            }
+          });
+          this.updateLog(`포획 보너스! 모든 보유 고양이가 ${expReward} EXP를 획득했습니다.`);
+
           // Double check instanceId isn't duped (should be safe since it's newly created)
           if (
             !collection.find((c) => c.instanceId === this.enemyCat.instanceId)
@@ -549,14 +561,24 @@ export class BattleScene extends Phaser.Scene {
                 `BattleScene: Party full. ${this.enemyCat.name} sent to collection.`,
               );
             }
+          } else {
+             // If already in collection (shouldn't happen for new capture but good to be safe)
+             this.registry.set("playerCollection", collection);
           }
+
+          // Sync party if any changes happened (gainExp might have modified objects shared by both)
+          this.registry.set("playerParty", this.playerParty);
 
           this.showSummaryPanel(
             "포획",
-            0,
+            expReward,
             false,
             this.playerCat.level,
             false,
+            0,
+            null,
+            null,
+            true // isCaptureSuccess
           );
         });
       } else {
@@ -591,7 +613,7 @@ export class BattleScene extends Phaser.Scene {
       const skillId = enemySkills[Math.floor(Math.random() * enemySkills.length)];
       const skill = SKILLS[skillId];
       if (skill) {
-        this.updateLog(`${this.enemyCat.name}(이)가 ${skill.name}(을)를 사용했다!`);
+        this.updateLog(`${koreanUtils.getPostPosition(this.enemyCat.name, '이')} ${koreanUtils.getPostPosition(skill.name, '을')} 사용했다!`);
         
         const { damage, multiplier } = battleSystem.calculateDamage(this.enemyCat, this.playerCat, skillId);
         
@@ -616,7 +638,7 @@ export class BattleScene extends Phaser.Scene {
     }
 
     // Fallback to basic attack
-    this.updateLog(`${this.enemyCat.name}(이)가 할퀴기를 사용했다!`);
+    this.updateLog(`${koreanUtils.getPostPosition(this.enemyCat.name, '이')} 할퀴기를 사용했다!`);
     
     const { damage, multiplier } = battleSystem.calculateDamage(
       this.enemyCat,
@@ -631,7 +653,7 @@ export class BattleScene extends Phaser.Scene {
 
     skillEffectSystem.playEffect(this, this.playerSprite, "scratch", "노말", multiplier);
 
-    this.time.delayedCall(1000, () => {
+    this.time.delayedCall(400, () => {
       this.displayTypeFeedback(multiplier);
       this.applyDamage(this.playerCat, damage, "player");
       if (this.playerCat.currentHp <= 0) {
@@ -666,6 +688,31 @@ export class BattleScene extends Phaser.Scene {
 
       this.time.delayedCall(100, () => this.enemySprite.clearTint());
     }
+
+    // Show Damage Numbers
+    const x = targetType === "player" ? this.playerSprite.x : this.enemySprite.x;
+    const y = targetType === "player" ? this.playerSprite.y - 50 : this.enemySprite.y - 50;
+    this.showDamageNumber(x, y, damage, targetType === "player");
+  }
+
+  showDamageNumber(x, y, amount, isPlayerTarget) {
+    const color = isPlayerTarget ? '#ff4d4d' : '#ffeb3b';
+    const text = this.add.text(x, y, `-${amount}`, {
+      fontFamily: '"Press Start 2P", Courier, monospace',
+      fontSize: '24px',
+      color: color,
+      stroke: '#000',
+      strokeThickness: 6
+    }).setOrigin(0.5).setDepth(2000);
+
+    this.tweens.add({
+      targets: text,
+      y: y - 80,
+      alpha: 0,
+      duration: 1000,
+      ease: 'Cubic.easeOut',
+      onComplete: () => text.destroy()
+    });
   }
 
   nextTurn() {
@@ -675,7 +722,7 @@ export class BattleScene extends Phaser.Scene {
     this.canInput = this.isPlayerTurn;
 
     if (this.isPlayerTurn) {
-      this.updateLog(`${this.playerCat.name}는 무엇을 할까?`);
+      this.updateLog(`${koreanUtils.getPostPosition(this.playerCat.name, '은')} 무엇을 할까?`);
       this.menuUI.setVisible(true);
     } else {
       this.enemyTurn();
@@ -691,7 +738,7 @@ export class BattleScene extends Phaser.Scene {
       // Mark seen
       codexSystem.markSeen(this.registry, this.enemyCat.id);
 
-      this.updateLog(`트레이너가 ${this.enemyCat.name}를 내보냈다!`);
+      this.updateLog(`트레이너가 ${koreanUtils.getPostPosition(this.enemyCat.name, '을')} 내보냈다!`);
 
       // Refresh UI
       this.enemySprite.setTexture(this.enemyCat.id.toLowerCase());
@@ -706,7 +753,7 @@ export class BattleScene extends Phaser.Scene {
       this.time.delayedCall(1500, () => {
         this.canInput = true;
         this.menuUI.setVisible(true);
-        this.updateLog(`${this.playerCat.name}는 무엇을 할까?`);
+        this.updateLog(`${koreanUtils.getPostPosition(this.playerCat.name, '은')} 무엇을 할까?`);
       });
       return;
     }

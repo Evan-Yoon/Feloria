@@ -23,21 +23,26 @@ export class InventoryScene extends Phaser.Scene {
     // Dim background
     this.add.rectangle(0, 0, width, height, 0x000000, 0.85).setOrigin(0);
 
-    const mWidth = 1000;
-    const mHeight = 560;
+    const mWidth = 1040;
+    const mHeight = 600;
     this.panelX = width / 2;
     this.panelY = height / 2;
 
-    this.add.rectangle(this.panelX, this.panelY, mWidth, mHeight, 0x1a252f).setOrigin(0.5);
-    this.add.rectangle(this.panelX, this.panelY, mWidth, mHeight).setStrokeStyle(4, 0x3498db).setOrigin(0.5);
+    const panelG = this.add.graphics();
+    // Glassy background
+    panelG.fillStyle(0x011627, 0.85);
+    panelG.fillRoundedRect(this.panelX - mWidth / 2, this.panelY - mHeight / 2, mWidth, mHeight, 20);
+    // Glowing border
+    panelG.lineStyle(4, 0x3498db, 1);
+    panelG.strokeRoundedRect(this.panelX - mWidth / 2, this.panelY - mHeight / 2, mWidth, mHeight, 20);
 
-    this.add.text(this.panelX, this.panelY - 230, "가방", { 
+    this.add.text(this.panelX, this.panelY - 250, "가방", { 
         font: 'bold 36px "Press Start 2P", Courier, monospace', fill: '#f1c40f',
         shadow: { offsetX: 2, offsetY: 2, color: '#000', blur: 0, fill: true }
     }).setOrigin(0.5);
     
-    this.notifText = this.add.text(this.panelX, this.panelY + 200, "", { font: 'bold 20px Arial', fill: '#e74c3c' }).setOrigin(0.5);
-    this.add.text(this.panelX, this.panelY + 250, "ESC를 눌러 돌아가기", { font: '20px Arial', fill: '#bdc3c7' }).setOrigin(0.5);
+    this.notifText = this.add.text(this.panelX, this.panelY + 220, "", { font: 'bold 20px Arial', fill: '#e74c3c' }).setOrigin(0.5);
+    this.add.text(this.panelX, this.panelY + 270, "ESC를 눌러 돌아가기", { font: '20px Arial', fill: '#bdc3c7' }).setOrigin(0.5);
 
     // Items Container
     this.itemsContainer = this.add.container(0, 0);
@@ -75,21 +80,28 @@ export class InventoryScene extends Phaser.Scene {
             const quantity = inventory[itemDef.id] || 0;
             if (quantity <= 0) return; // Only show owned items
 
-            const rowBg = this.add.rectangle(this.panelX, yPos, 900, 60, 0x2c3e50)
-                .setOrigin(0.5)
-                .setStrokeStyle(2, 0x34495e);
-            this.itemsContainer.add(rowBg);
+            const rowX = this.panelX;
+            const rowY = yPos;
+            const rowW = 940;
+            const rowH = 65;
+
+            const rowG = this.add.graphics();
+            rowG.fillStyle(0x2c3e50, 0.6);
+            rowG.fillRoundedRect(rowX - rowW / 2, rowY - rowH / 2, rowW, rowH, 12);
+            rowG.lineStyle(2, 0x34495e, 1);
+            rowG.strokeRoundedRect(rowX - rowW / 2, rowY - rowH / 2, rowW, rowH, 12);
+            this.itemsContainer.add(rowG);
             
             // Icon
             if (itemDef.spriteKey) {
-                const icon = this.add.image(this.panelX - 425, yPos, itemDef.spriteKey).setScale(1.5);
+                const icon = this.add.image(this.panelX - 440, yPos, itemDef.spriteKey).setScale(1.5);
                 this.itemsContainer.add(icon);
             } else {
-                const iconBg = this.add.rectangle(this.panelX - 425, yPos, 40, 40, 0x34495e).setOrigin(0.5);
+                const iconBg = this.add.rectangle(this.panelX - 440, yPos, 40, 40, 0x34495e).setOrigin(0.5);
                 this.itemsContainer.add(iconBg);
             }
 
-            this.itemsContainer.add(this.add.text(this.panelX - 380, yPos, itemDef.name, { font: 'bold 24px Arial', fill: '#ffffff' }).setOrigin(0, 0.5));
+            this.itemsContainer.add(this.add.text(this.panelX - 390, yPos, itemDef.name, { font: 'bold 24px Arial', fill: '#ffffff' }).setOrigin(0, 0.5));
             this.itemsContainer.add(this.add.text(this.panelX - 180, yPos, itemDef.description, { 
                 font: '18px Arial', 
                 fill: '#bdc3c7',
@@ -98,14 +110,40 @@ export class InventoryScene extends Phaser.Scene {
             this.itemsContainer.add(this.add.text(this.panelX + 320, yPos, `x${quantity}`, { font: 'bold 24px Arial', fill: '#f1c40f' }).setOrigin(1, 0.5));
 
             if (itemDef.type === 'healing') {
-               const useBtn = this.add.rectangle(this.panelX + 410, yPos, 90, 40, 0x27ae60).setInteractive({ useHandCursor: true }).setStrokeStyle(2, 0xffffff);
-               const useLbl = this.add.text(this.panelX + 410, yPos, '사용', { font: 'bold 18px Arial', fill: '#ffffff' }).setOrigin(0.5);
+               // Use a rounded button style here too
+               const btnX = this.panelX + 410;
+               const btnY = yPos;
+               const btnW = 90;
+               const btnH = 40;
+
+               const useBtnG = this.add.graphics();
+               useBtnG.fillStyle(0x27ae60, 0.8);
+               useBtnG.fillRoundedRect(btnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 8);
+               useBtnG.lineStyle(2, 0xffffff, 0.9);
+               useBtnG.strokeRoundedRect(btnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 8);
+               this.itemsContainer.add(useBtnG);
+
+               const useLbl = this.add.text(btnX, btnY, '사용', { font: 'bold 18px Arial', fill: '#ffffff' }).setOrigin(0.5);
+               this.itemsContainer.add(useLbl);
+
+               const hitArea = this.add.rectangle(btnX, btnY, btnW, btnH, 0x000000, 0).setInteractive({ useHandCursor: true });
                
-               useBtn.on('pointerover', () => useBtn.setFillStyle(0x2ecc71));
-               useBtn.on('pointerout', () => useBtn.setFillStyle(0x27ae60));
-               useBtn.on('pointerdown', () => this.handleUseItem(itemDef, quantity));
-               
-               this.itemsContainer.add([useBtn, useLbl]);
+               hitArea.on('pointerover', () => {
+                 useBtnG.clear();
+                 useBtnG.fillStyle(0x2ecc71, 0.9);
+                 useBtnG.fillRoundedRect(btnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 8);
+                 useBtnG.lineStyle(2, 0xffffff, 1);
+                 useBtnG.strokeRoundedRect(btnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 8);
+               });
+               hitArea.on('pointerout', () => {
+                 useBtnG.clear();
+                 useBtnG.fillStyle(0x27ae60, 0.8);
+                 useBtnG.fillRoundedRect(btnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 8);
+                 useBtnG.lineStyle(2, 0xffffff, 0.9);
+                 useBtnG.strokeRoundedRect(btnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 8);
+               });
+               hitArea.on('pointerdown', () => this.handleUseItem(itemDef, quantity));
+               this.itemsContainer.add(hitArea);
             } else {
                const passiveLbl = this.add.text(this.panelX + 410, yPos, '전투용', { font: 'bold 16px Arial', fill: '#95a5a6' }).setOrigin(0.5);
                this.itemsContainer.add(passiveLbl);

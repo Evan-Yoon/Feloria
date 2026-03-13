@@ -33,6 +33,7 @@ export class WorldScene extends Phaser.Scene {
     // Interaction lock
     this.isDialogueActive = false;
     this.isEncounterTriggered = false;
+    this.wasQuestUpdatedInInteraction = false;
   }
 
   preload() {
@@ -94,6 +95,7 @@ export class WorldScene extends Phaser.Scene {
     this.input.keyboard.on("keydown-C", () => this.openCodex());
 
     // 6. Camera Follow
+    this.cameras.main.setBackgroundColor(0x000000); // Ensure opaque background
     this.cameras.main.startFollow(this.player, true);
     this.cameras.main.setZoom(2); // Zoom in for the pixel RPG feel
 
@@ -397,16 +399,13 @@ export class WorldScene extends Phaser.Scene {
 
         // --- Chief Hyunseok Visibility Logic ---
         if (npcId === "elder_hyunseok") {
-          const firstSteps = questSystem.getQuest(this.registry, "first_steps");
+          const isClimaxStarted = this.registry.get("is_climax_battle") === true;
           const isRowanDefeated = (
             this.registry.get("defeatedTrainers") || []
           ).includes("guardian_rowan");
 
-          if (firstSteps && firstSteps.completed && !isRowanDefeated) {
-            // He "leaves" for the shrine (or hides his presence)
-            console.log(
-              "WorldScene: Chief Hyunseok is currently at the shrine.",
-            );
+          if (isClimaxStarted && !isRowanDefeated && this.mapId === "starwhisk_village") {
+            // He "leaves" for the shrine during the climax battle phase
             return;
           }
         }
@@ -597,7 +596,7 @@ export class WorldScene extends Phaser.Scene {
     if (!sb && lc?.completed && npcId === "elder_hyunseok") return "available";
     if (sb && !sb.completed && npcId === "trainer_sera") return "ready";
 
-    if (!ld && sb?.completed && npcId === "trainer_luke") return "available";
+    if (!ld && sb?.completed && npcId === "elder_hyunseok") return "available";
     if (ld && !ld.completed && npcId === "trainer_luke") return "ready";
 
     if (!cr && ld?.completed && npcId === "elder_hyunseok") return "available";
@@ -607,16 +606,28 @@ export class WorldScene extends Phaser.Scene {
   }
 
   spawnHerbs() {
-    if (this.mapId !== "greenpaw_forest") return;
+    const isGreenpaw = this.mapId === "greenpaw_forest";
+    const isMosslight = this.mapId === "mosslight_path";
+    if (!isGreenpaw && !isMosslight) return;
+
     const activeQuests = this.registry.get("activeQuests") || {};
     const ts = activeQuests["quest_toby_supply"];
     if (!ts || ts.completed || ts.objectives[1].completed) return;
 
-    const herbSpawnCoords = [
-      { x: 5, y: 10, id: "herb_1" },
-      { x: 15, y: 5, id: "herb_2" },
-      { x: 25, y: 15, id: "herb_3" },
-    ];
+    let herbSpawnCoords = [];
+    if (isGreenpaw) {
+      herbSpawnCoords = [
+        { x: 8, y: 8, id: "herb_1" },
+        { x: 12, y: 12, id: "herb_2" },
+        { x: 16, y: 10, id: "herb_3" },
+      ];
+    } else if (isMosslight) {
+      herbSpawnCoords = [
+        { x: 9, y: 9, id: "herb_m1" },
+        { x: 16, y: 16, id: "herb_m2" },
+        { x: 17, y: 11, id: "herb_m3" },
+      ];
+    }
 
     herbSpawnCoords.forEach((coord) => {
       if (this.registry.get(`${coord.id}_picked`)) return;
@@ -822,7 +833,7 @@ export class WorldScene extends Phaser.Scene {
       }
 
       if (npcSprite.npcId === "lost_cat") {
-        this.triggerLostCatChase(npcSprite);
+        this.handleLostCatPickup(npcSprite);
         return;
       }
 
@@ -893,6 +904,7 @@ export class WorldScene extends Phaser.Scene {
               "quest_toby_supply",
               "talk_toby",
             );
+            this.wasQuestUpdatedInInteraction = true;
           } else if (
             quest.objectives[1].completed &&
             !quest.objectives[2].completed
@@ -902,6 +914,7 @@ export class WorldScene extends Phaser.Scene {
               "quest_toby_supply",
               "return_toby",
             );
+            this.wasQuestUpdatedInInteraction = true;
           }
         }
       } else if (npcId === "villager1") {
@@ -976,6 +989,7 @@ export class WorldScene extends Phaser.Scene {
         onComplete: () => {
           this.isDialogueActive = false;
           this.processNpcRole(npcSprite, npcData);
+          this.wasQuestUpdatedInInteraction = false; // Reset for next time
           this.updateQuestIndicators();
         },
       });
@@ -998,7 +1012,7 @@ export class WorldScene extends Phaser.Scene {
     const ts = activeQuests["quest_toby_supply"];
     if (ts) {
       ts.objectives[1].count = (ts.objectives[1].count || 0) + 1;
-      ts.objectives[1].text = `그린포우 숲에서 신비한 약초 3개 채집하기 (${ts.objectives[1].count}/3)`;
+      ts.objectives[1].text = `신비한 약초 3개 채집하기 (${ts.objectives[1].count}/3)`;
       if (ts.objectives[1].count >= 3) {
         ts.objectives[1].completed = true;
       }
@@ -1108,6 +1122,10 @@ export class WorldScene extends Phaser.Scene {
         }
         break;
       case "shopkeeper":
+        if (this.wasQuestUpdatedInInteraction) {
+          console.log("WorldScene: Skipping shop launch due to quest progression.");
+          return;
+        }
         this.scene.pause();
         this.scene.launch("ShopScene");
         break;
@@ -1272,14 +1290,14 @@ export class WorldScene extends Phaser.Scene {
 
     await cutsceneSystem.shakeCamera(this, 2000, 0.02);
 
-    // Spawn cat
-    const spawnX = 18,
+    // Spawn cat at a valid within-bounds location (grass area on right)
+    const spawnX = 11,
       spawnY = 4;
     const cat = this.add.sprite(
       spawnX * 32 + 16,
       (spawnY + 1) * 32,
       "animal",
-      13,
+      40,
     ); // Cat index
     cat.setOrigin(0.5, 1);
     cat.npcId = "lost_cat";
@@ -1301,25 +1319,26 @@ export class WorldScene extends Phaser.Scene {
     this.updateQuestIndicators();
   }
 
-  async triggerLostCatChase(catSprite) {
+  async handleLostCatPickup(catSprite) {
     this.isDialogueActive = true;
     import("../systems/audioManager.js").then((module) =>
       module.audioManager.playSE("se_cat"),
     );
 
-    // Run away to Lina's house corner (hypothetically 5, 5 in this map)
-    await this.playCutscene(catSprite, 5, 5, null, () => {
-      questSystem.completeObjective(
-        this.registry,
-        "quest_lina_lost_cat",
-        "find_cat",
-      );
-      this.events.emit("notifyItem", {
-        message: "고양이가 마을로 돌아갔습니다!",
-        color: 0x3498db,
-      });
-      catSprite.destroy();
+    this.events.emit("notifyItem", {
+      message: "고양이를 발견하여 품에 안았습니다!",
+      color: 0x2ecc71,
     });
+
+    questSystem.completeObjective(
+      this.registry,
+      "quest_lina_lost_cat",
+      "find_cat",
+    );
+
+    catSprite.destroy();
+    this.isDialogueActive = false;
+    this.updateQuestIndicators();
   }
 
   checkEventTriggers() {

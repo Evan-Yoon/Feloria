@@ -17,14 +17,22 @@ export class SaveLoadScene extends Phaser.Scene {
     // Dim background
     this.add.rectangle(0, 0, width, height, 0x000000, 0.85).setOrigin(0);
 
-    const mWidth = 760;
-    const mHeight = 560;
-    this.add.rectangle(width / 2, height / 2, mWidth, mHeight, 0x1a252f).setOrigin(0.5);
-    this.add.rectangle(width / 2, height / 2, mWidth, mHeight).setStrokeStyle(4, 0x3498db).setOrigin(0.5);
+    const mWidth = 800;
+    const mHeight = 580;
+    const panelX = width / 2;
+    const panelY = height / 2;
+
+    const panelG = this.add.graphics();
+    // Glassy background
+    panelG.fillStyle(0x011627, 0.85);
+    panelG.fillRoundedRect(panelX - mWidth / 2, panelY - mHeight / 2, mWidth, mHeight, 20);
+    // Glowing border
+    panelG.lineStyle(4, 0x3498db, 1);
+    panelG.strokeRoundedRect(panelX - mWidth / 2, panelY - mHeight / 2, mWidth, mHeight, 20);
 
     // Header
     const titleText = this.mode === 'save' ? '게임 저장' : '게임 불러오기';
-    this.add.text(width / 2, height / 2 - 230, titleText, { 
+    this.add.text(width / 2, height / 2 - 245, titleText, { 
         font: 'bold 36px "Press Start 2P", Courier, monospace', fill: '#f1c40f',
         shadow: { offsetX: 2, offsetY: 2, color: '#000', blur: 0, fill: true }
     }).setOrigin(0.5);
@@ -53,13 +61,18 @@ export class SaveLoadScene extends Phaser.Scene {
         const drawIndex = this.mode === 'save' ? saveObj.slot - 1 : saveObj.slot; 
         const rowY = startY + (drawIndex * spacing);
 
-        const rowBg = this.add.rectangle(width / 2, rowY, 660, 50, 0x2c3e50)
-            .setInteractive({ useHandCursor: true })
-            .setStrokeStyle(2, 0x34495e)
-            .setOrigin(0.5);
+        const rowX = width / 2;
+        const rowW = 700;
+        const rowH = 55;
+
+        const rowG = this.add.graphics();
+        rowG.fillStyle(0x2c3e50, 0.6);
+        rowG.fillRoundedRect(rowX - rowW / 2, rowY - rowH / 2, rowW, rowH, 12);
+        rowG.lineStyle(2, 0x34495e, 1);
+        rowG.strokeRoundedRect(rowX - rowW / 2, rowY - rowH / 2, rowW, rowH, 12);
 
         const slotName = saveObj.slot === 0 ? "자동 저장" : `슬롯 ${saveObj.slot}`;
-        this.add.text(width / 2 - 310, rowY, slotName, { font: 'bold 24px Arial', fill: '#f1c40f' }).setOrigin(0, 0.5);
+        this.add.text(width / 2 - 330, rowY, slotName, { font: 'bold 24px Arial', fill: '#f1c40f' }).setOrigin(0, 0.5);
         
         let labelColor = saveObj.exists ? '#ffffff' : '#7f8c8d';
         let dateString = "";
@@ -70,13 +83,28 @@ export class SaveLoadScene extends Phaser.Scene {
         }
 
         this.add.text(width / 2 - 140, rowY, saveObj.label, { font: '20px Arial', fill: labelColor }).setOrigin(0, 0.5);
-        this.add.text(width / 2 + 310, rowY, dateString, { font: '16px Arial', fill: '#bdc3c7' }).setOrigin(1, 0.5);
+        this.add.text(width / 2 + 330, rowY, dateString, { font: '16px Arial', fill: '#bdc3c7' }).setOrigin(1, 0.5);
 
-        // Hover Effects
-        rowBg.on('pointerover', () => rowBg.setFillStyle(0xe74c3c));
-        rowBg.on('pointerout', () => rowBg.setFillStyle(0x2c3e50));
+        // Hover Effects & Interactions
+        const hitArea = this.add.rectangle(rowX, rowY, rowW, rowH, 0x000000, 0)
+            .setInteractive({ useHandCursor: true });
 
-        rowBg.on('pointerdown', () => {
+        hitArea.on('pointerover', () => {
+            rowG.clear();
+            rowG.fillStyle(0xe74c3c, 0.8);
+            rowG.fillRoundedRect(rowX - rowW / 2, rowY - rowH / 2, rowW, rowH, 12);
+            rowG.lineStyle(2, 0xffffff, 1);
+            rowG.strokeRoundedRect(rowX - rowW / 2, rowY - rowH / 2, rowW, rowH, 12);
+        });
+        hitArea.on('pointerout', () => {
+            rowG.clear();
+            rowG.fillStyle(0x2c3e50, 0.6);
+            rowG.fillRoundedRect(rowX - rowW / 2, rowY - rowH / 2, rowW, rowH, 12);
+            rowG.lineStyle(2, 0x34495e, 1);
+            rowG.strokeRoundedRect(rowX - rowW / 2, rowY - rowH / 2, rowW, rowH, 12);
+        });
+
+        hitArea.on('pointerdown', () => {
             if (this.mode === 'save') {
                 this.handleSave(saveObj.slot);
             } else {
@@ -117,7 +145,11 @@ export class SaveLoadScene extends Phaser.Scene {
         this.notifText.setFill('#2ecc71');
         
         this.time.delayedCall(500, () => {
-            // Stop whatever launched this overlay (StartScene, etc)
+            // Stop any potential background scenes to prevent visual bleeding
+            if (this.scene.isActive("StartScene")) this.scene.stop("StartScene");
+            if (this.scene.isActive("MenuScene")) this.scene.stop("MenuScene");
+            
+            // Start the world scene
             this.scene.start("WorldScene", sceneParams);
         });
     } else {

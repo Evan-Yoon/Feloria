@@ -11,7 +11,8 @@ export class BootScene extends Phaser.Scene {
   }
 
   preload() {
-    // Usually we load a small loading bar image here before the main PreloadScene
+    // Load NEW Transparent Nyan Cat image here
+    this.load.image('nyan_cat_clean', 'assets/images/ui/nyancat_transparent.png');
     console.log('BootScene: Preloading basic assets...');
   }
 

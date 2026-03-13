@@ -21,7 +21,8 @@ export class PartyScene extends Phaser.Scene {
 
   create() {
     const { width, height } = this.cameras.main;
-    this.add.rectangle(0, 0, width, height, 0x2c3e50).setOrigin(0);
+    // Glassy background for the whole scene
+    this.add.rectangle(0, 0, width, height, 0x011627, 0.95).setOrigin(0);
 
     this.party = this.registry.get("playerParty") || [];
     this.collection = this.registry.get("playerCollection") || [];
@@ -147,59 +148,79 @@ export class PartyScene extends Phaser.Scene {
 
   createCreatureCard(creature, x, y, isParty, isActive) {
     const card = this.add.container(x, y);
-    const bgWidth = 520;
-    const bgHeight = 120;
+    const bgWidth = 540;
+    const bgHeight = 140;
 
     const bgColor = isActive ? 0x27ae60 : isParty ? 0x2980b9 : 0x34495e;
-    const bg = this.add
-      .rectangle(0, 0, bgWidth, bgHeight, bgColor)
-      .setInteractive({ useHandCursor: true })
-      .setStrokeStyle(3, 0xecf0f1);
+    const borderColor = isActive ? 0x2ecc71 : 0x3498db;
+
+    const cardG = this.add.graphics();
+    // Glassy backing
+    cardG.fillStyle(bgColor, 0.4);
+    cardG.fillRoundedRect(-bgWidth / 2, -bgHeight / 2, bgWidth, bgHeight, 15);
+    // Border
+    cardG.lineStyle(2, borderColor, 0.8);
+    cardG.strokeRoundedRect(-bgWidth / 2, -bgHeight / 2, bgWidth, bgHeight, 15);
+    card.add(cardG);
 
     // Creature Sprite
     const spriteKey = creature.id.toLowerCase();
     const creatureSprite = this.add
-      .sprite(-bgWidth / 2 + 70, -20, spriteKey)
-      .setScale(1.05);
+      .sprite(-bgWidth / 2 + 75, -20, spriteKey)
+      .setScale(1.2);
 
     // Details Text
-    const nameText = this.add.text(-bgWidth / 2 + 70, 25, creature.name, {
-      font: "bold 22px Arial",
+    const nameText = this.add.text(-bgWidth / 2 + 75, 30, creature.name, {
+      font: "bold 24px Arial",
       fill: "#ffffff",
     }).setOrigin(0.5, 0);
 
-    const detailX = -bgWidth / 2 + 150;
+    const detailX = -bgWidth / 2 + 160;
     const lvlText = this.add.text(
       detailX,
-      -35,
-      `레벨 ${creature.level}`,
-      { font: "bold 24px Arial", fill: "#f1c40f" },
+      -50,
+      `LEVEL ${creature.level}`,
+      { font: "bold 22px Arial", fill: "#f1c40f" }
     );
 
-    // HP Bar / Text
-    const hpText = this.add.text(
-      detailX,
-      0,
-      `HP: ${creature.currentHp}/${creature.maxHp}`,
-      { font: "bold 22px Arial", fill: "#ff7979" },
-    );
+    // --- HP Bar ---
+    const barWidth = 180;
+    const hpPercent = Math.max(0, creature.currentHp / creature.maxHp);
+    
+    this.add.text(detailX, -22, "HP", { font: "bold 14px Arial", fill: "#ff7979" }).setOrigin(0, 0.5);
+    const hpBg = this.add.rectangle(detailX + 30, -22, barWidth, 12, 0x000000, 0.5).setOrigin(0, 0.5);
+    const hpFill = this.add.rectangle(detailX + 30, -22, barWidth * hpPercent, 10, 0xff4757).setOrigin(0, 0.5);
+    card.add([hpBg, hpFill]);
 
-    // Exact EXP Text
+    const hpValueText = this.add.text(
+      detailX + 30 + barWidth + 10,
+      -22,
+      `${creature.currentHp}/${creature.maxHp}`,
+      { font: "bold 16px Arial", fill: "#ff7979" }
+    ).setOrigin(0, 0.5);
+
+    // --- EXP Bar ---
     const expNeeded = creature.level * 50;
-    const expText = this.add.text(
-      detailX,
-      30,
-      `EXP: ${creature.exp}/${expNeeded}`,
-      { font: "18px Arial", fill: "#81ecec" },
-    );
+    const expPercent = Math.min(1, creature.exp / expNeeded);
+
+    this.add.text(detailX, 10, "XP", { font: "bold 14px Arial", fill: "#81ecec" }).setOrigin(0, 0.5);
+    const expBg = this.add.rectangle(detailX + 30, 10, barWidth, 12, 0x000000, 0.5).setOrigin(0, 0.5);
+    const expFill = this.add.rectangle(detailX + 30, 10, barWidth * expPercent, 10, 0x2ecc71).setOrigin(0, 0.5);
+    card.add([expBg, expFill]);
+
+    const expValueText = this.add.text(
+      detailX + 30 + barWidth + 10,
+      10,
+      `${creature.exp}/${expNeeded}`,
+      { font: "bold 16px Arial", fill: "#81ecec" }
+    ).setOrigin(0, 0.5);
 
     // Action Buttons
-    const btnContainer = this.add.container(bgWidth / 2 - 90, 0);
+    const btnContainer = this.add.container(bgWidth / 2 - 100, 0);
 
     if (this.isTargetMode) {
-      // In Target Mode, explicitly only show USE button for Party members
       if (isParty) {
-        const useBtn = this.createButton(0, 0, "아이템 사용", 0x27ae60, () =>
+        const useBtn = this.createButton(0, 0, "사용", 0x27ae60, () =>
           this.applyItem(creature),
         );
         btnContainer.add(useBtn);
@@ -207,28 +228,24 @@ export class PartyScene extends Phaser.Scene {
     } else {
       if (isParty) {
         if (!isActive) {
-          // Make Active Button
           const makeActiveBtn = this.createButton(
             0,
-            -25,
+            -30,
             "대표 설정",
             0xf39c12,
             () => this.makeActive(creature),
           );
           btnContainer.add(makeActiveBtn);
         }
-
-        // Remove Button (Only if party > 1)
         if (this.party.length > 1) {
-          const removeBtn = this.createButton(0, 25, "파티 제외", 0xc0392b, () =>
+          const removeBtn = this.createButton(0, 30, "제외", 0xc0392b, () =>
             this.removeFromParty(creature),
           );
           btnContainer.add(removeBtn);
         }
       } else {
-        // Add to Party Button (Only if party < 3)
         if (this.party.length < 3) {
-          const addBtn = this.createButton(0, 0, "파티 추가", 0x27ae60, () =>
+          const addBtn = this.createButton(0, 0, "참가", 0x27ae60, () =>
             this.addToParty(creature),
           );
           btnContainer.add(addBtn);
@@ -237,12 +254,11 @@ export class PartyScene extends Phaser.Scene {
     }
 
     card.add([
-      bg,
       creatureSprite,
       nameText,
       lvlText,
-      hpText,
-      expText,
+      hpValueText,
+      expValueText,
       btnContainer,
     ]);
     return card;
@@ -250,19 +266,39 @@ export class PartyScene extends Phaser.Scene {
 
   createButton(x, y, text, color, callback) {
     const container = this.add.container(x, y);
-    const bg = this.add
-      .rectangle(0, 0, 140, 40, color)
-      .setInteractive({ useHandCursor: true })
-      .setStrokeStyle(2, 0xffffff);
+    const bW = 150;
+    const bH = 40;
+
+    const btnG = this.add.graphics();
+    btnG.fillStyle(color, 0.8);
+    btnG.fillRoundedRect(-bW / 2, -bH / 2, bW, bH, 10);
+    btnG.lineStyle(2, 0xffffff, 0.8);
+    btnG.strokeRoundedRect(-bW / 2, -bH / 2, bW, bH, 10);
+
     const label = this.add
-      .text(0, 0, text, { font: "bold 16px Arial", fill: "#ffffff" })
+      .text(0, 0, text, { font: "bold 18px Arial", fill: "#ffffff" })
       .setOrigin(0.5);
 
-    bg.on("pointerdown", callback);
-    bg.on("pointerover", () => bg.setAlpha(0.8));
-    bg.on("pointerout", () => bg.setAlpha(1));
+    const hitArea = this.add.rectangle(0, 0, bW, bH, 0x000000, 0)
+      .setInteractive({ useHandCursor: true });
 
-    container.add([bg, label]);
+    hitArea.on("pointerdown", callback);
+    hitArea.on("pointerover", () => {
+      btnG.clear();
+      btnG.fillStyle(color, 1);
+      btnG.fillRoundedRect(-bW / 2, -bH / 2, bW, bH, 10);
+      btnG.lineStyle(2, 0xffffff, 1);
+      btnG.strokeRoundedRect(-bW / 2, -bH / 2, bW, bH, 10);
+    });
+    hitArea.on("pointerout", () => {
+      btnG.clear();
+      btnG.fillStyle(color, 0.8);
+      btnG.fillRoundedRect(-bW / 2, -bH / 2, bW, bH, 10);
+      btnG.lineStyle(2, 0xffffff, 0.8);
+      btnG.strokeRoundedRect(-bW / 2, -bH / 2, bW, bH, 10);
+    });
+
+    container.add([btnG, label, hitArea]);
     return container;
   }
 

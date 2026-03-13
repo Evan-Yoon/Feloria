@@ -13,15 +13,20 @@ export class QuestScene extends Phaser.Scene {
     // Elegant Dim background
     this.add.rectangle(0, 0, width, height, 0x000000, 0.85).setOrigin(0);
 
-    const mWidth = 760;
-    const mHeight = 560;
+    const mWidth = 800;
+    const mHeight = 580;
     const panelX = width / 2;
     const panelY = height / 2;
 
-    this.add.rectangle(panelX, panelY, mWidth, mHeight, 0x1a252f).setOrigin(0.5);
-    this.add.rectangle(panelX, panelY, mWidth, mHeight).setStrokeStyle(4, 0x3498db).setOrigin(0.5);
+    const panelG = this.add.graphics();
+    // Glassy background
+    panelG.fillStyle(0x011627, 0.85);
+    panelG.fillRoundedRect(panelX - mWidth / 2, panelY - mHeight / 2, mWidth, mHeight, 20);
+    // Glowing border
+    panelG.lineStyle(4, 0x3498db, 1);
+    panelG.strokeRoundedRect(panelX - mWidth / 2, panelY - mHeight / 2, mWidth, mHeight, 20);
 
-    this.add.text(panelX, panelY - 230, '퀘스트', { 
+    this.add.text(panelX, panelY - 245, '퀘스트', { 
         font: 'bold 36px "Press Start 2P", Courier, monospace', fill: '#f1c40f',
         shadow: { offsetX: 2, offsetY: 2, color: '#000', blur: 0, fill: true }
     }).setOrigin(0.5);
@@ -48,13 +53,20 @@ export class QuestScene extends Phaser.Scene {
         const color = obj.completed ? '#2ecc71' : '#ffffff';
         const checkbox = obj.completed ? '[\u2713]' : '[ ]';
         
-        const rowBg = this.add.rectangle(panelX, yPos, 600, 45, 0x2c3e50).setOrigin(0.5).setStrokeStyle(2, 0x34495e);
-        this.add.text(panelX - 280, yPos, `${checkbox} ${obj.text}`, { font: '20px Arial', fill: color }).setOrigin(0, 0.5);
-        yPos += 52;
+        const rowW = 640;
+        const rowH = 50;
+        const rowG = this.add.graphics();
+        rowG.fillStyle(0x2c3e50, 0.6);
+        rowG.fillRoundedRect(panelX - rowW / 2, yPos - rowH / 2, rowW, rowH, 12);
+        rowG.lineStyle(2, 0x34495e, 1);
+        rowG.strokeRoundedRect(panelX - rowW / 2, yPos - rowH / 2, rowW, rowH, 12);
+
+        this.add.text(panelX - 300, yPos, `${checkbox} ${obj.text}`, { font: '20px Arial', fill: color }).setOrigin(0, 0.5);
+        yPos += 58;
       });
     }
 
-    this.add.text(panelX, panelY + 250, 'ESC를 눌러 돌아가기', { font: '20px Arial', fill: '#95a5a6' }).setOrigin(0.5);
+    this.add.text(panelX, panelY + 265, 'ESC를 눌러 돌아가기', { font: '20px Arial', fill: '#95a5a6' }).setOrigin(0.5);
 
     this.input.keyboard.on('keydown-ESC', () => {
       this.scene.stop();

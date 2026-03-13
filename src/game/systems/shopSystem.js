@@ -9,15 +9,16 @@ export const shopSystem = {
    * Attempts to buy an item.
    * Returns { success: boolean, message: string }
    */
-  buyItem: (registry, itemId, quantity = 1) => {
+  buyItem: (scene, itemId, quantity = 1) => {
+    const registry = scene.registry;
     const item = Object.values(ITEMS).find((i) => i.id === itemId);
-    if (!item) return { success: false, message: "Item not found." };
+    if (!item) return { success: false, message: "아이템을 찾을 수 없습니다." };
 
     const cost = item.price * quantity;
     let currentGold = registry.get("playerGold") || 0;
 
     if (currentGold < cost) {
-      return { success: false, message: "Not enough gold." };
+      return { success: false, message: "골드가 부족합니다." };
     }
 
     // Deduct gold
@@ -31,10 +32,12 @@ export const shopSystem = {
     inventory[itemId] += quantity;
     registry.set("playerInventory", inventory);
 
-    // Emit notification to UIScene
-    const scene = registry.systems.scene.getScene('WorldScene');
-    if (scene) {
-      scene.events.emit('notifyItem', { 
+    // Emit notification to UIScene via WorldScene's events if available 
+    // or directly if UIScene is what we want.
+    // Usually these notifications are handled by the main game scene's emitter.
+    const worldScene = scene.scene.get('WorldScene');
+    if (worldScene) {
+      worldScene.events.emit('notifyItem', { 
         message: `${item.name} x${quantity} 획득!`,
         color: 0x27ae60 
       });
@@ -45,6 +48,6 @@ export const shopSystem = {
       });
     }
 
-    return { success: true, message: `Bought ${quantity}x ${item.name}!` };
+    return { success: true, message: `${item.name}을(를) 구매했습니다!` };
   },
 };
