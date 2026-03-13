@@ -76,6 +76,7 @@ export class BattleScene extends Phaser.Scene {
     // 4. Battle State
     this.isPlayerTurn = true;
     this.isBattleOver = false;
+    this.isDefeated = false;
     this.canInput = true;
 
     // Get Trainer Name for UI
@@ -869,6 +870,7 @@ export class BattleScene extends Phaser.Scene {
 
   defeat() {
     this.isBattleOver = true;
+    this.isDefeated = true;
 
     // Persist HP (will be 0)
     this.registry.set("playerParty", this.playerParty);
@@ -881,15 +883,7 @@ export class BattleScene extends Phaser.Scene {
     });
     
     this.time.delayedCall(1500, () => {
-      if (this.trainerId === 'boss_hyunseok') {
-        // Special Game Over for final boss
-        this.cameras.main.fadeOut(2000, 0, 0, 0);
-        this.cameras.main.once('camerafadeoutcomplete', () => {
-          this.scene.start('GameOverScene'); // Assuming this exists or I'll create it
-        });
-      } else {
-        this.showSummaryPanel("패배", 0, false, this.playerCat.level, false);
-      }
+      this.showSummaryPanel("패배", 0, false, this.playerCat.level, false);
     });
   }
 
@@ -1026,6 +1020,11 @@ export class BattleScene extends Phaser.Scene {
 
     this.cameras.main.fadeOut(500, 0, 0, 0);
     this.cameras.main.once("camerafadeoutcomplete", () => {
+      if (this.isDefeated) {
+        this.scene.start('GameOverScene');
+        return;
+      }
+
       // Return to world using saved position
       const mapId = this.registry.get("world_mapId") || "starwhisk_village";
       const tx = this.registry.get("world_spawnX") || 10;

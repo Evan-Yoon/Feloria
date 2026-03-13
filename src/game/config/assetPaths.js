@@ -1347,51 +1347,124 @@ export const ASSETS = {
   AUDIO: {
     BGM: {
       TITLE: { KEY: "bgm_title", PATH: "/assets/audio/bgm/Airship.ogg" },
-      INTRO: { KEY: "bgm_intro", PATH: "/assets/audio/bgm/The Giant's Piano.ogg" },
-      QUEST_REVEAL: { KEY: "bgm_quest_reveal", PATH: "/assets/audio/bgm/Dark_-_Criminal_Mind.ogg" },
-      VILLAGE: { KEY: "bgm_village", PATH: "/assets/audio/bgm/Happy Town Theme - Ogg.ogg" },
-      FOREST_GREENPAW: { KEY: "bgm_forest_greenpaw", PATH: "/assets/audio/bgm/Field2.ogg" },
-      PATH_MOSSLIGHT: { KEY: "bgm_path_mosslight", PATH: "/assets/audio/bgm/Field1.ogg" },
-      FOREST_ANCIENT: { KEY: "bgm_forest_ancient", PATH: "/assets/audio/bgm/Peaceful_-_Princess_Dreams.ogg" },
-      SHRINE_MOSSLIGHT: { KEY: "bgm_shrine_mosslight", PATH: "/assets/audio/bgm/Dungeon9.ogg" },
-      BATTLE_WILD: { KEY: "bgm_battle_wild", PATH: "/assets/audio/bgm/Battle8.ogg" },
-      BATTLE_KYLE: { KEY: "bgm_battle_kyle", PATH: "/assets/audio/bgm/Battle5.ogg" },
-      BATTLE_SERA: { KEY: "bgm_battle_sera", PATH: "/assets/audio/bgm/10 - Battle Nothing.ogg" },
-      BATTLE_LUKE: { KEY: "bgm_battle_luke", PATH: "/assets/audio/bgm/10 - Abominations Of The Soul.ogg" },
-      BATTLE_ROWAN: { KEY: "bgm_battle_rowan", PATH: "/assets/audio/bgm/01 - Namazu.ogg" },
-      BATTLE_HYUNSEOK: { KEY: "bgm_battle_hyunseok", PATH: "/assets/audio/bgm/07 - In Darkness Where Elves Burn.mp3" },
-      CLIMAX_EVENT: { KEY: "bgm_climax_event", PATH: "/assets/audio/bgm/Scene2.ogg" },
+      INTRO: {
+        KEY: "bgm_intro",
+        PATH: "/assets/audio/bgm/The Giant's Piano.ogg",
+      },
+      QUEST_REVEAL: {
+        KEY: "bgm_quest_reveal",
+        PATH: "/assets/audio/bgm/Dark_-_Criminal_Mind.ogg",
+      },
+      VILLAGE: {
+        KEY: "bgm_village",
+        PATH: "/assets/audio/bgm/Happy Town Theme - Ogg.ogg",
+      },
+      FOREST_GREENPAW: {
+        KEY: "bgm_forest_greenpaw",
+        PATH: "/assets/audio/bgm/Field2.ogg",
+      },
+      PATH_MOSSLIGHT: {
+        KEY: "bgm_path_mosslight",
+        PATH: "/assets/audio/bgm/Field1.ogg",
+      },
+      FOREST_ANCIENT: {
+        KEY: "bgm_forest_ancient",
+        PATH: "/assets/audio/bgm/Peaceful_-_Princess_Dreams.ogg",
+      },
+      SHRINE_MOSSLIGHT: {
+        KEY: "bgm_shrine_mosslight",
+        PATH: "/assets/audio/bgm/Dungeon9.ogg",
+      },
+      BATTLE_WILD: {
+        KEY: "bgm_battle_wild",
+        PATH: "/assets/audio/bgm/Battle8.ogg",
+      },
+      BATTLE_KYLE: {
+        KEY: "bgm_battle_kyle",
+        PATH: "/assets/audio/bgm/Battle5.ogg",
+      },
+      BATTLE_SERA: {
+        KEY: "bgm_battle_sera",
+        PATH: "/assets/audio/bgm/10 - Battle Nothing.ogg",
+      },
+      BATTLE_LUKE: {
+        KEY: "bgm_battle_luke",
+        PATH: "/assets/audio/bgm/10 - Abominations Of The Soul.ogg",
+      },
+      BATTLE_ROWAN: {
+        KEY: "bgm_battle_rowan",
+        PATH: "/assets/audio/bgm/01 - Namazu.ogg",
+      },
+      BATTLE_HYUNSEOK: {
+        KEY: "bgm_battle_hyunseok",
+        PATH: "/assets/audio/bgm/07 - In Darkness Where Elves Burn.mp3",
+      },
+      CLIMAX_EVENT: {
+        KEY: "bgm_climax_event",
+        PATH: "/assets/audio/bgm/Scene2.ogg",
+      },
     },
     BGS: {
       QUAKE: { KEY: "bgs_quake", PATH: "/assets/audio/bgs/Quake.ogg" },
     },
     ME: {
       LEVEL_UP: { KEY: "me_level_up", PATH: "/assets/audio/me/Fanfare1.ogg" },
-      CATCH_SUCCESS: { KEY: "me_catch_success", PATH: "/assets/audio/me/Fanfare2.ogg" },
+      CATCH_SUCCESS: {
+        KEY: "me_catch_success",
+        PATH: "/assets/audio/me/Fanfare2.ogg",
+      },
       EVOLUTION: { KEY: "me_evolution", PATH: "/assets/audio/me/Fanfare3.ogg" },
-      GAME_OVER: { KEY: "me_game_over", PATH: "/assets/audio/me/Gameover1.ogg" },
+      GAME_OVER: {
+        KEY: "me_game_over",
+        PATH: "/assets/audio/me/Gameover1.ogg",
+      },
       ITEM_GET: { KEY: "me_item_get", PATH: "/assets/audio/me/Item.ogg" },
-      VICTORY_WILD: { KEY: "me_victory_wild", PATH: "/assets/audio/me/Victory1.ogg" },
-      VICTORY_TRAINER: { KEY: "me_victory_trainer", PATH: "/assets/audio/me/Victory2.ogg" },
+      VICTORY_WILD: {
+        KEY: "me_victory_wild",
+        PATH: "/assets/audio/me/Victory1.ogg",
+      },
+      VICTORY_TRAINER: {
+        KEY: "me_victory_trainer",
+        PATH: "/assets/audio/me/Victory2.ogg",
+      },
     },
     SE: {
-      ATTACK_BASIC: { KEY: "se_attack_basic", PATH: "/assets/audio/se/Attack3.ogg" },
-      ENCOUNTER: { KEY: "se_encounter", PATH: "/assets/audio/se/Encounter.ogg" },
+      ATTACK_BASIC: {
+        KEY: "se_attack_basic",
+        PATH: "/assets/audio/se/Attack3.ogg",
+      },
+      ENCOUNTER: {
+        KEY: "se_encounter",
+        PATH: "/assets/audio/se/Encounter.ogg",
+      },
       CANCEL: { KEY: "se_cancel", PATH: "/assets/audio/se/Cancel2.ogg" },
-      COLLAPSE_PLAYER: { KEY: "se_collapse_player", PATH: "/assets/audio/se/Collapse2.ogg" },
-      COLLAPSE_ENEMY: { KEY: "se_collapse_enemy", PATH: "/assets/audio/se/Collapse1.ogg" },
+      COLLAPSE_PLAYER: {
+        KEY: "se_collapse_player",
+        PATH: "/assets/audio/se/Collapse2.ogg",
+      },
+      COLLAPSE_ENEMY: {
+        KEY: "se_collapse_enemy",
+        PATH: "/assets/audio/se/Collapse1.ogg",
+      },
       HEAL: { KEY: "se_heal", PATH: "/assets/audio/se/Recovery.ogg" },
       MOVE: { KEY: "se_move", PATH: "/assets/audio/se/Move.ogg" },
       CURSOR: { KEY: "se_cursor", PATH: "/assets/audio/se/Cursor1.ogg" },
       // Skill types
       FIRE: { KEY: "se_skill_fire", PATH: "/assets/audio/se/Fire1.ogg" },
       ICE: { KEY: "se_skill_ice", PATH: "/assets/audio/se/Ice1.ogg" },
-      THUNDER: { KEY: "se_skill_thunder", PATH: "/assets/audio/se/Thunder1.ogg" },
-      SHADOW: { KEY: "se_skill_shadow", PATH: "/assets/audio/se/Darkness1.ogg" },
+      THUNDER: {
+        KEY: "se_skill_thunder",
+        PATH: "/assets/audio/se/Thunder1.ogg",
+      },
+      SHADOW: {
+        KEY: "se_skill_shadow",
+        PATH: "/assets/audio/se/Darkness1.ogg",
+      },
       ROCK: { KEY: "se_skill_rock", PATH: "/assets/audio/se/Earth1.ogg" },
       WIND: { KEY: "se_skill_wind", PATH: "/assets/audio/se/Wind1.ogg" },
       LIGHT: { KEY: "se_skill_light", PATH: "/assets/audio/se/Saint1.ogg" },
       MYSTIC: { KEY: "se_skill_mystic", PATH: "/assets/audio/se/Magic1.ogg" },
-    }
+      CAT: { KEY: "se_cat", PATH: "/assets/audio/se/Cat.ogg" },
+    },
   },
 };

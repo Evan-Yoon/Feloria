@@ -26,24 +26,62 @@ export const NPCS = {
 
       const activeQuests = registry.get("activeQuests") || {};
       const firstSteps = activeQuests["first_steps"];
+      const tobyQuest = activeQuests["quest_toby_supply"];
+      const linaQuest = activeQuests["quest_lina_lost_cat"];
+      const seraQuest = activeQuests["quest_sera_blockade"];
+      const lukeQuest = activeQuests["quest_luke_despair"];
+      const relicQuest = activeQuests["quest_chiefs_relic"];
 
-      // Quest progression checks
+      // Story Progression
+      if (relicQuest && relicQuest.completed) {
+        return [
+          "이제 준비가 된 것 같구나. 그 유물만 있으면 신전의 '오염'을 정화할 수 있을 게야.",
+          "서두르거라. 로완이 더 큰 힘을 깨우기 전에...",
+        ];
+      }
+
+      if (relicQuest && !relicQuest.completed) {
+        if (relicQuest.objectives[0].completed) {
+          return [
+            "참으로 고생 많았다. 세라와 루크... 그 아이들이 그렇게까지 타락했을 줄이야.",
+            "나도 마음이 아프구나... 하지만 마을을 지키기 위해선 어쩔 수 없는 선택이었단다.",
+            "자, 여기 내가 소중히 간직해온 '정화의 유물'을 주마. 이걸 신전 중심부에 설치하거라.",
+          ];
+        }
+        return [
+          "세라와 루크를 막아냈느냐? 숲의 평화를 위해 조금만 더 힘내주렴.",
+        ];
+      }
+
+      if (seraQuest && !seraQuest.completed) {
+        return [
+          "세라가 길을 막고 있다니... 로완에게 완전히 세뇌된 모양이구나.",
+          "미안하지만, 그녀를 쓰러뜨려서라도 길을 열어야 한단다. 이건 정당한 방어란다.",
+        ];
+      }
+
+      // Check if previous quests done to trigger seraQuest
+      if (tobyQuest?.completed && linaQuest?.completed && !seraQuest) {
+        return [
+          "고생했다, {playerName}. 하지만 로완의 제자들이 길을 막기 시작했다는구나. 그들을 설득해야 한단다.",
+        ];
+      }
+
+      // Quest progression checks for first_steps
       if (!firstSteps || !firstSteps.objectives[1].completed) {
-        // Starter not chosen yet
         return [
           "어서 오너라, {playerName}아.",
           "요즘 숲의 기운이 조금 이상하단다. 모험을 도와줄 고양이 한마리를 입양하거라...",
         ];
       }
+
       if (firstSteps && !firstSteps.completed) {
-        if (firstSteps.objectives.find(o => o.id === 'return_mira').completed) {
-          // Special transition dialogue
+        if (
+          firstSteps.objectives.find((o) => o.id === "return_mira").completed
+        ) {
           return [
             "장하구나, {playerName}! 고양이를 훌륭하게 포획해왔군.",
-            "하지만 지금 그린포우 숲 너머에서 심상치 않은 일이 벌어지고 있단다.",
-            "수호자 로완이라는 자가 고대 숲의 신전을 점거하고 숲의 정령들을 자극하고 있어.",
-            "그를 막지 않으면 우리 마을뿐만 아니라 온 대륙이 위험해질 게야.",
-            "자, 이제 모스라이트 길을 지나 고대 숲으로 가거라. 로완을 처치하고 숲의 평화를 되찾아야 한다!",
+            "하지만 상인 토비가 요즘 걱정이 많은 것 같더구나. 그에게 가서 도와줄 일이 없는지 물어보겠니?",
           ];
         }
         return [
@@ -52,10 +90,10 @@ export const NPCS = {
         ];
       }
 
-      // Default / Healer Dialogue
+      // Default
       return [
         "피곤해 보이는구나. 이리 오렴.",
-        "내가 네 파티를 아주 '건강하게' 유지해 주마.",
+        "내가 네 파티를 아주 '건강하게' 유지해 주마 (웃음).",
       ];
     },
   },
@@ -82,7 +120,7 @@ export const NPCS = {
     sprite: "people2",
     characterIndex: 0,
     faceKey: "face_people2",
-    faceIndex: 1, 
+    faceIndex: 1,
     getDialogue: (registry) => {
       return [
         "큭... 하지만 이미 전설의 고양이들이 깨어났다. 내 계획은 멈출 수 없어!",
@@ -98,9 +136,31 @@ export const NPCS = {
     faceKey: "face_people2",
     faceIndex: 3,
     getDialogue: (registry) => {
+      const activeQuests = registry.get("activeQuests") || {};
+      const tobyQuest = activeQuests["quest_toby_supply"];
+
+      if (tobyQuest) {
+        if (tobyQuest.completed) {
+          return [
+            "역시 촌장님의 말씀이 옳았어. {playerName}, 네가 가져온 약초 덕분에 기운이 좀 나네.",
+            "로완은 왜 이런 좋은 걸 독점하려고 하는 건지... 정말 무서운 사람이야.",
+          ];
+        }
+        if (tobyQuest.objectives[1].completed) {
+          return [
+            "오! 약초를 구해왔구나! 정말 고마워.",
+            "역시 믿을 건 촌장님과 너뿐이야.",
+          ];
+        }
+        return [
+          "로완... 그 사람이 숲의 기운을 다 빨아가고 있어. 이대론 우리 가계도 끝이야.",
+          "그린포우 숲에서 '신비한 약초' 3개만 구해다 줄 수 있을까? 촌장님이 너라면 도와줄 거라 하셨어.",
+        ];
+      }
+
       return [
         "어서 와! 필요한 물건이 있나?",
-        "포션은 전투에서 정말 유용하지. 특히 깊은 숲에선 필수야!",
+        "로완 때문에 숲이 죽어가니 물건 떼오기도 힘드네.",
       ];
     },
   },
@@ -116,17 +176,30 @@ export const NPCS = {
       if (registry.get("chapter1_done")) {
         return [
           "하늘이 이상해! 멀리 산등성이에서 번쩍이는 걸 봤어!",
-          "정말로 책에 나오는 전설의 고양이들이 깨어난 걸까?",
+          "촌장님이 말씀하신 대로 로완이 결국 재앙을 불러온 걸까?",
         ];
       }
-      const collection = registry.get("playerCollection") || [];
-      if (collection.length > 1) {
-        // Has captured at least one cat (since starter is 1)
+
+      const activeQuests = registry.get("activeQuests") || {};
+      const linaQuest = activeQuests["quest_lina_lost_cat"];
+
+      if (linaQuest) {
+        if (linaQuest.completed) {
+          return [
+            "우리 고양이를 찾아줘서 정말 고마워. 떨고 있는 걸 보니 숲의 비명 소리가 정말 끔찍했나 봐.",
+            "촌장님 말씀처럼... 로완이 정말 숲을 망치고 있는 게 분명해!",
+          ];
+        }
+        if (linaQuest.objectives[1].completed) {
+          return ["고양이를 발견했구나! 곧 돌아오겠지? 정말 다행이야."];
+        }
         return [
-          "와! {playerName}! 벌써 고양이를 잡았구나!",
-          "촌장님이 널 아주 특별하게 생각하시는 것 같더라.",
+          "흑흑... 우리 고양이가 어디론가 사라졌어.",
+          "숲에서 들려온 기분 나쁜 소리에 놀라 도망친 것 같아. 분명 로완이 수작을 부리는 게야!",
+          "제단 근처에서 우리 고양이를 좀 찾아봐 줄래?",
         ];
       }
+
       return [
         "숲에 들어가면 풀숲을 조심해.",
         "야생 고양이들이 갑자기 나타나거든. 요즘 들어 유독 더 사나워졌어.",
@@ -241,11 +314,27 @@ export const NPCS = {
     faceKey: "face_actor1",
     faceIndex: 3,
     getDialogue: (registry) => {
+      const activeQuests = registry.get("activeQuests") || {};
+      const seraQuest = activeQuests["quest_sera_blockade"];
       const defeated = registry.get("defeatedTrainers") || [];
+
       if (defeated.includes("sera")) {
-        return ["대단하네…", "넌 정말 강한 트레이너야. 신전에 갈 자격이 있어."];
+        return [
+          "결국... 봉인을 풀려는 건가요?",
+          "촌장님의 말이 진실이라 믿는 당신...",
+          "지금이라도 늦지 않았기를 바랄 뿐이에요.",
+        ];
       }
-      return ["이 길을 지나가려면 나를 이겨야 해!"];
+
+      if (seraQuest) {
+        return [
+          "더 이상은 안 돼요! 숲의 진실을 모르는 자는 돌아가세요!",
+          "당신은 이용당하고 있는 거예요... 하지만 지금은 제 말이 들리지 않겠죠.",
+          "숲과 동료들을 지키기 위해, 당신을 여기서 막겠습니다!",
+        ];
+      }
+
+      return ["이 길은 로완 님의 허락 없이는 지나갈 수 없습니다."];
     },
   },
 
@@ -281,11 +370,26 @@ export const NPCS = {
     faceKey: "face_actor3",
     faceIndex: 0,
     getDialogue: (registry) => {
+      const activeQuests = registry.get("activeQuests") || {};
+      const lukeQuest = activeQuests["quest_luke_despair"];
       const defeated = registry.get("defeatedTrainers") || [];
+
       if (defeated.includes("luke")) {
-        return ["너라면 이 숲의 시련을 이겨낼 수 있을 거다. 로완 님을 도와줘."];
+        return [
+          "크윽... 내가 약해서... 숲을 지키지 못했어...",
+          "제발... 촌장의 말에 속지 마. 로완 님은 우리 모두를 위해 싸우고 계신 거야!",
+        ];
       }
-      return ["더 이상은 못 간다! 신전을 보호해야 해!"];
+
+      if (lukeQuest) {
+        return [
+          "멈춰! 촌장에게 속고 있는 거야! 제발 여기서 멈춰!",
+          "세라 누나까지 쓰러뜨리고 오다니... 당신은 대체 무엇을 위해 싸우는 겁니까?",
+          "더 이상 전진하게 둘 순 없어. 내 모든 걸 걸고 막겠다!",
+        ];
+      }
+
+      return ["신전의 봉인을 지키는 것이 나의 사명이다!"];
     },
   },
 
@@ -310,10 +414,7 @@ export const NPCS = {
         ];
       }
 
-      return [
-        "신전에 들어가기 전에 준비를 단단히 해.",
-        "수호자님은 강한 힘으로 무언가를 억누르고 계셔.",
-      ];
+      return ["수호자님은 강한 힘으로 무언가를 억누르고 계셔."];
     },
   },
   trainer_guardian_rowan: {
@@ -349,17 +450,17 @@ export const NPCS = {
       ];
     },
   },
-  
+
   // --- CLIMAX NPCs ---
   boss_hyunseok_climax: {
     id: "boss_hyunseok_climax",
-    name: "타락한 현석",
+    name: "촌장 현석",
     role: "boss_trainer",
     trainerId: "boss_hyunseok",
-    sprite: "people4",
+    sprite: "people2",
     characterIndex: 5, // Custom index for bad guy look
-    faceKey: "face_evil", 
-    faceIndex: 0,
+    faceKey: "face_people2",
+    faceIndex: 5,
     getDialogue: (registry) => {
       return [
         "하하하! 정말 수고했다, {playerName}.",
@@ -367,22 +468,22 @@ export const NPCS = {
         "너 덕분에 신전의 결계가 완벽하게 무너졌어. 이제 고대 고양이들을 내 의지대로 다룰 수 있다!",
         "자, 이제 너는 쓸모가 없어졌구나. 사라져라!",
       ];
-    }
+    },
   },
   boss_hyunseok_defeated: {
     id: "boss_hyunseok_defeated",
-    name: "타락한 현석",
+    name: "촌장 현석",
     role: "lore_npc",
-    sprite: "people4",
+    sprite: "people2",
     characterIndex: 5,
-    faceKey: "face_evil",
-    faceIndex: 0,
+    faceKey: "face_people2",
+    faceIndex: 5,
     getDialogue: (registry) => {
       return [
         "크윽... 이 힘이... 내 통제를 벗어나...?",
         "신전의 봉인이 완전히 풀려버렸어! 전설의 고양이들이...!",
         "안 돼! 내가 지배해야 할 전설들이 흩어지고 있다!",
       ];
-    }
-  }
+    },
+  },
 };

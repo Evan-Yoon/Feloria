@@ -24,4 +24,20 @@ export const ITEMS = {
     price: 0,
     type: "key",
   },
+  mysterious_herb: {
+    id: "mysterious_herb",
+    name: "신비한 약초",
+    description: "숲의 기운이 깃든 약초입니다. 정화 작용을 한다고 합니다.",
+    spriteKey: "icon_19_07",
+    price: 0,
+    type: "quest",
+  },
+  purification_relic: {
+    id: "purification_relic",
+    name: "정화의 유물",
+    description: "촌장 현석이 준 고대의 정화 장치입니다... 어딘가 불길합니다.",
+    spriteKey: "icon_31_15",
+    price: 0,
+    type: "key",
+  },
 };
