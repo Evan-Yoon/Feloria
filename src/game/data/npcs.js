@@ -486,14 +486,4 @@ export const NPCS = {
       ];
     },
   },
-  item_potion: {
-    id: "item_potion",
-    name: "비밀의 포션",
-    role: "item_pickup",
-    sprite: "people2",
-    characterIndex: 0,
-    faceKey: "face_people2",
-    faceIndex: 0,
-    getDialogue: () => ["무언가 반짝이는 물건을 발견했습니다!"],
-  },
 };

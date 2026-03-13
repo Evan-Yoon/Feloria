@@ -389,7 +389,9 @@ export class WorldScene extends Phaser.Scene {
         const npcData = NPCS[npcId];
 
         if (!npcData) {
-          console.warn(`WorldScene: No data for NPC '${npcId}' in createNPCs. Skipping.`);
+          console.warn(
+            `WorldScene: No data for NPC '${npcId}' in createNPCs. Skipping.`,
+          );
           return;
         }
 
@@ -514,7 +516,10 @@ export class WorldScene extends Phaser.Scene {
       try {
         this.indicatorGroup.clear(true, true);
       } catch (e) {
-        console.warn("WorldScene: Failed to clear indicatorGroup, recreating...", e);
+        console.warn(
+          "WorldScene: Failed to clear indicatorGroup, recreating...",
+          e,
+        );
         this.indicatorGroup = this.add.group();
       }
     }
@@ -566,7 +571,7 @@ export class WorldScene extends Phaser.Scene {
     if (
       fs &&
       !fs.completed &&
-      fs.objectives.find((o) => o.id === "return_mira").completed &&
+      fs.objectives.find((o) => o.id === "capture_cat").completed &&
       npcId === "elder_hyunseok"
     )
       return "ready";
@@ -834,6 +839,27 @@ export class WorldScene extends Phaser.Scene {
       }
 
       this.isDialogueActive = true;
+
+      // Automatic Quest Start Logic
+      const activeQuests = this.registry.get("activeQuests") || {};
+      const status = this.getNpcQuestStatus(npcId, activeQuests);
+      if (status === "available") {
+        if (npcId === "shopkeeper")
+          questSystem.startQuest(this.registry, "quest_toby_supply");
+        else if (npcId === "villager1")
+          questSystem.startQuest(this.registry, "quest_lina_lost_cat");
+        else if (npcId === "elder_hyunseok") {
+          const lc = questSystem.getQuest(this.registry, "quest_lina_lost_cat");
+          const ld = questSystem.getQuest(this.registry, "quest_luke_despair");
+          if (lc?.completed)
+            questSystem.startQuest(this.registry, "quest_sera_blockade");
+          else if (ld?.completed)
+            questSystem.startQuest(this.registry, "quest_chiefs_relic");
+        } else if (npcId === "trainer_luke") {
+          questSystem.startQuest(this.registry, "quest_luke_despair");
+        }
+      }
+
       let pages = npcData.getDialogue(this.registry);
 
       // Pre-dialogue objective triggers
@@ -857,6 +883,80 @@ export class WorldScene extends Phaser.Scene {
             "first_steps",
             "return_mira",
           );
+        }
+      } else if (npcId === "shopkeeper") {
+        const quest = questSystem.getQuest(this.registry, "quest_toby_supply");
+        if (quest) {
+          if (!quest.objectives[0].completed) {
+            questSystem.completeObjective(
+              this.registry,
+              "quest_toby_supply",
+              "talk_toby",
+            );
+          } else if (
+            quest.objectives[1].completed &&
+            !quest.objectives[2].completed
+          ) {
+            questSystem.completeObjective(
+              this.registry,
+              "quest_toby_supply",
+              "return_toby",
+            );
+          }
+        }
+      } else if (npcId === "villager1") {
+        const quest = questSystem.getQuest(
+          this.registry,
+          "quest_lina_lost_cat",
+        );
+        if (quest) {
+          if (!quest.objectives[0].completed) {
+            questSystem.completeObjective(
+              this.registry,
+              "quest_lina_lost_cat",
+              "talk_lina",
+            );
+          } else if (
+            quest.objectives[1].completed &&
+            !quest.objectives[2].completed
+          ) {
+            questSystem.completeObjective(
+              this.registry,
+              "quest_lina_lost_cat",
+              "return_lina",
+            );
+          }
+        }
+      } else if (npcId === "elder_hyunseok") {
+        const seraQuest = questSystem.getQuest(
+          this.registry,
+          "quest_sera_blockade",
+        );
+        const relicQuest = questSystem.getQuest(
+          this.registry,
+          "quest_chiefs_relic",
+        );
+
+        if (seraQuest && !seraQuest.completed) {
+          questSystem.completeObjective(
+            this.registry,
+            "quest_sera_blockade",
+            "talk_chief",
+          );
+        } else if (relicQuest && !relicQuest.completed) {
+          if (!relicQuest.objectives[0].completed) {
+            questSystem.completeObjective(
+              this.registry,
+              "quest_chiefs_relic",
+              "report_chief",
+            );
+          } else {
+            questSystem.completeObjective(
+              this.registry,
+              "quest_chiefs_relic",
+              "receive_relic",
+            );
+          }
         }
       }
 

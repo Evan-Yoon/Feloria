@@ -34,10 +34,10 @@ export class CodexScene extends Phaser.Scene {
     // Background
     this.add.rectangle(0, 0, width, height, 0x000000, 0.9).setOrigin(0);
 
-    const mWidth = 1100;
-    const mHeight = 620;
+    const mWidth = 1200;
+    const mHeight = 660;
     this.panelX = width / 2;
-    this.panelY = height / 2 + 30;
+    this.panelY = height / 2 + 15;
 
     // Main Panel Background
     this.panelBg = this.add
@@ -50,7 +50,7 @@ export class CodexScene extends Phaser.Scene {
 
     // Title
     this.add
-      .text(this.panelX, this.panelY - 285, "몬스터 도감", {
+      .text(this.panelX, this.panelY - 305, "몬스터 도감", {
         font: 'bold 36px "Press Start 2P", Courier, monospace',
         fill: "#f1c40f",
         shadow: { offsetX: 2, offsetY: 2, color: "#000", blur: 0, fill: true },
@@ -68,7 +68,7 @@ export class CodexScene extends Phaser.Scene {
       const btn = this.add
         .rectangle(
           this.panelX - 450 + i * 120,
-          this.panelY - 210,
+          this.panelY - 230,
           110,
           40,
           0x2c3e50,
@@ -77,7 +77,7 @@ export class CodexScene extends Phaser.Scene {
         .setStrokeStyle(2, 0x34495e);
 
       const txt = this.add
-        .text(this.panelX - 450 + i * 120, this.panelY - 210, f.text, {
+        .text(this.panelX - 450 + i * 120, this.panelY - 230, f.text, {
           font: "bold 18px Arial",
           fill: "#ffffff",
         })
@@ -103,7 +103,7 @@ export class CodexScene extends Phaser.Scene {
     // Grid Panel (Right)
     this.gridContainer = this.add.container(
       this.panelX + 100,
-      this.panelY - 140,
+      this.panelY - 160,
     );
 
     this.refreshList();
@@ -113,7 +113,7 @@ export class CodexScene extends Phaser.Scene {
     this.add
       .text(
         this.panelX,
-        this.panelY + 285,
+        this.panelY + 305,
         "방향키/마우스 휠: 이동 | ENTER: 상세 정보 | ESC: 종료",
         {
           font: "18px Arial",
@@ -267,7 +267,7 @@ export class CodexScene extends Phaser.Scene {
 
     // Draw Left Panel Background
     const detailBg = this.add
-      .rectangle(0, -10, 350, 480, 0x34495e)
+      .rectangle(0, -10, 350, 540, 0x34495e)
       .setOrigin(0.5);
     detailBg.setStrokeStyle(4, 0x2980b9);
     this.detailContainer.add(detailBg);
