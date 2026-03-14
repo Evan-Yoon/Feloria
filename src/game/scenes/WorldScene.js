@@ -50,9 +50,17 @@ export class WorldScene extends Phaser.Scene {
     console.log(`WorldScene: NPCS keys = ${Object.keys(NPCS).join(", ")}`);
     console.log(`WorldScene: elder_hyunseok data =`, NPCS.elder_hyunseok);
 
+    // 0. Initialize Inputs Early (Prevents 'left' of undefined if create() returns early)
+    this.cursors = this.input.keyboard.createCursorKeys();
+    this.wasd = this.input.keyboard.addKeys("W,A,S,D");
+
     // 1. Load Map
     this.mapData = mapLoader.createMap(this, this.mapId);
-    if (!this.mapData) return;
+    if (!this.mapData) {
+      console.error(`WorldScene: Critical error - mapData failed for ${this.mapId}`);
+      this.scene.start("StartScene"); // Fallback to safe scene
+      return;
+    }
 
     // Quest Check: Enter Forest
     if (this.mapId === "greenpaw_forest") {
@@ -82,9 +90,7 @@ export class WorldScene extends Phaser.Scene {
     // 4.5. Initialize Indicator Group
     this.indicatorGroup = this.add.group();
 
-    // 5. Input Handling
-    this.cursors = this.input.keyboard.createCursorKeys();
-    this.wasd = this.input.keyboard.addKeys("W,A,S,D");
+    // 5. Input Handling (Remaining setup)
 
     // Interaction Key (Space)
     this.input.keyboard.on("keydown-SPACE", () => this.handleInteraction());
@@ -646,7 +652,7 @@ export class WorldScene extends Phaser.Scene {
   }
 
   update(time, delta) {
-    if (this.isMoving || this.isDialogueActive || this.isEncounterTriggered)
+    if (!this.cursors || !this.wasd || this.isMoving || this.isDialogueActive || this.isEncounterTriggered)
       return;
 
     let dx = 0;

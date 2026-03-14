@@ -8,7 +8,7 @@ export const mapLoader = {
    * Note: Assets should ideally be preloaded in PreloadScene.
    */
   preloadMap: (scene, mapId) => {
-    scene.load.json(`${mapId}-data`, `/src/game/data/maps/${mapId}.json`);
+    scene.load.json(`${mapId}-data`, `/assets/maps/${mapId}.json`);
   },
 
   /**
