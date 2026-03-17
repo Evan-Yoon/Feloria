@@ -39,9 +39,12 @@ export class BattleScene extends Phaser.Scene {
     if (this.isTrainer && this.trainerId) {
       const trainerData = TRAINERS[this.trainerId];
       trainerData.party.forEach((member) => {
-        this.enemyParty.push(
-          battleSystem.createInstance(member.creatureId, member.level),
-        );
+        const catInstance = battleSystem.createInstance(member.creatureId, member.level);
+        // Story Mode Balance: Nerf Trainer and Boss cats by 50% HP and Attack
+        catInstance.maxHp = Math.max(1, Math.floor(catInstance.maxHp * 0.5));
+        catInstance.currentHp = catInstance.maxHp;
+        catInstance.stats.attack = Math.max(1, Math.floor(catInstance.stats.attack * 0.5));
+        this.enemyParty.push(catInstance);
       });
       this.enemyCat = this.enemyParty[0];
       console.log(`BattleScene: Trainer ${trainerData.name} wants to battle!`);
