@@ -275,11 +275,11 @@ export class BattleScene extends Phaser.Scene {
 
     // 3. Battle Log (Bottom)
     this.logBg = this.add
-      .rectangle(0, height - 140, width - 280, 140, 0x1a252f)
+      .rectangle(0, height - 205, width - 280, 205, 0x1a252f)
       .setOrigin(0)
       .setStrokeStyle(4, 0x34495e);
     this.logText = this.add
-      .text((width - 280) / 2, height - 70, "", {
+      .text((width - 280) / 2, height - 102.5, "", {
         font: "bold 32px Arial",
         fill: "#ffffff",
         align: "center",
