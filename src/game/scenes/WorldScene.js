@@ -615,7 +615,8 @@ export class WorldScene extends Phaser.Scene {
 
     // 7. Forest Awakening Quest
     // Guardian Rowan battle
-    if (fa && !fa.completed && fa.objectives.find(o => o.id === "enter_ancient_forest").completed && !fa.objectives.find(o => o.id === "defeat_rowan").completed && npcId === "trainer_guardian_rowan") return "ready"; // Rowan battle (!)
+    if (fa && !fa.completed && fa.objectives.find(o => o.id === "enter_ancient_forest").completed && !fa.objectives.find(o => o.id === "defeat_rowan").completed && npcId === "trainer_guardian_rowan") return "ready"; // Rowan battle
+    if (fa && !fa.completed && !fa.objectives.find(o => o.id === "defeat_rowan").completed && npcId === "ellie") return "complete"; // Ellie gives warning/advice (?)
 
     return null;
   }
@@ -748,22 +749,6 @@ export class WorldScene extends Phaser.Scene {
    */
   onMoveComplete() {
     // 0. Check Event Triggers
-    if (this.mapId === "mosslight_shrine") {
-      const activeQuests = this.registry.get("activeQuests") || {};
-      const forestQuest = activeQuests["forest_awakening"];
-      const isQuestActive = forestQuest && !forestQuest.completed;
-
-      // Rowan Battle Trigger: Exactly at Y=5 (the horizontal line)
-      if (
-        this.player.tileY === 5 &&
-        !this.registry.get("boss_rowan_intro") &&
-        isQuestActive
-      ) {
-        this.runMosslightBossIntro();
-        return;
-      }
-    }
-
     if (
       this.mapId === "mosslight_shrine" &&
       !this.registry.get("lost_cat_event_triggered")

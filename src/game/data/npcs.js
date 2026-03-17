@@ -399,7 +399,15 @@ export const NPCS = {
     getDialogue: (registry) => {
       const activeQuests = registry.get("activeQuests") || {};
       const lukeQuest = activeQuests["quest_luke_despair"];
+      const forestQuest = activeQuests["forest_awakening"];
       const defeated = registry.get("defeatedTrainers") || [];
+
+      if (forestQuest && !forestQuest.completed) {
+        return [
+          "로완 스승님은 신전 안에 계셔... 너무 늦지 않았기를...",
+          "조심해, {playerName}.",
+        ];
+      }
 
       if (defeated.includes("luke")) {
         return [

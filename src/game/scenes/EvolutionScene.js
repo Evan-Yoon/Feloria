@@ -21,8 +21,7 @@ export class EvolutionScene extends Phaser.Scene {
     const cx = width / 2;
     const cy = height / 2;
 
-    // Background (Dark)
-    this.add.rectangle(0, 0, width, height, 0x000000, 0.9).setOrigin(0);
+    this.cameras.main.setBackgroundColor('#000000');
 
     // Initial Text
     this.headerText = this.add
@@ -37,16 +36,16 @@ export class EvolutionScene extends Phaser.Scene {
     // Old Sprite
     if (this.oldCreatureId) {
       this.oldSprite = this.add
-        .sprite(cx, cy, this.oldCreatureId.toLowerCase())
+        .sprite(cx, cy, "creature_" + this.oldCreatureId.toLowerCase())
         .setScale(4);
     } else {
-      this.oldSprite = this.add.sprite(cx, cy, "player").setScale(4);
+      this.oldSprite = this.add.sprite(cx, cy, "actor1").setScale(4);
     }
 
     // New Sprite (Hidden initially)
     if (this.newCreatureId) {
       this.newSprite = this.add
-        .sprite(cx, cy, this.newCreatureId.toLowerCase())
+        .sprite(cx, cy, "creature_" + this.newCreatureId.toLowerCase())
         .setScale(4)
         .setAlpha(0);
       this.newSprite.setTintFill(0xffffff); // Start as white silhouette
@@ -181,11 +180,9 @@ export class EvolutionScene extends Phaser.Scene {
 
     this.cameras.main.fadeOut(500, 0, 0, 0);
     this.cameras.main.once("camerafadeoutcomplete", () => {
+      this.scene.stop();
       if (this.onCompleteCallback) {
         this.onCompleteCallback(); // Handled by caller to resume or change scenes
-      } else {
-        // Failsafe exit
-        this.scene.stop();
       }
     });
   }

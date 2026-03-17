@@ -1093,6 +1093,8 @@ export class BattleScene extends Phaser.Scene {
           oldLevel,
           evolutionHappened,
           goldGain,
+          oldStats,
+          oldCreatureId
         );
       });
     }
@@ -1327,27 +1329,11 @@ export class BattleScene extends Phaser.Scene {
       saveSystem.saveData(this.registry, mapId, tx, ty);
 
       const onBattleCompletelyDone = () => {
-        if (this.trainerId === 'guardian_rowan') {
-          this.scene.start('WorldScene', {
-            mapId: this.registry.get('world_mapId'),
-            spawnX: this.registry.get('world_spawnX'),
-            spawnY: this.registry.get('world_spawnY'),
-            triggerClimax: true
-          });
-        } else if (this.trainerId === 'boss_hyunseok') {
-          this.scene.start('WorldScene', {
-            mapId: this.registry.get('world_mapId'),
-            spawnX: this.registry.get('world_spawnX'),
-            spawnY: this.registry.get('world_spawnY'),
-            triggerPostClimax: true
-          });
-        } else {
-          this.scene.start("WorldScene", {
-            mapId: this.registry.get("world_mapId"),
-            spawnX: this.registry.get("world_spawnX"),
-            spawnY: this.registry.get("world_spawnY"),
-          });
-        }
+        this.scene.start("WorldScene", {
+          mapId: this.registry.get("world_mapId"),
+          spawnX: this.registry.get("world_spawnX"),
+          spawnY: this.registry.get("world_spawnY"),
+        });
       };
 
       if (this.evolutionHappened) {
