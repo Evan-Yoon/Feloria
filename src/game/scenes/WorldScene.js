@@ -216,6 +216,36 @@ export class WorldScene extends Phaser.Scene {
       }
     }
 
+    // Auto-complete Defeat Tasks upon returning to Map
+    const defeated = this.registry.get("defeatedTrainers") || [];
+    const activeQuests = this.registry.get("activeQuests") || {};
+
+    // Sera
+    if (defeated.includes("sera") && activeQuests["quest_sera_blockade"]) {
+      questSystem.completeObjective(this.registry, "quest_sera_blockade", "defeat_sera");
+    }
+
+    // Luke
+    if (defeated.includes("luke") && activeQuests["quest_luke_despair"]) {
+      questSystem.completeObjective(this.registry, "quest_luke_despair", "defeat_luke");
+    }
+
+    // Rowan
+    if (defeated.includes("guardian_rowan") && activeQuests["forest_awakening"]) {
+      const isComplete = questSystem.completeObjective(this.registry, "forest_awakening", "defeat_rowan");
+      
+      // If we just completed it now
+      if (isComplete) {
+        // Prompt user
+        setTimeout(() => {
+          this.events.emit("notifyItem", {
+            message: "신전 중심부(최상단)로 이동해 [Spacebar]로 정화의 유물을 조율하세요.",
+            color: 0x3498db,
+          });
+        }, 1000);
+      }
+    }
+
     legendarySystem.applyWorldEffects(this);
   }
 
@@ -1356,37 +1386,6 @@ export class WorldScene extends Phaser.Scene {
 
           this.isTransitioning = true;
           this.triggerTrainerBattle(npcData.trainerId);
-        } else {
-          // Post-battle quest completion
-          if (npcData.trainerId === "guardian_rowan") {
-            questSystem.completeObjective(
-              this.registry,
-              "forest_awakening",
-              "defeat_rowan",
-            );
-
-            // Hide Rowan
-            const rowan = this.npcs.getChildren().find(n => n.npcId === "trainer_guardian_rowan");
-            if (rowan) rowan.destroy();
-
-            // Prompt user
-            this.events.emit("notifyItem", {
-              message: "신전 중심부(최상단)로 이동해 [Spacebar]로 정화의 유물을 조율하세요.",
-              color: 0x3498db,
-            });
-          } else if (npcData.trainerId === "sera") {
-            questSystem.completeObjective(
-              this.registry,
-              "quest_sera_blockade",
-              "defeat_sera",
-            );
-          } else if (npcData.trainerId === "luke") {
-            questSystem.completeObjective(
-              this.registry,
-              "quest_luke_despair",
-              "defeat_luke",
-            );
-          }
         }
         break;
       case "lore_npc":
