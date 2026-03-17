@@ -185,6 +185,15 @@ export class WorldScene extends Phaser.Scene {
         "forest_awakening",
         "enter_ancient_forest",
       );
+      
+      const ld = this.registry.get("activeQuests")?.["quest_luke_despair"];
+      if (ld && !ld.completed) {
+        questSystem.completeObjective(
+          this.registry,
+          "quest_luke_despair",
+          "reach_ancient_forest",
+        );
+      }
     }
 
     legendarySystem.applyWorldEffects(this);
@@ -571,6 +580,7 @@ export class WorldScene extends Phaser.Scene {
     const sb = activeQuests["quest_sera_blockade"];
     const ld = activeQuests["quest_luke_despair"];
     const cr = activeQuests["quest_chiefs_relic"];
+    const fa = activeQuests["forest_awakening"];
 
     if (!fs && npcId === "elder_hyunseok") return "available";
     if (
@@ -600,13 +610,21 @@ export class WorldScene extends Phaser.Scene {
       return "ready";
 
     if (!sb && lc?.completed && npcId === "elder_hyunseok") return "available";
+    // Sera battle
     if (sb && !sb.completed && npcId === "trainer_sera") return "ready";
 
     if (!ld && sb?.completed && npcId === "elder_hyunseok") return "available";
-    if (ld && !ld.completed && npcId === "trainer_luke") return "ready";
+    // Luke battle
+    if (ld && !ld.completed && !ld.objectives.find(o => o.id === "defeat_luke").completed && npcId === "trainer_luke") return "ready";
+    // Luke report back
+    if (ld && !ld.completed && ld.objectives.find(o => o.id === "defeat_luke").completed && npcId === "elder_hyunseok") return "ready";
 
-    if (!cr && ld?.completed && npcId === "elder_hyunseok") return "available";
-    if (cr && !cr.completed && npcId === "elder_hyunseok") return "ready";
+    // Chief's relic (start) - after luke report, relic quest is available
+    if (!cr && ld?.completed && npcId === "elder_hyunseok") return "ready"; // Used !cr ? "available"
+    if (cr && !cr.completed && npcId === "elder_hyunseok") return "available";
+    
+    // Guardian Rowan battle
+    if (fa && !fa.completed && fa.objectives.find(o => o.id === "enter_ancient_forest").completed && npcId === "trainer_guardian_rowan") return "ready";
 
     return null;
   }
@@ -827,6 +845,29 @@ export class WorldScene extends Phaser.Scene {
     else if (this.playerDir === "up") targetY--;
     else if (this.playerDir === "down") targetY++;
 
+    // Relic usage check at Shrine Altar
+    if (this.mapId === "mosslight_shrine" && targetY <= 2) {
+      const activeQuests = this.registry.get("activeQuests") || {};
+      const fa = activeQuests["forest_awakening"];
+      if (fa && !fa.completed && fa.objectives.find(o => o.id === "defeat_rowan").completed && !fa.objectives.find(o => o.id === "use_relic").completed) {
+        // Trigger relic usage
+        questSystem.completeObjective(this.registry, "forest_awakening", "use_relic");
+        
+        // Relic Event Feedback
+        this.events.emit("notifyItem", {
+          message: "신전의 중심부에서 정화의 유물을 조율합니다...",
+          color: 0x3498db,
+        });
+
+        // Pause to let the message show then trigger climax
+        setTimeout(() => {
+          this.runClimaxSequence();
+        }, 1500);
+
+        return;
+      }
+    }
+
     // Find NPC Sprite
     const npcSprite = this.npcs
       .getChildren()
@@ -901,6 +942,31 @@ export class WorldScene extends Phaser.Scene {
             "return_mira",
           );
         }
+        
+        // --- Added fixes for elder_hyunseok interactions missing earlier ---
+        const seraQuest = questSystem.getQuest(this.registry, "quest_sera_blockade");
+        const lukeQuest = questSystem.getQuest(this.registry, "quest_luke_despair");
+        const relicQuest = questSystem.getQuest(this.registry, "quest_chiefs_relic");
+
+        if (seraQuest && !seraQuest.completed) {
+          questSystem.completeObjective(
+            this.registry,
+            "quest_sera_blockade",
+            "talk_chief",
+          );
+        } else if (lukeQuest && !lukeQuest.completed && lukeQuest.objectives.find(o => o.id === "defeat_luke").completed) {
+          questSystem.completeObjective(
+            this.registry,
+            "quest_luke_despair",
+            "report_chief"
+          );
+        } else if (relicQuest && !relicQuest.completed) {
+          questSystem.completeObjective(
+            this.registry,
+            "quest_chiefs_relic",
+            "receive_relic",
+          );
+        }
       } else if (npcId === "shopkeeper") {
         const quest = questSystem.getQuest(this.registry, "quest_toby_supply");
         if (quest) {
@@ -946,37 +1012,6 @@ export class WorldScene extends Phaser.Scene {
             );
           }
         }
-      } else if (npcId === "elder_hyunseok") {
-        const seraQuest = questSystem.getQuest(
-          this.registry,
-          "quest_sera_blockade",
-        );
-        const relicQuest = questSystem.getQuest(
-          this.registry,
-          "quest_chiefs_relic",
-        );
-
-        if (seraQuest && !seraQuest.completed) {
-          questSystem.completeObjective(
-            this.registry,
-            "quest_sera_blockade",
-            "talk_chief",
-          );
-        } else if (relicQuest && !relicQuest.completed) {
-          if (!relicQuest.objectives[0].completed) {
-            questSystem.completeObjective(
-              this.registry,
-              "quest_chiefs_relic",
-              "report_chief",
-            );
-          } else {
-            questSystem.completeObjective(
-              this.registry,
-              "quest_chiefs_relic",
-              "receive_relic",
-            );
-          }
-        }
       }
 
       console.log(`WorldScene: Interacting with ${npcSprite.npcId}`, npcData);
@@ -1017,13 +1052,20 @@ export class WorldScene extends Phaser.Scene {
     const activeQuests = this.registry.get("activeQuests") || {};
     const ts = activeQuests["quest_toby_supply"];
     if (ts) {
-      ts.objectives[1].count = (ts.objectives[1].count || 0) + 1;
-      ts.objectives[1].text = `신비한 약초 3개 채집하기 (${ts.objectives[1].count}/3)`;
-      if (ts.objectives[1].count >= 3) {
-        ts.objectives[1].completed = true;
+      if (ts.objectives[1].count < 3) {
+        ts.objectives[1].count = (ts.objectives[1].count || 0) + 1;
+        ts.objectives[1].text = `[그린포우 숲] 신비한 약초 3개 채집하기 (${ts.objectives[1].count}/3)`;
+        this.registry.set("activeQuests", activeQuests);
+        
+        // Complete objective properly to emit events if reached 3
+        if (ts.objectives[1].count >= 3) {
+          questSystem.completeObjective(this.registry, "quest_toby_supply", "collect_herbs");
+        } else {
+          // Just update UI manually if not fully complete
+          const uiScene = this.scene.manager.getScene("UIScene");
+          if (uiScene) uiScene.events.emit("updateQuests");
+        }
       }
-      this.registry.set("activeQuests", activeQuests);
-      this.events.emit("updateQuests");
     }
 
     herbSprite.destroy();
@@ -1164,6 +1206,16 @@ export class WorldScene extends Phaser.Scene {
               "forest_awakening",
               "defeat_rowan",
             );
+            
+            // Hide Rowan
+            const rowan = this.npcs.getChildren().find(n => n.npcId === "trainer_guardian_rowan");
+            if (rowan) rowan.destroy();
+
+            // Prompt user
+            this.events.emit("notifyItem", {
+              message: "신전 중심부(최상단)로 이동해 [Spacebar]로 정화의 유물을 조율하세요.",
+              color: 0x3498db,
+            });
           } else if (npcData.trainerId === "sera") {
             questSystem.completeObjective(
               this.registry,
@@ -1210,24 +1262,14 @@ export class WorldScene extends Phaser.Scene {
           ) {
             this.startQuest("quest_chiefs_relic");
           } else if (q["quest_chiefs_relic"]) {
-            questSystem.completeObjective(
-              this.registry,
-              "quest_chiefs_relic",
-              "report_chief",
-            );
             if (
-              q["quest_chiefs_relic"].objectives[0].completed &&
-              !q["quest_chiefs_relic"].objectives[1].completed
+              q["quest_chiefs_relic"].objectives[0].completed
             ) {
               this.registry.set("playerInventory", {
                 ...this.registry.get("playerInventory"),
                 purification_relic: 1,
               });
-              questSystem.completeObjective(
-                this.registry,
-                "quest_chiefs_relic",
-                "receive_relic",
-              );
+              
               this.events.emit("notifyItem", {
                 message: "정화의 유물을 획득했습니다!",
                 color: 0x3498db,
@@ -1439,7 +1481,9 @@ export class WorldScene extends Phaser.Scene {
       npcData.faceIndex,
     );
 
-    // 3. Trigger Battle
+    // 3. Start Hidden Quest and Trigger Battle
+    this.startQuest("climax_hyunseok_betrayal");
+    
     this.registry.set("is_climax_battle", true);
     this.triggerTrainerBattle("boss_hyunseok");
   }

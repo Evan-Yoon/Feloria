@@ -10,20 +10,20 @@ export const QUEST_DATA = {
     description:
       "첫 번째 동료를 얻고 펠로리아를 탐험하는 기본 방법을 배웁니다.",
     objectives: [
-      { id: "talk_mira", text: "촌장 현석과 대화하기", completed: false },
+      { id: "talk_mira", text: "[스타위스크 마을] 촌장 현석과 대화하기", completed: false },
       {
         id: "choose_starter",
-        text: "스타팅 포켓몬 선택하기",
+        text: "[스타위스크 마을] 스타팅 고양이 선택하기",
         completed: false,
       },
-      { id: "enter_forest", text: "그린포우 숲 입장하기", completed: false },
+      { id: "enter_forest", text: "[그린포우 숲]으로 향하는 입구 지나가기", completed: false },
       {
         id: "trigger_encounter",
-        text: "야생 몬스터와 조우하기",
+        text: "[그린포우 숲] 풀숲에서 야생 몬스터와 조우하기",
         completed: false,
       },
-      { id: "capture_cat", text: "야생 고양이 포획하기", completed: false },
-      { id: "return_mira", text: "촌장 현석에게 돌아가기", completed: false },
+      { id: "capture_cat", text: "[그린포우 숲] 전투에서 야생 고양이 포획하기", completed: false },
+      { id: "return_mira", text: "[스타위스크 마을] 촌장 현석에게 돌아가기", completed: false },
     ],
     completed: false,
   },
@@ -33,15 +33,15 @@ export const QUEST_DATA = {
     description:
       "상인 토비는 숲의 마력이 오염되고 있다고 걱정합니다. 신비한 약초를 구해다 주세요.",
     objectives: [
-      { id: "talk_toby", text: "상인 토비와 대화하기", completed: false },
+      { id: "talk_toby", text: "[스타위스크 마을] 상인 토비와 대화하기", completed: false },
       {
         id: "collect_herbs",
-        text: "그린포우 숲에서 신비한 약초 3개 채집하기 (0/3)",
+        text: "[그린포우 숲] 신비한 약초 3개 채집하기 (0/3)",
         completed: false,
         count: 0,
         max: 3,
       },
-      { id: "return_toby", text: "토비에게 약초 전달하기", completed: false },
+      { id: "return_toby", text: "[스타위스크 마을] 토비에게 약초 전달하기", completed: false },
     ],
     completed: false,
   },
@@ -50,15 +50,15 @@ export const QUEST_DATA = {
     title: "리나의 잃어버린 고양이",
     description: "숲의 포효에 놀라 도망친 리나의 고양이를 찾아야 합니다.",
     objectives: [
-      { id: "talk_lina", text: "주민 리나와 대화하기", completed: false },
+      { id: "talk_lina", text: "[스타위스크 마을] 주민 리나와 대화하기", completed: false },
       {
         id: "find_cat",
-        text: "모스라이트 제단 근처에서 고양이 찾기",
+        text: "[모스라이트 신전] 근처에서 방황하는 고양이 찾기",
         completed: false,
       },
       {
         id: "return_lina",
-        text: "리나에게 고양이 소식 알리기",
+        text: "[스타위스크 마을] 리나에게 고양이 소식 알리기",
         completed: false,
       },
     ],
@@ -69,10 +69,10 @@ export const QUEST_DATA = {
     title: "세라의 경고",
     description: "촌장님의 지시로 모스라이트 길의 동태를 살핍니다.",
     objectives: [
-      { id: "talk_chief", text: "촌장과 대화하기", completed: false },
+      { id: "talk_chief", text: "[스타위스크 마을] 촌장과 대화하기", completed: false },
       {
         id: "defeat_sera",
-        text: "모스라이트 길에서 수호자의 제자 세라 처치하기",
+        text: "[모스라이트 길] 수호자의 제자 세라 처치하기",
         completed: false,
       },
     ],
@@ -85,13 +85,18 @@ export const QUEST_DATA = {
     objectives: [
       {
         id: "reach_ancient_forest",
-        text: "고대 숲 입구로 이동하기",
+        text: "[고대 숲 입구] 모스라이트 길을 따라 이동하기",
         completed: false,
       },
       {
         id: "defeat_luke",
-        text: "수호자 견습 루크 처치하기",
+        text: "[고대 숲 입구] 수호자 견습 루크 쓰러트리기",
         completed: false,
+      },
+      { 
+        id: "report_chief", 
+        text: "[스타위스크 마을] 귀환하여 촌장 현석에게 보고하기", 
+        completed: false 
       },
     ],
     completed: false,
@@ -101,8 +106,7 @@ export const QUEST_DATA = {
     title: "거짓된 정화 장치",
     description: "신전을 정화하기 위해 촌장님으로부터 특별한 유물을 받습니다.",
     objectives: [
-      { id: "report_chief", text: "촌장에게 상황 보고하기", completed: false },
-      { id: "receive_relic", text: "정화의 유물 획득하기", completed: false },
+      { id: "receive_relic", text: "[스타위스크 마을] 촌장 현석에게 정화의 유물 획득하기", completed: false },
     ],
     completed: false,
   },
@@ -111,13 +115,23 @@ export const QUEST_DATA = {
     title: "숲의 각성",
     description: "깊은 숲 속에서 고대의 그림자가 요동칩니다. 신전을 찾으세요.",
     objectives: [
-      { id: "explore_path", text: "모스라이트 길 탐험하기", completed: false },
+      { id: "explore_path", text: "[모스라이트 길] 깊은 곳으로 탐험하기", completed: false },
       {
         id: "enter_ancient_forest",
-        text: "고대 숲 입장하기",
+        text: "[고대 숲] 내부로 진입하기",
         completed: false,
       },
-      { id: "defeat_rowan", text: "수호자 로완 처치하기", completed: false },
+      { id: "defeat_rowan", text: "[모스라이트 신전] 수호자 로완 쓰러트리기", completed: false },
+      { id: "use_relic", text: "[모스라이트 신전] 중심부 제단(최상단)에서 정화의 유물 조율하기 (Spacebar)", completed: false },
+    ],
+    completed: false,
+  },
+  climax_hyunseok_betrayal: {
+    id: "climax_hyunseok_betrayal",
+    title: "???",
+    description: "믿었던 자의 배신. 살아남기 위해선 싸워야 합니다.",
+    objectives: [
+      { id: "defeat_hyunseok", text: "촌장 현석 쓰러트리기", completed: false },
     ],
     completed: false,
   },
