@@ -161,7 +161,7 @@ export class BattleScene extends Phaser.Scene {
               this.enemyUI.setVisible(true);
               this.logBg.setVisible(true);
               this.logText.setVisible(true);
-              
+
               if (this.isTrainer) {
                 this.trainerNameText.setVisible(true);
               }
@@ -288,14 +288,14 @@ export class BattleScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     // 4. Action Menu (Right Side)
-    this.menuUI = this.add.container(width - 280, height - 140);
+    this.menuUI = this.add.container(width - 280, height - 205);
     this.menuBg = this.add
-      .rectangle(0, 0, 280, 140, 0x2c3e50)
+      .rectangle(0, 0, 280, 205, 0x2c3e50)
       .setOrigin(0)
       .setStrokeStyle(4, 0x34495e);
     this.menuUI.add(this.menuBg);
 
-    const menuItems = ["공격", "스킬", "포획", "도망"];
+    const menuItems = ["공격", "스킬", "포획", "교체", "아이템", "도망"];
     this.menuButtons = [];
 
     menuItems.forEach((text, i) => {
@@ -327,8 +327,8 @@ export class BattleScene extends Phaser.Scene {
     });
 
     // 5. Skill Submenu (Hidden initially)
-    this.skillMenuUI = this.add.container(width - 280, height - 140);
-    this.skillMenuBg = this.add.rectangle(0, 0, 280, 140, 0x2c3e50).setOrigin(0).setStrokeStyle(4, 0x34495e);
+    this.skillMenuUI = this.add.container(width - 280, height - 205);
+    this.skillMenuBg = this.add.rectangle(0, 0, 280, 205, 0x2c3e50).setOrigin(0).setStrokeStyle(4, 0x34495e);
     this.skillMenuUI.add(this.skillMenuBg);
     this.skillButtons = [];
 
@@ -412,16 +412,235 @@ export class BattleScene extends Phaser.Scene {
       case "포획":
         this.playerCapture();
         break;
+      case "교체":
+        this.showSwapMenu();
+        break;
+      case "아이템":
+        this.showItemMenu();
+        break;
       case "도망":
         this.playerRun();
         break;
     }
   }
 
+  showSwapMenu() {
+    this.canInput = true;
+
+    if (this.swapMenuUI) {
+      this.swapMenuUI.destroy();
+    }
+
+    const { width, height } = this.cameras.main;
+    this.swapMenuUI = this.add.container(width - 280, height - 205);
+
+    const aliveCats = this.playerParty.filter(cat => cat.currentHp > 0 && cat.instanceId !== this.playerCat.instanceId);
+
+    const menuHeight = 10 + (Math.ceil((aliveCats.length + 1) / 2) * 65);
+    const bgHeight = Math.max(205, menuHeight);
+
+    const swapBg = this.add.rectangle(0, 0, 280, bgHeight, 0x2c3e50).setOrigin(0).setStrokeStyle(4, 0x34495e);
+    this.swapMenuUI.add(swapBg);
+
+    const swapList = [...aliveCats, { name: "뒤로", id: "back" }];
+
+    swapList.forEach((catItem, i) => {
+      const col = i % 2;
+      const row = Math.floor(i / 2);
+
+      const btnBg = this.add
+        .rectangle(10 + col * 135, 10 + row * 65, 125, 55, 0x34495e)
+        .setOrigin(0)
+        .setInteractive({ useHandCursor: true });
+      const btnText = this.add
+        .text(10 + col * 135 + 62.5, 10 + row * 65 + 27.5,
+          catItem.id === "back" ? "뒤로" : `${catItem.name}\nHP ${catItem.currentHp}`,
+          {
+            font: "bold 14px Arial",
+            fill: "#ffffff",
+            align: 'center',
+            wordWrap: { width: 110 }
+          })
+        .setOrigin(0.5);
+
+      if (catItem.id === "back") {
+        btnBg.on("pointerdown", () => {
+          this.swapMenuUI.setVisible(false);
+          this.menuUI.setVisible(true);
+          import('../systems/audioManager.js').then(module => {
+            module.audioManager.playSE('se_cancel');
+          });
+        });
+      } else {
+        btnBg.on("pointerdown", () => {
+          this.swapMenuUI.setVisible(false);
+          this.swapActiveCat(catItem, false);
+        });
+      }
+
+      btnBg.on("pointerover", () => {
+        btnBg.setFillStyle(0xe74c3c);
+        import('../systems/audioManager.js').then(module => {
+          module.audioManager.playSE('se_cursor');
+        });
+      });
+      btnBg.on("pointerout", () => btnBg.setFillStyle(0x34495e));
+
+      this.swapMenuUI.add([btnBg, btnText]);
+    });
+  }
+
+  showItemMenu() {
+    this.canInput = true;
+
+    if (this.itemMenuUI) {
+      this.itemMenuUI.destroy();
+    }
+
+    const { width, height } = this.cameras.main;
+    this.itemMenuUI = this.add.container(width - 280, height - 205);
+
+    const inventory = this.registry.get("playerInventory") || {};
+    // Extract healing items dynamically if we import items.js, but let's hardcode potion check for now since we only have one
+    const healItemsList = [];
+    if (inventory["potion"] > 0) {
+      healItemsList.push({ id: "potion", name: `포션 (x${inventory["potion"]})`, amount: 20 });
+    }
+
+    const menuHeight = 10 + (Math.ceil((healItemsList.length + 1) / 2) * 65);
+    const bgHeight = Math.max(205, menuHeight);
+
+    const itemBg = this.add.rectangle(0, 0, 280, bgHeight, 0x2c3e50).setOrigin(0).setStrokeStyle(4, 0x34495e);
+    this.itemMenuUI.add(itemBg);
+
+    const itemList = [...healItemsList, { name: "뒤로", id: "back" }];
+
+    itemList.forEach((itemObj, i) => {
+      const col = i % 2;
+      const row = Math.floor(i / 2);
+
+      const btnBg = this.add
+        .rectangle(10 + col * 135, 10 + row * 65, 125, 55, 0x34495e)
+        .setOrigin(0)
+        .setInteractive({ useHandCursor: true });
+      const btnText = this.add
+        .text(10 + col * 135 + 62.5, 10 + row * 65 + 27.5, itemObj.name, {
+          font: "bold 14px Arial",
+          fill: "#ffffff",
+          align: 'center',
+          wordWrap: { width: 110 }
+        })
+        .setOrigin(0.5);
+
+      if (itemObj.id === "back") {
+        btnBg.on("pointerdown", () => {
+          this.itemMenuUI.setVisible(false);
+          this.menuUI.setVisible(true);
+          import('../systems/audioManager.js').then(module => {
+            module.audioManager.playSE('se_cancel');
+          });
+        });
+      } else {
+        btnBg.on("pointerdown", () => {
+          this.itemMenuUI.setVisible(false);
+          this.playerItemUse(itemObj.id, itemObj.amount);
+        });
+      }
+
+      btnBg.on("pointerover", () => {
+        btnBg.setFillStyle(0xe74c3c);
+        import('../systems/audioManager.js').then(module => {
+          module.audioManager.playSE('se_cursor');
+        });
+      });
+      btnBg.on("pointerout", () => btnBg.setFillStyle(0x34495e));
+
+      this.itemMenuUI.add([btnBg, btnText]);
+    });
+  }
+
+  swapActiveCat(newCat, isAuto) {
+    this.canInput = false;
+
+    if (!isAuto) {
+      this.updateLog(`${koreanUtils.getPostPosition(this.playerCat.name, '을')} 들이고 ${koreanUtils.getPostPosition(newCat.name, '을')} 내보냈다!`);
+    } else {
+      this.updateLog(`${koreanUtils.getPostPosition(newCat.name, '이')} 전투에 나섰다!`);
+    }
+
+    // Play Swap ME
+    import('../systems/audioManager.js').then(module => {
+      module.audioManager.playSE('se_heal'); // Using heal sound as stand-in for swap
+    });
+
+    this.playerCat = newCat;
+
+    // Update UI
+    this.playerSprite.setTexture(this.playerCat.id.toLowerCase());
+    this.playerName.setText(`${this.playerCat.name} Lv. ${this.playerCat.level}`);
+    this.playerHpText.setText(`HP: ${this.playerCat.currentHp}/${this.playerCat.maxHp}`);
+
+    const ratio = this.playerCat.currentHp / this.playerCat.maxHp;
+    this.playerHpBar.width = 260 * ratio;
+
+    // Visual effect
+    this.playerSprite.setAlpha(0);
+    this.tweens.add({
+      targets: this.playerSprite,
+      alpha: 1,
+      duration: 500,
+      ease: 'Power2',
+      onComplete: () => {
+        // Auto swap happens instantly from defeat, no turn pass needed since it was the enemy's turn
+        // Wait, auto swap triggers at the end of enemy turn. So we just let the battle continue.
+        if (isAuto) {
+          this.time.delayedCall(500, () => {
+            this.nextTurn(); // Pass to player
+          });
+        } else {
+          // Manual swap uses player's turn
+          this.time.delayedCall(500, () => {
+            this.nextTurn(); // Pass to enemy
+          });
+        }
+      }
+    });
+  }
+
+  playerItemUse(itemId, healAmount) {
+    this.canInput = false;
+
+    // Deduct from inventory
+    const inventory = this.registry.get("playerInventory") || {};
+    inventory[itemId]--;
+    this.registry.set("playerInventory", inventory);
+
+    this.updateLog(`포션을 사용했다! ${this.playerCat.name}의 체력이 회복되었다.`);
+
+    // Heal the active cat
+    this.playerCat.currentHp = Math.min(this.playerCat.maxHp, this.playerCat.currentHp + healAmount);
+
+    // Update HP bar
+    this.playerHpText.setText(`HP: ${this.playerCat.currentHp}/${this.playerCat.maxHp}`);
+    const ratio = this.playerCat.currentHp / this.playerCat.maxHp;
+    this.playerHpBar.width = 260 * ratio;
+
+    // Play Heal SE and particle effect
+    import('../systems/audioManager.js').then(module => {
+      module.audioManager.playSE('se_heal');
+    });
+
+    skillEffectSystem.playEffect(this, this.playerSprite, "heal", "버프", 1);
+
+    this.time.delayedCall(1500, () => {
+      this.nextTurn();
+    });
+  }
+
   playerAttack() {
     this.canInput = false;
     this.updateLog(`${koreanUtils.getPostPosition(this.playerCat.name, '이')} 할퀴기를 사용했다!`);
-    
+
     const { damage, multiplier } = battleSystem.calculateDamage(
       this.playerCat,
       this.enemyCat,
@@ -452,7 +671,7 @@ export class BattleScene extends Phaser.Scene {
     if (!skill) return;
 
     this.updateLog(`${koreanUtils.getPostPosition(this.playerCat.name, '이')} ${koreanUtils.getPostPosition(skill.name, '을')} 사용했다!`);
-    
+
     const { damage, multiplier } = battleSystem.calculateDamage(
       this.playerCat,
       this.enemyCat,
@@ -533,13 +752,13 @@ export class BattleScene extends Phaser.Scene {
         this.time.delayedCall(2000, () => {
           // Add to collection
           const collection = this.registry.get("playerCollection") || [];
-          
+
           // Reward EXP to all possessed cats
           const expReward = Math.ceil(battleSystem.calculateExp(this.enemyCat) * 1.5);
           collection.forEach(cat => {
             const leveledUp = battleSystem.gainExp(cat, expReward);
             if (leveledUp) {
-                this.updateLog(`${koreanUtils.getPostPosition(cat.name, '의')} 레벨이 올랐다! (Lv.${cat.level})`);
+              this.updateLog(`${koreanUtils.getPostPosition(cat.name, '의')} 레벨이 올랐다! (Lv.${cat.level})`);
             }
           });
           this.updateLog(`포획 보너스! 모든 보유 고양이가 ${expReward} EXP를 획득했습니다.`);
@@ -562,8 +781,8 @@ export class BattleScene extends Phaser.Scene {
               );
             }
           } else {
-             // If already in collection (shouldn't happen for new capture but good to be safe)
-             this.registry.set("playerCollection", collection);
+            // If already in collection (shouldn't happen for new capture but good to be safe)
+            this.registry.set("playerCollection", collection);
           }
 
           // Sync party if any changes happened (gainExp might have modified objects shared by both)
@@ -614,9 +833,9 @@ export class BattleScene extends Phaser.Scene {
       const skill = SKILLS[skillId];
       if (skill) {
         this.updateLog(`${koreanUtils.getPostPosition(this.enemyCat.name, '이')} ${koreanUtils.getPostPosition(skill.name, '을')} 사용했다!`);
-        
+
         const { damage, multiplier } = battleSystem.calculateDamage(this.enemyCat, this.playerCat, skillId);
-        
+
         // Play Skill SE
         import('../systems/audioManager.js').then(module => {
           module.audioManager.playSkillSE(skill.type);
@@ -628,7 +847,7 @@ export class BattleScene extends Phaser.Scene {
           this.displayTypeFeedback(multiplier);
           this.applyDamage(this.playerCat, damage, "player");
           if (this.playerCat.currentHp <= 0) {
-            this.defeat();
+            this.handlePlayerFaint();
           } else {
             this.nextTurn();
           }
@@ -639,7 +858,7 @@ export class BattleScene extends Phaser.Scene {
 
     // Fallback to basic attack
     this.updateLog(`${koreanUtils.getPostPosition(this.enemyCat.name, '이')} 할퀴기를 사용했다!`);
-    
+
     const { damage, multiplier } = battleSystem.calculateDamage(
       this.enemyCat,
       this.playerCat,
@@ -657,7 +876,7 @@ export class BattleScene extends Phaser.Scene {
       this.displayTypeFeedback(multiplier);
       this.applyDamage(this.playerCat, damage, "player");
       if (this.playerCat.currentHp <= 0) {
-        this.defeat();
+        this.handlePlayerFaint();
       } else {
         this.nextTurn();
       }
@@ -677,7 +896,7 @@ export class BattleScene extends Phaser.Scene {
       this.enemyHpText.setText(`HP: ${target.currentHp}/${target.maxHp}`);
       this.enemyHpBar.width = 260 * ratio;
       this.enemySprite.setTint(0xff0000);
-      
+
       // Play Death SE if HP hits 0
       if (target.currentHp <= 0) {
         import('../systems/audioManager.js').then(module => {
@@ -784,7 +1003,7 @@ export class BattleScene extends Phaser.Scene {
         const itemId = trainerData.rewards.item;
         inventory[itemId] = (inventory[itemId] || 0) + 1;
         this.registry.set("playerInventory", inventory);
-        
+
         // Play Item Get ME
         import('../systems/audioManager.js').then(module => {
           module.audioManager.playME('me_item_get', { duckBGM: true });
@@ -915,6 +1134,21 @@ export class BattleScene extends Phaser.Scene {
     });
   }
 
+  handlePlayerFaint() {
+    this.updateLog(`${koreanUtils.getPostPosition(this.playerCat.name, '이')} 쓰러졌다...`);
+
+    const aliveCats = this.playerParty.filter(cat => cat.currentHp > 0);
+
+    if (aliveCats.length > 0) {
+      this.time.delayedCall(1500, () => {
+        this.swapActiveCat(aliveCats[0], true);
+      });
+    } else {
+      // All fainted, trigger full defeat sequence
+      this.defeat();
+    }
+  }
+
   defeat() {
     this.isBattleOver = true;
     this.isDefeated = true;
@@ -923,12 +1157,12 @@ export class BattleScene extends Phaser.Scene {
     this.registry.set("playerParty", this.playerParty);
 
     this.updateLog(`${this.playerCat.name}가 쓰러졌다...`);
-    
+
     // Play Game Over ME
     import('../systems/audioManager.js').then(module => {
       module.audioManager.playME('me_game_over', { duckBGM: true });
     });
-    
+
     this.time.delayedCall(1500, () => {
       this.showSummaryPanel("패배", 0, false, this.playerCat.level, false);
     });

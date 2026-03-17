@@ -159,6 +159,47 @@ export const questSystem = {
       if (quest.objectives.every((o) => o.completed)) {
         quest.completed = true;
         console.log(`Quest Completed: ${quest.title}`);
+        
+        // Dynamic Rewards
+        let completedCount = registry.get("completedQuestsCount") || 0;
+        completedCount++;
+        registry.set("completedQuestsCount", completedCount);
+        
+        const goldReward = 50 + (completedCount * 20);
+        const expReward = 30 + (completedCount * 15);
+        
+        // Grant Gold
+        const currentGold = registry.get("playerGold") || 0;
+        registry.set("playerGold", currentGold + goldReward);
+        
+        // Grant EXP to all cats in collection
+        const collection = registry.get("playerCollection") || [];
+        // Import battleSystem dynamically or just apply math since gainExp needs battleSystem
+        // Avoid circular dependencies, import inline if needed or just add raw exp
+        import('./battleSystem.js').then(module => {
+           const battleSystem = module.battleSystem;
+           collection.forEach((cat) => {
+             battleSystem.gainExp(cat, expReward);
+           });
+           registry.set("playerCollection", collection);
+           
+           // Sync party if any changes happened
+           const playerParty = registry.get("playerParty") || [];
+           registry.set("playerParty", playerParty);
+        });
+
+        const game = registry.parent;
+        if (game && game.scene && typeof game.scene.get === "function") {
+          const uiScene = game.scene.get("UIScene");
+          if (uiScene) {
+            setTimeout(() => {
+              uiScene.events.emit("notifyItem", {
+                message: `퀘스트 보상: ${goldReward} 골드, ${expReward} EXP 획득!`,
+                color: 0xf1c40f
+              });
+            }, 1000);
+          }
+        }
       }
 
       registry.set("activeQuests", activeQuests);
