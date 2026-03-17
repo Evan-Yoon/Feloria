@@ -61,9 +61,25 @@ export const NPCS = {
       }
 
       if (seraQuest && !seraQuest.completed) {
+        // Before defeating Sera
+        if (!seraQuest.objectives.find(o => o.id === "defeat_sera").completed) {
+          return [
+            "세라가 길을 막고 있다니... 로완에게 완전히 세뇌된 모양이구나.",
+            "미안하지만, 그녀를 쓰러뜨려서라도 길을 열어야 한단다. 이건 정당한 방어란다.",
+          ];
+        }
+        // Very brief moment between defeating Sera and completing the quest
         return [
-          "세라가 길을 막고 있다니... 로완에게 완전히 세뇌된 모양이구나.",
-          "미안하지만, 그녀를 쓰러뜨려서라도 길을 열어야 한단다. 이건 정당한 방어란다.",
+          "세라를 무사히 돌파했구나! 네가 무사해서 정말 다행이다.",
+          "이걸로 모스라이트 길은 확보되었어. 수고 많았다, {playerName}."
+        ];
+      }
+
+      // After completing Sera's quest, and currently doing Luke's quest (before defeating Luke)
+      if (lukeQuest && !lukeQuest.completed && !lukeQuest.objectives.find(o => o.id === "defeat_luke").completed) {
+        return [
+          "하지만 아직 쉴 틈이 없단다. 고대 숲 입구를 루크라는 견습 수호자가 굳게 지키고 있다는구나.",
+          "그 아이 역시 로완의 거짓에 속아넘어간 게 분명해... 마음 굳게 먹고 루크마저 돌파해야 한단다!"
         ];
       }
 
@@ -100,7 +116,7 @@ export const NPCS = {
       // Default
       return [
         "피곤해 보이는구나. 이리 오렴.",
-        "내가 네 파티를 아주 '건강하게' 유지해 주마 (웃음).",
+        "내가 네 파티를 아주 건강하게 유지해 주마.",
       ];
     },
   },

@@ -1239,19 +1239,19 @@ export class WorldScene extends Phaser.Scene {
           if (npcData.trainerId === "ellie") {
             const forestQuest = activeQuests["forest_awakening"];
             if (!forestQuest || forestQuest.completed) {
-              this.showDialog(npcData.id);
+              this.startDialogue(npcData.id);
               return;
             }
           } else if (npcData.trainerId === "sera") {
             const seraQuest = activeQuests["quest_sera_blockade"];
             if (!seraQuest || seraQuest.completed || seraQuest.objectives.find(o => o.id === "defeat_sera").completed) {
-              this.showDialog(npcData.id);
+              this.startDialogue(npcData.id);
               return;
             }
           } else if (npcData.trainerId === "luke") {
             const lukeQuest = activeQuests["quest_luke_despair"];
             if (!lukeQuest || lukeQuest.completed || lukeQuest.objectives.find(o => o.id === "defeat_luke").completed) {
-              this.showDialog(npcData.id);
+              this.startDialogue(npcData.id);
               return;
             }
           }
