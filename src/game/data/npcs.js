@@ -146,6 +146,13 @@ export const NPCS = {
     faceKey: "face_people2",
     faceIndex: 1,
     getDialogue: (registry) => {
+      if (registry.get("chapter1_done")) {
+        return [
+          "흥... 지금은 창살 안에 갇힌 신세지만...",
+          "깨어난 고대 고양이들이 펠로리아를 휩쓸 것이다.",
+          "두고 보거라... 내 야망은 결코 여기서 끝나지 않는다!"
+        ];
+      }
       return [
         "큭... 하지만 이미 전설의 고양이들이 깨어났다. 내 계획은 멈출 수 없어!",
       ];

@@ -63,6 +63,25 @@ export class WorldScene extends Phaser.Scene {
       return;
     }
 
+    // 1.5 Render Village Prison
+    if (this.mapId === "starwhisk_village") {
+      const ground = this.mapData.layers.groundLayer;
+      const collision = this.mapData.layers.collisionLayer;
+      const rocks = [
+        { x: 1, y: 15 },
+        { x: 2, y: 15 },
+        { x: 3, y: 15 },
+        { x: 1, y: 16 },
+        { x: 3, y: 16 },
+        { x: 1, y: 17 },
+        { x: 3, y: 17 },
+      ];
+      rocks.forEach((pos) => {
+        if (ground) this.mapData.map.putTileAt(4, pos.x, pos.y, true, ground);
+        if (collision) this.mapData.map.putTileAt(4, pos.x, pos.y, true, collision);
+      });
+    }
+
     // Quest Check: Enter Forest
     if (this.mapId === "greenpaw_forest") {
       questSystem.completeObjective(
@@ -414,6 +433,16 @@ export class WorldScene extends Phaser.Scene {
           return;
         }
 
+        // --- Rowan Visibility Logic ---
+        if (npcId === "trainer_guardian_rowan") {
+          const isRowanDefeated = (
+            this.registry.get("defeatedTrainers") || []
+          ).includes("guardian_rowan");
+          if (isRowanDefeated || this.registry.get("chapter1_done")) {
+            return;
+          }
+        }
+
         // --- Chief Hyunseok Visibility Logic ---
         if (npcId === "elder_hyunseok") {
           const isClimaxStarted = this.registry.get("is_climax_battle") === true;
@@ -421,8 +450,18 @@ export class WorldScene extends Phaser.Scene {
             this.registry.get("defeatedTrainers") || []
           ).includes("guardian_rowan");
 
-          if (isClimaxStarted && !isRowanDefeated && this.mapId === "starwhisk_village") {
-            // He "leaves" for the shrine during the climax battle phase
+          if (this.registry.get("chapter1_done")) {
+            // Force him to spawn in village prison regardless of where the spawn point is normally
+            if (this.mapId !== "starwhisk_village") return;
+          } else if (isRowanDefeated) {
+            if (this.mapId === "mosslight_shrine") {
+              // Spawn him at the altar
+            } else if (this.mapId === "starwhisk_village") {
+              // He left the village
+              return;
+            }
+          } else if (isClimaxStarted && this.mapId === "starwhisk_village") {
+            // He "leaves" for the shrine
             return;
           }
         }
@@ -449,46 +488,43 @@ export class WorldScene extends Phaser.Scene {
             : config.CHARACTER_INDEX || 0;
 
         const frames = this.getCharacterFrames(config.KEY, characterIndex);
-        const startFrame = frames.down[1];
 
         let nx = spawn.x;
         let ny = spawn.y;
+        let finalSpriteKey = config.KEY;
+        let finalCharIdx = characterIndex;
 
-        // Custom positioning for prison scene
-        if (
-          npcId === "elder_hyunseok" &&
-          this.mapId === "starwhisk_village" &&
-          this.registry.get("chapter1_done")
-        ) {
-          nx = 2;
-          ny = 16;
-          // (Prison construction logic remains same)
-          const ground = this.mapData.layers.groundLayer;
-          const collision = this.mapData.layers.collisionLayer;
-          const rocks = [
-            { x: 1, y: 15 },
-            { x: 2, y: 15 },
-            { x: 3, y: 15 },
-            { x: 1, y: 16 },
-            { x: 3, y: 16 },
-            { x: 1, y: 17 },
-            { x: 3, y: 17 },
-          ];
-          rocks.forEach((pos) => {
-            if (ground)
-              this.mapData.map.putTileAt(4, pos.x, pos.y, true, ground);
-            if (collision)
-              this.mapData.map.putTileAt(4, pos.x, pos.y, true, collision);
-          });
+        // Custom positioning for Hyunseok based on story state
+        if (npcId === "elder_hyunseok") {
+          const isRowanDefeated = (
+            this.registry.get("defeatedTrainers") || []
+          ).includes("guardian_rowan");
+
+          if (this.registry.get("chapter1_done")) {
+            // Hyunseok in Prison
+            nx = 2;
+            ny = 16;
+            finalSpriteKey = "people2";
+            finalCharIdx = 0; // matching boss_hyunseok_defeated appearance
+          } else if (isRowanDefeated && this.mapId === "mosslight_shrine") {
+            // Hyunseok at Altar after Rowan is defeated
+            nx = 7;
+            ny = 5;
+            finalSpriteKey = "people4"; // Boss appearance
+            finalCharIdx = 37; // actor sheet index for boss hyunseok
+          }
         }
+
+        const npcFrames = this.getCharacterFrames(finalSpriteKey, finalCharIdx);
+        const startFrame = npcFrames.down[1];
 
         const npc = this.add.sprite(
           nx * 32 + 16,
           (ny + 1) * 32,
-          config.KEY,
+          finalSpriteKey,
           startFrame,
         );
-        npc.animFrames = frames;
+        npc.animFrames = npcFrames;
         npc.setOrigin(0.5, 1);
         npc.npcId = spawn.id;
         npc.tileX = nx;
@@ -573,6 +609,33 @@ export class WorldScene extends Phaser.Scene {
         this.indicatorGroup.add(indicator);
       }
     });
+
+    // Custom indicator for relic placement at the Altar
+    if (this.mapId === "mosslight_shrine") {
+      const fa = activeQuests["forest_awakening"];
+      if (fa && !fa.completed && fa.objectives.find(o => o.id === "defeat_rowan").completed && !fa.objectives.find(o => o.id === "use_relic").completed) {
+        const indicator = this.add
+          .text(7 * 32 + 16, 2 * 32 + 16 - 20, "?", {
+            font: "bold 24px Arial",
+            fill: "#f1c40f",
+            stroke: "#000",
+            strokeThickness: 4,
+          })
+          .setOrigin(0.5)
+          .setDepth(20);
+
+        this.tweens.add({
+          targets: indicator,
+          y: indicator.y - 10,
+          duration: 600,
+          yoyo: true,
+          repeat: -1,
+          ease: "Sine.easeInOut",
+        });
+
+        this.indicatorGroup.add(indicator);
+      }
+    }
   }
 
   getNpcQuestStatus(npcId, activeQuests) {
@@ -845,9 +908,32 @@ export class WorldScene extends Phaser.Scene {
     }
 
     // Find NPC Sprite
-    const npcSprite = this.npcs
+    let npcSprite = this.npcs
       .getChildren()
       .find((n) => n.tileX === targetX && n.tileY === targetY);
+
+    // Custom check for prison bars interaction (interact across rock)
+    if (!npcSprite && this.mapId === "starwhisk_village") {
+      let farX = targetX;
+      let farY = targetY;
+      if (this.playerDir === "left") farX--;
+      else if (this.playerDir === "right") farX++;
+      else if (this.playerDir === "up") farY--;
+      else if (this.playerDir === "down") farY++;
+
+      const farNpc = this.npcs
+        .getChildren()
+        .find(
+          (n) =>
+            n.tileX === farX &&
+            n.tileY === farY &&
+            (n.npcId === "elder_hyunseok" || n.npcId === "mira")
+        );
+
+      if (farNpc) {
+        npcSprite = farNpc;
+      }
+    }
 
     if (npcSprite) {
       if (npcSprite.isHerb) {
@@ -1588,7 +1674,38 @@ export class WorldScene extends Phaser.Scene {
     });
 
     await cutsceneSystem.shakeCamera(this, 3000, 0.05);
+
+    // --- Scatter Effect ---
+    const altarPxX = 7 * 32 + 16;
+    const altarPxY = 2 * 32 + 16;
+    const legendaries = [
+      "creature_verdantlynx",
+      "creature_embermane",
+      "creature_floodlynx",
+      "creature_voidlynx"
+    ];
+
+    legendaries.forEach((key, index) => {
+      const sprite = this.add.sprite(altarPxX, altarPxY, key);
+      sprite.setDepth(20);
+      sprite.setTintFill(0x000000); // Black silhouette effect
+
+      const angle = (Math.PI * 2 * index) / legendaries.length;
+      const dist = 600;
+
+      this.tweens.add({
+        targets: sprite,
+        x: altarPxX + Math.cos(angle) * dist,
+        y: altarPxY + Math.sin(angle) * dist,
+        alpha: 0,
+        duration: 1500,
+        ease: 'Cubic.easeOut',
+        onComplete: () => sprite.destroy()
+      });
+    });
+
     this.cameras.main.flash(1000, 255, 255, 255);
+    // -----------------------
 
     this.updateLogText("전설의 고양이들이 대륙 곳곳으로 흩어졌습니다...");
 
@@ -1600,6 +1717,26 @@ export class WorldScene extends Phaser.Scene {
       this.registry.set("chapter1_done", true);
       this.registry.set("is_climax_battle", false);
 
+      // Complete the Climax Quest
+      questSystem.completeObjective(
+        this.registry,
+        "climax_hyunseok_betrayal",
+        "defeat_hyunseok"
+      );
+
+      // Stop Quake BGS
+      import("../systems/audioManager.js").then((module) => {
+        module.audioManager.stopBGS();
+      });
+
+      // Chapter 1 End Message
+      setTimeout(() => {
+        this.events.emit("notifyItem", {
+          message: "=== 챕터 1 완료! ===\n대륙 곳곳으로 흩어진 전설의 고양이들을 찾아 다음 챕터를 준비하세요!",
+          color: 0xf39c12
+        });
+      }, 1000);
+
       // Stop Quake BGS
       import("../systems/audioManager.js").then((module) => {
         module.audioManager.stopBGS();
@@ -1608,8 +1745,8 @@ export class WorldScene extends Phaser.Scene {
       // Return to village prison
       this.scene.start("WorldScene", {
         mapId: "starwhisk_village",
-        spawnX: 2,
-        spawnY: 17,
+        spawnX: 4,
+        spawnY: 16,
       });
     });
   }
