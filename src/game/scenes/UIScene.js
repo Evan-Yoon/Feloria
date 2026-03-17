@@ -105,18 +105,38 @@ export class UIScene extends Phaser.Scene {
     const { width } = this.cameras.main;
     this.questTracker = this.add.container(width - 20, 20);
 
+    // Initialize toggle state in registry if not present
+    if (this.registry.get("isQuestOpen") === undefined) {
+      this.registry.set("isQuestOpen", true);
+    }
+
     // 1. Stylish Glassmorphism Background (Graphics instead of Rectangle)
     this.questTrackerBg = this.add.graphics();
 
+    // Toggle Button (Interactive)
+    this.questToggleBtn = this.add
+      .text(-5, 15, "▼", {
+        fontFamily: "Arial",
+        fontSize: "18px",
+        color: "#ffffff",
+      })
+      .setOrigin(1, 0)
+      .setInteractive({ useHandCursor: true })
+      .on("pointerdown", () => {
+        const currentState = this.registry.get("isQuestOpen");
+        this.registry.set("isQuestOpen", !currentState);
+        this.updateQuestTracker();
+      });
+
     // 2. Quest Title
     this.questTitleText = this.add
-      .text(-15, 15, "퀘스트", {
+      .text(-35, 15, "퀘스트", {
         fontFamily: "Arial",
         fontSize: "20px",
         fontWeight: "bold",
         color: "#f1c40f",
         align: "right",
-        wordWrap: { width: 230 },
+        wordWrap: { width: 330, useAdvancedWrap: true },
       })
       .setOrigin(1, 0);
 
@@ -128,12 +148,13 @@ export class UIScene extends Phaser.Scene {
         color: "#ffffff",
         align: "right",
         lineSpacing: 10,
-        wordWrap: { width: 230 },
+        wordWrap: { width: 330, useAdvancedWrap: true },
       })
       .setOrigin(1, 0);
 
     this.questTracker.add([
       this.questTrackerBg,
+      this.questToggleBtn,
       this.questTitleText,
       this.questObjectivesText,
     ]);
@@ -222,10 +243,14 @@ export class UIScene extends Phaser.Scene {
 
   updateQuestTracker() {
     const activeQuests = this.registry.get("activeQuests") || {};
+    const isOpen = this.registry.get("isQuestOpen");
 
     const firstQuest = Object.values(activeQuests).find(
       (q) => q && !q.completed,
     );
+
+    // Update toggle button text based on state
+    this.questToggleBtn.setText(isOpen ? "▼" : "◀");
 
     if (!firstQuest) {
       this.questTitleText.setText("퀘스트 완료!");
@@ -242,12 +267,19 @@ export class UIScene extends Phaser.Scene {
       this.questObjectivesText.setText(objectives);
     }
 
+    // Toggle visibility of objectives
+    this.questObjectivesText.setVisible(isOpen);
+
     // Dynamic Background Redraw
     const padding = 20;
-    const trackerWidth = 260;
-    const textHeight =
-      this.questObjectivesText.y + this.questObjectivesText.height + padding;
-    const trackerHeight = Math.max(100, textHeight);
+    const trackerWidth = 360;
+
+    // Calculate box height dynamically based on toggle state
+    let trackerHeight = 48; // Base height for title only
+    if (isOpen) {
+      const textHeight = this.questObjectivesText.y + this.questObjectivesText.height + padding;
+      trackerHeight = Math.max(100, textHeight);
+    }
 
     this.questTrackerBg.clear();
     // Glassmorphism effect: Semi-transparent dark blue with a border
