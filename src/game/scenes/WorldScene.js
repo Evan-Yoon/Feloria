@@ -582,51 +582,38 @@ export class WorldScene extends Phaser.Scene {
     const cr = activeQuests["quest_chiefs_relic"];
     const fa = activeQuests["forest_awakening"];
 
-    if (!fs && npcId === "elder_hyunseok") return "available";
-    if (
-      fs &&
-      !fs.completed &&
-      fs.objectives.find((o) => o.id === "capture_cat").completed &&
-      npcId === "elder_hyunseok"
-    )
-      return "ready";
+    // 1. First Steps Quest (Chief Hyunseok)
+    if (!fs && npcId === "elder_hyunseok") return "available"; // Give quest 'first_steps' (!)
+    if (fs && !fs.completed && fs.objectives.find((o) => o.id === "capture_cat").completed && npcId === "elder_hyunseok") return "ready"; // Report back (?)
 
-    if (!ts && fs?.completed && npcId === "shopkeeper") return "available";
-    if (
-      ts &&
-      !ts.completed &&
-      ts.objectives[1].completed &&
-      npcId === "shopkeeper"
-    )
-      return "ready";
+    // 2. Toby Supply Quest (Shopkeeper)
+    if (!ts && fs && fs.completed && npcId === "shopkeeper") return "available"; // Give quest 'quest_toby_supply' (!)
+    if (ts && !ts.completed && ts.objectives[1].completed && npcId === "shopkeeper") return "ready"; // Turn in herbs (?)
 
-    if (!lc && ts?.completed && npcId === "villager1") return "available";
-    if (
-      lc &&
-      !lc.completed &&
-      lc.objectives[1].completed &&
-      npcId === "villager1"
-    )
-      return "ready";
+    // 3. Lina Lost Cat Quest (Villager1)
+    if (!lc && ts && ts.completed && npcId === "villager1") return "available"; // Give quest 'quest_lina_lost_cat' (!)
+    if (lc && !lc.completed && lc.objectives[1].completed && npcId === "villager1") return "ready"; // Return Mira (?)
 
-    if (!sb && lc?.completed && npcId === "elder_hyunseok") return "available";
-    // Sera battle
-    if (sb && !sb.completed && !sb.objectives.find(o => o.id === "defeat_sera").completed && npcId === "trainer_sera") return "ready";
-    // Sera report back
-    if (sb && !sb.completed && sb.objectives.find(o => o.id === "defeat_sera").completed && npcId === "elder_hyunseok") return "ready";
+    // 4. Sera Blockade Quest (Chief -> Sera -> Chief)
+    if (!sb && lc && lc.completed && npcId === "elder_hyunseok") return "available"; // Give quest 'quest_sera_blockade' (!)
+    if (sb && !sb.completed && !sb.objectives.find(o => o.id === "defeat_sera").completed && npcId === "trainer_sera") return "ready"; // Sera battle (ready symbol indicates important interaction)
+    if (sb && !sb.completed && sb.objectives.find(o => o.id === "defeat_sera").completed && !sb.objectives.find(o => o.id === "report_chief").completed && npcId === "elder_hyunseok") return "ready"; // Report defeated Sera (?)
 
-    if (!ld && sb?.completed && npcId === "elder_hyunseok") return "available";
-    // Luke battle
-    if (ld && !ld.completed && !ld.objectives.find(o => o.id === "defeat_luke").completed && npcId === "trainer_luke") return "ready";
-    // Luke report back
-    if (ld && !ld.completed && ld.objectives.find(o => o.id === "defeat_luke").completed && npcId === "elder_hyunseok") return "ready";
+    // 5. Luke Despair Quest (Chief -> Luke -> Chief)
+    if (!ld && sb && sb.completed && npcId === "elder_hyunseok") return "available"; // Give quest 'quest_luke_despair' (!)
+    if (ld && !ld.completed && !ld.objectives.find(o => o.id === "defeat_luke").completed && npcId === "trainer_luke") return "ready"; // Luke battle (ready symbol indicates important interaction)
+    if (ld && !ld.completed && ld.objectives.find(o => o.id === "defeat_luke").completed && !ld.objectives.find(o => o.id === "report_chief").completed && npcId === "elder_hyunseok") return "ready"; // Report defeated Luke (?)
 
-    // Chief's relic (start) - after luke report, relic quest is available
-    if (!cr && ld?.completed && npcId === "elder_hyunseok") return "ready"; // Used !cr ? "available"
-    if (cr && !cr.completed && npcId === "elder_hyunseok") return "available";
+    // 6. Chief's Relic Quest (Chief)
+    // After returning from defeating Luke, Chief gives the relic automatically.
+    // However, if we split the interaction, first we report Luke (above), then Chief gives relic quest.
+    if (!cr && ld && ld.completed && npcId === "elder_hyunseok") return "available"; // Give quest 'quest_chiefs_relic' (!)
+    if (cr && !cr.completed && cr.objectives[0].completed && npcId === "elder_hyunseok") return "ready"; // Turn in relic -> wait, it completes immediately during talk usually but if not, logic fallback
+    if (cr && !cr.completed && !cr.objectives[0].completed && npcId === "elder_hyunseok") return "ready"; // Interaction to receive relic (?)
     
+    // 7. Forest Awakening Quest
     // Guardian Rowan battle
-    if (fa && !fa.completed && fa.objectives.find(o => o.id === "enter_ancient_forest").completed && npcId === "trainer_guardian_rowan") return "ready";
+    if (fa && !fa.completed && fa.objectives.find(o => o.id === "enter_ancient_forest").completed && !fa.objectives.find(o => o.id === "defeat_rowan").completed && npcId === "trainer_guardian_rowan") return "ready"; // Rowan battle (!)
 
     return null;
   }
@@ -1239,19 +1226,52 @@ export class WorldScene extends Phaser.Scene {
           if (npcData.trainerId === "ellie") {
             const forestQuest = activeQuests["forest_awakening"];
             if (!forestQuest || forestQuest.completed) {
-              this.startDialogue(npcData.id);
+              this.scene.launch("DialogScene", {
+                dialogue: {
+                  name: npcData.name,
+                  pages: npcData.getDialogue(this.registry),
+                  faceKey: npcData.faceKey,
+                  faceIndex: npcData.faceIndex || 0,
+                },
+                onComplete: () => {
+                  this.isDialogueActive = false;
+                  this.updateQuestIndicators();
+                },
+              });
               return;
             }
           } else if (npcData.trainerId === "sera") {
             const seraQuest = activeQuests["quest_sera_blockade"];
             if (!seraQuest || seraQuest.completed || seraQuest.objectives.find(o => o.id === "defeat_sera").completed) {
-              this.startDialogue(npcData.id);
+              this.scene.launch("DialogScene", {
+                dialogue: {
+                  name: npcData.name,
+                  pages: npcData.getDialogue(this.registry),
+                  faceKey: npcData.faceKey,
+                  faceIndex: npcData.faceIndex || 0,
+                },
+                onComplete: () => {
+                  this.isDialogueActive = false;
+                  this.updateQuestIndicators();
+                },
+              });
               return;
             }
           } else if (npcData.trainerId === "luke") {
             const lukeQuest = activeQuests["quest_luke_despair"];
             if (!lukeQuest || lukeQuest.completed || lukeQuest.objectives.find(o => o.id === "defeat_luke").completed) {
-              this.startDialogue(npcData.id);
+              this.scene.launch("DialogScene", {
+                dialogue: {
+                  name: npcData.name,
+                  pages: npcData.getDialogue(this.registry),
+                  faceKey: npcData.faceKey,
+                  faceIndex: npcData.faceIndex || 0,
+                },
+                onComplete: () => {
+                  this.isDialogueActive = false;
+                  this.updateQuestIndicators();
+                },
+              });
               return;
             }
           }

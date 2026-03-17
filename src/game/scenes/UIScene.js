@@ -140,23 +140,13 @@ export class UIScene extends Phaser.Scene {
       })
       .setOrigin(1, 0);
 
-    // 3. Quest Objectives
-    this.questObjectivesText = this.add
-      .text(-15, 50, "", {
-        fontFamily: "Arial",
-        fontSize: "16px",
-        color: "#ffffff",
-        align: "right",
-        lineSpacing: 10,
-        wordWrap: { width: 330, useAdvancedWrap: true },
-      })
-      .setOrigin(1, 0);
+    this.questObjectiveTexts = []; // Array to hold individual objective text objects
+    this.questObjectivesStartY = 50; // Starting Y coordinate for objectives
 
     this.questTracker.add([
       this.questTrackerBg,
       this.questToggleBtn,
       this.questTitleText,
-      this.questObjectivesText,
     ]);
     this.updateQuestTracker();
   }
@@ -252,23 +242,60 @@ export class UIScene extends Phaser.Scene {
     // Update toggle button text based on state
     this.questToggleBtn.setText(isOpen ? "▼" : "◀");
 
+    // Clear existing objective texts
+    this.questObjectiveTexts.forEach((t) => t.destroy());
+    this.questObjectiveTexts = [];
+
+    let totalTextHeight = 0;
+
     if (!firstQuest) {
       this.questTitleText.setText("퀘스트 완료!");
       this.questTitleText.setColor("#2ecc71");
-      this.questObjectivesText.setText("모든 주요 퀘스트를 완료했습니다.");
+      
+      const text = this.add
+        .text(-15, this.questObjectivesStartY, "모든 주요 퀘스트를 완료했습니다.", {
+          fontFamily: "Arial",
+          fontSize: "16px",
+          color: "#ffffff",
+          align: "right",
+          wordWrap: { width: 330, useAdvancedWrap: true },
+        })
+        .setOrigin(1, 0)
+        .setVisible(isOpen);
+      
+      this.questTracker.add(text);
+      this.questObjectiveTexts.push(text);
+      totalTextHeight = text.height + 10;
     } else {
       this.questTitleText.setText(`[${firstQuest.title}]`);
       this.questTitleText.setColor("#f1c40f");
 
-      const objectives = (firstQuest.objectives || [])
-        .map((o) => `${o.completed ? "✓" : "○"} ${o.text}`)
-        .join("\n");
+      let currentY = this.questObjectivesStartY;
+      const objectives = firstQuest.objectives || [];
 
-      this.questObjectivesText.setText(objectives);
+      objectives.forEach((o) => {
+        const textContent = `${o.completed ? "✓" : "○"} ${o.text}`;
+        const textColor = o.completed ? "#f1c40f" : "#ffffff";
+
+        const text = this.add
+          .text(-15, currentY, textContent, {
+            fontFamily: "Arial",
+            fontSize: "16px",
+            color: textColor,
+            align: "right",
+            wordWrap: { width: 330, useAdvancedWrap: true },
+          })
+          .setOrigin(1, 0)
+          .setVisible(isOpen);
+
+        this.questTracker.add(text);
+        this.questObjectiveTexts.push(text);
+        
+        // Add height + spacing for next item
+        currentY += text.height + 10;
+      });
+      totalTextHeight = currentY - this.questObjectivesStartY;
     }
-
-    // Toggle visibility of objectives
-    this.questObjectivesText.setVisible(isOpen);
 
     // Dynamic Background Redraw
     const padding = 20;
@@ -277,8 +304,7 @@ export class UIScene extends Phaser.Scene {
     // Calculate box height dynamically based on toggle state
     let trackerHeight = 48; // Base height for title only
     if (isOpen) {
-      const textHeight = this.questObjectivesText.y + this.questObjectivesText.height + padding;
-      trackerHeight = Math.max(100, textHeight);
+      trackerHeight = Math.max(100, this.questObjectivesStartY + totalTextHeight + padding - 10);
     }
 
     this.questTrackerBg.clear();
