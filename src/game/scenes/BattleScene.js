@@ -67,6 +67,14 @@ export class BattleScene extends Phaser.Scene {
         this.enemyCat = battleSystem.createInstance("SNAGPUSS", 2);
         this.enemyParty.push(this.enemyCat);
       }
+      
+      // Story Mode Balance: Nerf Wild cats by 50% HP, Attack, and Defense
+      this.enemyParty.forEach((catInstance) => {
+        catInstance.maxHp = Math.max(1, Math.floor(catInstance.maxHp * 0.5));
+        catInstance.currentHp = catInstance.maxHp;
+        catInstance.stats.attack = Math.max(1, Math.floor(catInstance.stats.attack * 0.5));
+        catInstance.stats.defense = Math.max(1, Math.floor(catInstance.stats.defense * 0.5));
+      });
     }
 
     // 3. Mark Codex and Quests (For active enemy)
