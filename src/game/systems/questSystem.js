@@ -170,8 +170,8 @@ export const questSystem = {
         completedCount++;
         registry.set("completedQuestsCount", completedCount);
 
-        const goldReward = 50 + (completedCount * 20);
-        const expReward = 30 + (completedCount * 15);
+        const goldReward = (100 + (completedCount * 20));
+        const expReward = (150 + (completedCount * 50));
 
         // Grant Gold
         const currentGold = registry.get("playerGold") || 0;
