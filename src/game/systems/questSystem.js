@@ -16,13 +16,13 @@ export const QUEST_DATA = {
         text: "[스타위스크 마을] 스타팅 고양이 선택하기",
         completed: false,
       },
-      { id: "enter_forest", text: "[그린포우 숲]으로 향하는 입구 지나가기", completed: false },
+      { id: "enter_forest", text: "[그린포 숲]으로 향하는 입구 지나가기", completed: false },
       {
         id: "trigger_encounter",
-        text: "[그린포우 숲] 풀숲에서 야생 몬스터와 조우하기",
+        text: "[그린포 숲] 풀숲에서 야생 몬스터와 조우하기",
         completed: false,
       },
-      { id: "capture_cat", text: "[그린포우 숲] 전투에서 야생 고양이 포획하기", completed: false },
+      { id: "capture_cat", text: "[그린포 숲] 전투에서 야생 고양이 포획하기", completed: false },
       { id: "return_mira", text: "[스타위스크 마을] 촌장 현석에게 돌아가기", completed: false },
     ],
     completed: false,
@@ -36,7 +36,7 @@ export const QUEST_DATA = {
       { id: "talk_toby", text: "[스타위스크 마을] 상인 토비와 대화하기", completed: false },
       {
         id: "collect_herbs",
-        text: "[그린포우 숲] 신비한 약초 3개 채집하기 (0/3)",
+        text: "[그린포 숲] 신비한 약초 3개 채집하기 (0/3)",
         completed: false,
         count: 0,
         max: 3,
@@ -75,6 +75,11 @@ export const QUEST_DATA = {
         text: "[모스라이트 길] 수호자의 제자 세라 처치하기",
         completed: false,
       },
+      {
+        id: "report_chief",
+        text: "[스타위스크 마을] 귀환하여 촌장 현석에게 보고하기",
+        completed: false
+      },
     ],
     completed: false,
   },
@@ -93,10 +98,10 @@ export const QUEST_DATA = {
         text: "[고대 숲 입구] 수호자 견습 루크 쓰러트리기",
         completed: false,
       },
-      { 
-        id: "report_chief", 
-        text: "[스타위스크 마을] 귀환하여 촌장 현석에게 보고하기", 
-        completed: false 
+      {
+        id: "report_chief",
+        text: "[스타위스크 마을] 귀환하여 촌장 현석에게 보고하기",
+        completed: false
       },
     ],
     completed: false,
@@ -159,33 +164,33 @@ export const questSystem = {
       if (quest.objectives.every((o) => o.completed)) {
         quest.completed = true;
         console.log(`Quest Completed: ${quest.title}`);
-        
+
         // Dynamic Rewards
         let completedCount = registry.get("completedQuestsCount") || 0;
         completedCount++;
         registry.set("completedQuestsCount", completedCount);
-        
+
         const goldReward = 50 + (completedCount * 20);
         const expReward = 30 + (completedCount * 15);
-        
+
         // Grant Gold
         const currentGold = registry.get("playerGold") || 0;
         registry.set("playerGold", currentGold + goldReward);
-        
+
         // Grant EXP to all cats in collection
         const collection = registry.get("playerCollection") || [];
         // Import battleSystem dynamically or just apply math since gainExp needs battleSystem
         // Avoid circular dependencies, import inline if needed or just add raw exp
         import('./battleSystem.js').then(module => {
-           const battleSystem = module.battleSystem;
-           collection.forEach((cat) => {
-             battleSystem.gainExp(cat, expReward);
-           });
-           registry.set("playerCollection", collection);
-           
-           // Sync party if any changes happened
-           const playerParty = registry.get("playerParty") || [];
-           registry.set("playerParty", playerParty);
+          const battleSystem = module.battleSystem;
+          collection.forEach((cat) => {
+            battleSystem.gainExp(cat, expReward);
+          });
+          registry.set("playerCollection", collection);
+
+          // Sync party if any changes happened
+          const playerParty = registry.get("playerParty") || [];
+          registry.set("playerParty", playerParty);
         });
 
         const game = registry.parent;

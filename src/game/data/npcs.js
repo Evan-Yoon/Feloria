@@ -334,7 +334,7 @@ export const NPCS = {
         ];
       }
 
-      if (seraQuest) {
+      if (seraQuest && !seraQuest.completed && !seraQuest.objectives.find(o => o.id === "defeat_sera").completed) {
         return [
           "더 이상은 안 돼요! 숲의 진실을 모르는 자는 돌아가세요!",
           "당신은 이용당하고 있는 거예요... 하지만 지금은 제 말이 들리지 않겠죠.",
@@ -342,7 +342,10 @@ export const NPCS = {
         ];
       }
 
-      return ["이 길은 로완 님의 허락 없이는 지나갈 수 없습니다."];
+      return [
+        "촌장님은 대체 무슨 생각을 하시는 건지 모르겠어요.",
+        "우린 로완 님을 믿을 뿐이에요...",
+      ];
     },
   },
 
@@ -389,7 +392,7 @@ export const NPCS = {
         ];
       }
 
-      if (lukeQuest) {
+      if (lukeQuest && !lukeQuest.completed && !lukeQuest.objectives.find(o => o.id === "defeat_luke").completed) {
         return [
           "멈춰! 촌장에게 속고 있는 거야! 제발 여기서 멈춰!",
           "세라 누나까지 쓰러뜨리고 오다니... 당신은 대체 무엇을 위해 싸우는 겁니까?",
@@ -397,7 +400,10 @@ export const NPCS = {
         ];
       }
 
-      return ["신전의 봉인을 지키는 것이 나의 사명이다!"];
+      return [
+        "신전의 봉인을 지키는 것이 나의 사명이다!",
+        "로완 님은 우리 모두를 위해 싸우고 계신 거야..."
+      ];
     },
   },
 

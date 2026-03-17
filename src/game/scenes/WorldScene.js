@@ -611,7 +611,9 @@ export class WorldScene extends Phaser.Scene {
 
     if (!sb && lc?.completed && npcId === "elder_hyunseok") return "available";
     // Sera battle
-    if (sb && !sb.completed && npcId === "trainer_sera") return "ready";
+    if (sb && !sb.completed && !sb.objectives.find(o => o.id === "defeat_sera").completed && npcId === "trainer_sera") return "ready";
+    // Sera report back
+    if (sb && !sb.completed && sb.objectives.find(o => o.id === "defeat_sera").completed && npcId === "elder_hyunseok") return "ready";
 
     if (!ld && sb?.completed && npcId === "elder_hyunseok") return "available";
     // Luke battle
@@ -1150,23 +1152,67 @@ export class WorldScene extends Phaser.Scene {
       case "healer_quest":
         this.healParty();
         // Transition Quest logic
-        const firstSteps = questSystem.getQuest(this.registry, "first_steps");
+        const qH = this.registry.get("activeQuests") || {};
+        const firstSteps = qH["first_steps"];
+        const seraBlockade = qH["quest_sera_blockade"];
+        const lukeDespair = qH["quest_luke_despair"];
+        
         if (
           firstSteps &&
           !firstSteps.completed &&
           firstSteps.objectives.find((o) => o.id === "return_mira").completed
         ) {
-          // Chief has sent player to defeat Rowan
           questSystem.completeObjective(
             this.registry,
             "first_steps",
             "return_mira",
-          ); // This will mark firstSteps complete
-          // Start next phase objectives are already in the registry but maybe we should explicitly announce it?
+          );
           this.events.emit("notifyItem", {
             message: "새로운 퀘스트: 숲의 각성",
             color: 0xf1c40f,
           });
+        }
+        
+        // Handle Sera Report Back
+        if (seraBlockade && !seraBlockade.completed && seraBlockade.objectives.find(o => o.id === "defeat_sera").completed) {
+           questSystem.completeObjective(this.registry, "quest_sera_blockade", "report_chief");
+        }
+        
+        // Handle Luke Report Back
+        if (lukeDespair && !lukeDespair.completed && lukeDespair.objectives.find(o => o.id === "defeat_luke").completed) {
+           questSystem.completeObjective(this.registry, "quest_luke_despair", "report_chief");
+        }
+
+        // Also fallback to default quest assignment if possible
+        if (!qH["quest_toby_supply"] && qH["first_steps"]?.completed) {
+          this.startQuest("quest_toby_supply");
+        } else if (
+          qH["quest_toby_supply"]?.completed &&
+          qH["quest_lina_lost_cat"]?.completed &&
+          !qH["quest_sera_blockade"]
+        ) {
+          this.startQuest("quest_sera_blockade");
+        } else if (
+          qH["quest_sera_blockade"]?.completed &&
+          !qH["quest_luke_despair"]
+        ) {
+          this.startQuest("quest_luke_despair");
+        } else if (
+          qH["quest_luke_despair"]?.completed &&
+          !qH["quest_chiefs_relic"]
+        ) {
+          this.startQuest("quest_chiefs_relic");
+        } else if (qH["quest_chiefs_relic"]) {
+          if (qH["quest_chiefs_relic"].objectives[0].completed && !(this.registry.get("playerInventory") || {}).purification_relic) {
+            this.registry.set("playerInventory", {
+              ...this.registry.get("playerInventory"),
+              purification_relic: 1,
+            });
+            this.events.emit("notifyItem", {
+              message: "정화의 유물을 획득했습니다!",
+              color: 0x3498db,
+            });
+          }
         }
         break;
       case "shopkeeper":
@@ -1188,15 +1234,28 @@ export class WorldScene extends Phaser.Scene {
         }
         const defeated = this.registry.get("defeatedTrainers") || [];
         if (!defeated.includes(npcData.trainerId)) {
-          // Ellie only fights during the Rowan quest
+          const activeQuests = this.registry.get("activeQuests") || {};
+          
           if (npcData.trainerId === "ellie") {
-            const activeQuests = this.registry.get("activeQuests") || {};
             const forestQuest = activeQuests["forest_awakening"];
             if (!forestQuest || forestQuest.completed) {
-              console.log("WorldScene: Ellie is peaceful (no quest).");
+              this.showDialog(npcData.id);
+              return;
+            }
+          } else if (npcData.trainerId === "sera") {
+            const seraQuest = activeQuests["quest_sera_blockade"];
+            if (!seraQuest || seraQuest.completed || seraQuest.objectives.find(o => o.id === "defeat_sera").completed) {
+              this.showDialog(npcData.id);
+              return;
+            }
+          } else if (npcData.trainerId === "luke") {
+            const lukeQuest = activeQuests["quest_luke_despair"];
+            if (!lukeQuest || lukeQuest.completed || lukeQuest.objectives.find(o => o.id === "defeat_luke").completed) {
+              this.showDialog(npcData.id);
               return;
             }
           }
+          
           this.triggerTrainerBattle(npcData.trainerId);
         } else {
           // Post-battle quest completion
@@ -1239,8 +1298,7 @@ export class WorldScene extends Phaser.Scene {
             quests["quest_sera_blockade"].completed &&
             !quests["quest_luke_despair"]
           ) {
-            // Automatically move to Luke quest
-            // This is usually handled by talk_chief in sera_blockade or luke quest start
+            // Automatically move to Luke quest handled elsewhere
           }
         }
         break;
@@ -1257,6 +1315,11 @@ export class WorldScene extends Phaser.Scene {
           ) {
             this.startQuest("quest_sera_blockade");
           } else if (
+            q["quest_sera_blockade"]?.completed &&
+            !q["quest_luke_despair"]
+          ) {
+            this.startQuest("quest_luke_despair");
+          } else if (
             q["quest_luke_despair"]?.completed &&
             !q["quest_chiefs_relic"]
           ) {
@@ -1265,15 +1328,17 @@ export class WorldScene extends Phaser.Scene {
             if (
               q["quest_chiefs_relic"].objectives[0].completed
             ) {
-              this.registry.set("playerInventory", {
-                ...this.registry.get("playerInventory"),
-                purification_relic: 1,
-              });
-              
-              this.events.emit("notifyItem", {
-                message: "정화의 유물을 획득했습니다!",
-                color: 0x3498db,
-              });
+              if (!(this.registry.get("playerInventory") || {}).purification_relic) {
+                this.registry.set("playerInventory", {
+                  ...this.registry.get("playerInventory"),
+                  purification_relic: 1,
+                });
+                
+                this.events.emit("notifyItem", {
+                  message: "정화의 유물을 획득했습니다!",
+                  color: 0x3498db,
+                });
+              }
             }
           }
         } else if (npcData.id === "shopkeeper") {
