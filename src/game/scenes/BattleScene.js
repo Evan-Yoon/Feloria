@@ -45,6 +45,15 @@ export class BattleScene extends Phaser.Scene {
         catInstance.currentHp = catInstance.maxHp;
         catInstance.stats.attack = Math.max(1, Math.floor(catInstance.stats.attack * 0.5));
         catInstance.stats.defense = Math.max(1, Math.floor(catInstance.stats.defense * 0.5));
+
+        // Additional 50% nerf specifically for Chief Hyunseok due to his overwhelming level gap
+        if (this.trainerId === "boss_hyunseok") {
+          catInstance.maxHp = Math.max(1, Math.floor(catInstance.maxHp * 0.5));
+          catInstance.currentHp = catInstance.maxHp;
+          catInstance.stats.attack = Math.max(1, Math.floor(catInstance.stats.attack * 0.5));
+          catInstance.stats.defense = Math.max(1, Math.floor(catInstance.stats.defense * 0.5));
+        }
+
         this.enemyParty.push(catInstance);
       });
       this.enemyCat = this.enemyParty[0];
