@@ -770,44 +770,34 @@ export class BattleScene extends Phaser.Scene {
           legendarySystem.markLegendaryCleared(this.registry, this.enemyCat.id);
         }
 
-        this.time.delayedCall(2000, () => {
-          // Add to collection
-          const collection = this.registry.get("playerCollection") || [];
+        // --- SYNCHRONOUS SAVE LOGIC ---
+        const collection = this.registry.get("playerCollection") || [];
+        const expReward = Math.ceil(battleSystem.calculateExp(this.enemyCat) * 1.5);
+        
+        // Reward EXP to all possessed cats
+        collection.forEach(cat => {
+          battleSystem.gainExp(cat, expReward);
+        });
 
-          // Reward EXP to all possessed cats
-          const expReward = Math.ceil(battleSystem.calculateExp(this.enemyCat) * 1.5);
-          collection.forEach(cat => {
-            const leveledUp = battleSystem.gainExp(cat, expReward);
-            if (leveledUp) {
-              this.updateLog(`${koreanUtils.getPostPosition(cat.name, '의')} 레벨이 올랐다! (Lv.${cat.level})`);
-            }
-          });
-          this.updateLog(`포획 보너스! 모든 보유 고양이가 ${expReward} EXP를 획득했습니다.`);
+        // Add to collection
+        if (!collection.find((c) => c.instanceId === this.enemyCat.instanceId)) {
+          collection.push(this.enemyCat);
+          this.registry.set("playerCollection", collection);
 
-          // Double check instanceId isn't duped (should be safe since it's newly created)
-          if (
-            !collection.find((c) => c.instanceId === this.enemyCat.instanceId)
-          ) {
-            collection.push(this.enemyCat);
-            this.registry.set("playerCollection", collection);
-
-            // Auto-add to party if space available (Max 3)
-            if (this.playerParty.length < 3) {
-              this.playerParty.push(this.enemyCat);
-              this.registry.set("playerParty", this.playerParty);
-              console.log(`BattleScene: Added ${this.enemyCat.name} to party.`);
-            } else {
-              console.log(
-                `BattleScene: Party full. ${this.enemyCat.name} sent to collection.`,
-              );
-            }
-          } else {
-            // If already in collection (shouldn't happen for new capture but good to be safe)
-            this.registry.set("playerCollection", collection);
+          // Auto-add to party if space available
+          if (this.playerParty.length < 3) {
+            this.playerParty.push(this.enemyCat);
+            this.registry.set("playerParty", this.playerParty);
           }
+        } else {
+          this.registry.set("playerCollection", collection);
+        }
 
-          // Sync party if any changes happened (gainExp might have modified objects shared by both)
-          this.registry.set("playerParty", this.playerParty);
+        this.registry.set("playerParty", this.playerParty);
+
+        // --- UI DELAY ---
+        this.time.delayedCall(2000, () => {
+          this.updateLog(`포획 보너스! 모든 보유 고양이가 ${expReward} EXP를 획득했습니다.`);
 
           this.showSummaryPanel(
             "포획",
@@ -818,7 +808,7 @@ export class BattleScene extends Phaser.Scene {
             0,
             null,
             null,
-            true // isCaptureSuccess
+            true
           );
         });
       } else {

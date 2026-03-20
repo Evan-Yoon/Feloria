@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import { battleSystem } from "../systems/battleSystem.js";
 import { questSystem } from "../systems/questSystem.js";
 import { codexSystem } from "../systems/codexSystem.js";
+import { CREATURES } from "../data/creatures.js";
 
 /**
  * StarterSelectScene
@@ -35,29 +36,31 @@ export class StarterSelectScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     // Starters pool
-    this.starters = [
-      {
-        id: "leafkit",
-        name: "리프킷",
-        type: "숲",
-        color: "#2ecc71",
-        x: width * 0.25,
-      },
-      {
-        id: "emberpaw",
-        name: "엠버파우",
-        type: "불",
-        color: "#e74c3c",
-        x: width * 0.5,
-      },
-      {
-        id: "misttail",
-        name: "미스트테일",
-        type: "물",
-        color: "#34ace0",
-        x: width * 0.75,
-      },
-    ];
+    const availableStarters = Object.values(CREATURES).filter(c => 
+      c.activeNow && 
+      !Object.values(CREATURES).some(p => p.evolution && p.evolution.target === c.id)
+    );
+
+    // Shuffle array
+    for (let i = availableStarters.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [availableStarters[i], availableStarters[j]] = [availableStarters[j], availableStarters[i]];
+    }
+
+    const selectedStarters = availableStarters.slice(0, 3);
+    const typeColors = {
+      "물": "#34ace0", "불": "#e74c3c", "숲": "#2ecc71", "풀": "#2ecc71",
+      "바위": "#95a5a6", "그림자": "#8e44ad", "얼음": "#00d2d3",
+      "노말": "#bdc3c7", "신비": "#9b59b6"
+    };
+
+    this.starters = selectedStarters.map((cat, index) => ({
+      id: cat.id.toLowerCase(),
+      name: cat.name,
+      type: cat.type,
+      color: typeColors[cat.type] || "#ffffff",
+      x: width * (0.25 * (index + 1)),
+    }));
 
     this.starters.forEach((s) => this.createStarterOption(s));
 

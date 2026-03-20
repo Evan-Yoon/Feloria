@@ -1232,7 +1232,7 @@ export class WorldScene extends Phaser.Scene {
     if (npcSprite.npcId === "eugene" && this.registry.get("chapter1_done")) {
       currentRole = "healer_quest";
     } else if (
-      npcSprite.npcId === "mira" &&
+      (npcSprite.npcId === "mira" || npcSprite.npcId === "elder_hyunseok") &&
       this.registry.get("chapter1_done")
     ) {
       currentRole = "prison";
@@ -1697,7 +1697,7 @@ export class WorldScene extends Phaser.Scene {
         x: altarPxX + Math.cos(angle) * dist,
         y: altarPxY + Math.sin(angle) * dist,
         alpha: 0,
-        duration: 1500,
+        duration: 4500,
         ease: 'Cubic.easeOut',
         onComplete: () => sprite.destroy()
       });
@@ -1708,7 +1708,7 @@ export class WorldScene extends Phaser.Scene {
 
     this.updateLogText("전설의 고양이들이 대륙 곳곳으로 흩어졌습니다...");
 
-    await cutsceneSystem.delay(this, 2000);
+    await cutsceneSystem.delay(this, 4500);
 
     // 5. Final Fade and Set State
     this.cameras.main.fadeOut(2000, 0, 0, 0);
@@ -1728,24 +1728,20 @@ export class WorldScene extends Phaser.Scene {
         module.audioManager.stopBGS();
       });
 
-      // Chapter 1 End Message
-      setTimeout(() => {
-        this.events.emit("notifyItem", {
-          message: "=== 챕터 1 완료! ===\n대륙 곳곳으로 흩어진 전설의 고양이들을 찾아 다음 챕터를 준비하세요!",
-          color: 0xf39c12
-        });
-      }, 1000);
-
-      // Stop Quake BGS
-      import("../systems/audioManager.js").then((module) => {
-        module.audioManager.stopBGS();
+      // Chapter 1 End Message before destroying the scene
+      this.events.emit("notifyItem", {
+        message: "=== 챕터 1 완료! ===\n대륙 곳곳으로 흩어진 전설의 고양이들을 찾아 다음 챕터를 준비하세요!",
+        color: 0xf39c12
       });
 
-      // Return to village prison
-      this.scene.start("WorldScene", {
-        mapId: "starwhisk_village",
-        spawnX: 4,
-        spawnY: 16,
+      // Wait 3 seconds to let the player read the message, then transition
+      this.time.delayedCall(3000, () => {
+        // Return to village prison
+        this.scene.start("WorldScene", {
+          mapId: "starwhisk_village",
+          spawnX: 4,
+          spawnY: 16,
+        });
       });
     });
   }
@@ -1817,6 +1813,26 @@ export class WorldScene extends Phaser.Scene {
 
   healParty() {
     const party = this.registry.get("playerParty") || [];
+    let needsHeal = false;
+    party.forEach((p) => {
+      if (p.currentHp < p.maxHp) needsHeal = true;
+    });
+
+    if (!needsHeal) {
+      let heals = this.registry.get("consecutiveHeals") || 0;
+      heals++;
+      this.registry.set("consecutiveHeals", heals);
+
+      if (heals >= 5) {
+        this.events.emit("notifyItem", { message: "이제 그만 할일 하러가거라", color: 0xe74c3c });
+      } else {
+        this.events.emit("notifyItem", { message: "힐 할 고양이가 없다", color: 0xf1c40f });
+      }
+      return;
+    }
+
+    this.registry.set("consecutiveHeals", 0);
+
     party.forEach((p) => (p.currentHp = p.maxHp));
     this.registry.set("playerParty", party);
 
