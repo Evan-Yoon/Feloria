@@ -1,5 +1,6 @@
 import { SKILLS } from "../../data/skills.js";
 import { battleSystem } from "./battleSystem.js";
+import { audioManager } from "../audioManager.js";
 import { codexSystem } from "../codexSystem.js";
 import { questSystem } from "../questSystem.js";
 import { legendarySystem } from "../legendarySystem.js";
@@ -23,7 +24,7 @@ export const battleActions = {
 
     const { damage, multiplier } = battleSystem.calculateDamage(scene.playerCat, scene.enemyCat, "scratch");
 
-    import("../audioManager.js").then(m => m.audioManager.playSE("se_attack_basic"));
+    audioManager.playSE("se_attack_basic");
     skillEffectSystem.playEffect(scene, scene.enemySprite, "scratch", "노말", multiplier);
 
     scene.time.delayedCall(150, () => {
@@ -47,7 +48,7 @@ export const battleActions = {
 
     const { damage, multiplier } = battleSystem.calculateDamage(scene.playerCat, scene.enemyCat, skillId);
 
-    import("../audioManager.js").then(m => m.audioManager.playSkillSE(skill.type));
+    audioManager.playSkillSE(skill.type);
     skillEffectSystem.playEffect(scene, scene.enemySprite, skillId, skill.type, multiplier);
 
     scene.time.delayedCall(800, () => {
@@ -92,7 +93,7 @@ export const battleActions = {
       if (battleSystem.checkCapture(scene.enemyCat)) {
         scene.updateLog(`성공! ${koreanUtils.getPostPosition(scene.enemyCat.name, "을")} 포획했다!`);
 
-        import("../audioManager.js").then(m => m.audioManager.playME("me_catch_success", { duckBGM: true }));
+        audioManager.playME("me_catch_success", { duckBGM: true });
 
         codexSystem.markCaught(scene.registry, scene.enemyCat.id);
         questSystem.completeObjective(scene.registry, "first_steps", "capture_cat");
@@ -158,7 +159,7 @@ export const battleActions = {
     scene.playerHpText.setText(`HP: ${scene.playerCat.currentHp}/${scene.playerCat.maxHp}`);
     scene.playerHpBar.width = 260 * (scene.playerCat.currentHp / scene.playerCat.maxHp);
 
-    import("../audioManager.js").then(m => m.audioManager.playSE("se_heal"));
+    audioManager.playSE("se_heal");
     skillEffectSystem.playEffect(scene, scene.playerSprite, "heal", "버프", 1);
 
     scene.time.delayedCall(1500, () => scene.nextTurn());
@@ -174,7 +175,7 @@ export const battleActions = {
       scene.updateLog(`${koreanUtils.getPostPosition(newCat.name, "이")} 전투에 나섰다!`);
     }
 
-    import("../audioManager.js").then(m => m.audioManager.playSE("se_heal"));
+    audioManager.playSE("se_heal");
 
     scene.playerCat = newCat;
     battleUI.refreshPlayerPanel(scene);
@@ -205,7 +206,7 @@ export const battleActions = {
         scene.updateLog(`${koreanUtils.getPostPosition(scene.enemyCat.name, "이")} ${koreanUtils.getPostPosition(skill.name, "을")} 사용했다!`);
 
         const { damage, multiplier } = battleSystem.calculateDamage(scene.enemyCat, scene.playerCat, skillId);
-        import("../audioManager.js").then(m => m.audioManager.playSkillSE(skill.type));
+        audioManager.playSkillSE(skill.type);
         skillEffectSystem.playEffect(scene, scene.playerSprite, skillId, skill.type, multiplier);
 
         scene.time.delayedCall(1000, () => {
@@ -225,7 +226,7 @@ export const battleActions = {
     scene.updateLog(`${koreanUtils.getPostPosition(scene.enemyCat.name, "이")} 할퀴기를 사용했다!`);
     const { damage, multiplier } = battleSystem.calculateDamage(scene.enemyCat, scene.playerCat, "scratch");
 
-    import("../audioManager.js").then(m => m.audioManager.playSE("se_attack_basic"));
+    audioManager.playSE("se_attack_basic");
     skillEffectSystem.playEffect(scene, scene.playerSprite, "scratch", "노말", multiplier);
 
     scene.time.delayedCall(400, () => {

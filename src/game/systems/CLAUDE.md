@@ -13,6 +13,7 @@ Game logic systems — imported by scenes, not Phaser-scene classes themselves.
 systems/
 ├── battle/          # Combat logic (used by BattleScene)
 ├── world/           # Overworld logic (used by WorldScene)
+├── uiHelpers/       # Shared UI utilities (used by multiple scenes)
 └── [standalone]     # Shared utilities used across multiple scenes
 ```
 
@@ -32,6 +33,11 @@ systems/
 | npcSpawnSystem.js | NPC/herb spawning and quest indicator rendering — all methods take `scene` as first arg |
 | npcInteractionSystem.js | NPC interaction dispatch, quest status logic, herb/cat pickup — all methods take `scene` as first arg |
 | worldStorySystem.js | Story cutscene sequences (climax, post-climax, legendary, lost cat) — all methods take `scene` as first arg |
+
+### uiHelpers/
+| File | Purpose |
+|---|---|
+| buttonFactory.js | Rounded-rect Graphics button with hover state — `buttonFactory.create(scene, x, y, text, w, h, options)` |
 
 ### Standalone
 | File | Purpose |

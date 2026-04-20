@@ -20,7 +20,15 @@
       "Bash(node --check /c/Feloria/src/game/systems/battle/battleActions.js)",
       "Bash(node --check /c/Feloria/src/game/systems/world/characterSystem.js)",
       "Bash(node --check /c/Feloria/src/game/systems/world/npcSpawnSystem.js)",
-      "Bash(wc -l /c/Feloria/src/game/scenes/WorldScene.js /c/Feloria/src/game/scenes/BattleScene.js /c/Feloria/src/game/systems/battle/*.js /c/Feloria/src/game/systems/world/*.js)"
+      "Bash(wc -l /c/Feloria/src/game/scenes/WorldScene.js /c/Feloria/src/game/scenes/BattleScene.js /c/Feloria/src/game/systems/battle/*.js /c/Feloria/src/game/systems/world/*.js)",
+      "Bash(wc -l /c/Feloria/src/game/**/*.js)",
+      "Bash(grep -c \"^  [a-zA-Z_]*:.*=>.*{\" /c/Feloria/src/game/systems/*.js)",
+      "Bash(node --check /c/Feloria/src/game/systems/world/npcInteractionSystem.js)",
+      "Bash(node --check /c/Feloria/src/game/systems/world/worldStorySystem.js)",
+      "Bash(node --check /c/Feloria/src/game/systems/uiHelpers/buttonFactory.js)",
+      "Bash(node --check /c/Feloria/src/game/scenes/MenuScene.js)",
+      "Bash(node --check /c/Feloria/src/game/scenes/InventoryScene.js)",
+      "Bash(python3:*)"
     ]
   }
 }

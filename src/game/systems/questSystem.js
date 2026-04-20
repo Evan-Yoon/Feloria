@@ -181,7 +181,7 @@ export const questSystem = {
         const collection = registry.get("playerCollection") || [];
         // Import battleSystem dynamically or just apply math since gainExp needs battleSystem
         // Avoid circular dependencies, import inline if needed or just add raw exp
-        import('./battleSystem.js').then(module => {
+        import('./battle/battleSystem.js').then(module => {
           const battleSystem = module.battleSystem;
           collection.forEach((cat) => {
             battleSystem.gainExp(cat, expReward);

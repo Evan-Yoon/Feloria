@@ -1,5 +1,6 @@
 import { NPCS } from "../../data/npcs.js";
 import { questSystem } from "../questSystem.js";
+import { audioManager } from "../audioManager.js";
 
 /**
  * npcInteractionSystem
@@ -376,9 +377,7 @@ export const npcInteractionSystem = {
   collectHerb(scene, herbSprite) {
     scene.registry.set(`${herbSprite.herbId}_picked`, true);
 
-    import("../audioManager.js").then((module) => {
-      module.audioManager.playME("me_item_get");
-    });
+    audioManager.playME("me_item_get");
 
     scene.events.emit("notifyItem", { message: "신비한 약초를 채집했습니다!", color: 0x2ecc71 });
 
@@ -404,9 +403,7 @@ export const npcInteractionSystem = {
   /** Handles picking up the lost cat during the Lina quest. */
   handleLostCatPickup(scene, catSprite) {
     scene.isDialogueActive = true;
-    import("../audioManager.js").then((module) =>
-      module.audioManager.playSE("se_cat"),
-    );
+    audioManager.playSE("se_cat");
 
     scene.events.emit("notifyItem", { message: "고양이를 발견하여 품에 안았습니다!", color: 0x2ecc71 });
 

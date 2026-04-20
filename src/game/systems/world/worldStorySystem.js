@@ -2,6 +2,7 @@ import { ASSETS } from "../../config/assetPaths.js";
 import { NPCS } from "../../data/npcs.js";
 import { questSystem } from "../questSystem.js";
 import { cutsceneSystem } from "../cutsceneSystem.js";
+import { audioManager } from "../audioManager.js";
 
 /**
  * worldStorySystem
@@ -123,9 +124,7 @@ export const worldStorySystem = {
     scene.registry.set("lost_cat_event_triggered", true);
     cutsceneSystem.lockInput(scene);
 
-    import("../audioManager.js").then((module) => {
-      module.audioManager.playBGS("bgs_quake");
-    });
+    audioManager.playBGS("bgs_quake");
 
     await cutsceneSystem.shakeCamera(scene, 2000, 0.02);
 
@@ -139,10 +138,8 @@ export const worldStorySystem = {
 
     await cutsceneSystem.panCameraTo(scene, cat.x, cat.y, 1000);
 
-    import("../audioManager.js").then((module) => {
-      module.audioManager.playSE("se_cat");
-      module.audioManager.stopBGS();
-    });
+    audioManager.playSE("se_cat");
+    audioManager.stopBGS();
 
     await cutsceneSystem.delay(scene, 1000);
     await cutsceneSystem.restoreCameraToPlayer(scene, 1000);
@@ -204,9 +201,7 @@ export const worldStorySystem = {
 
     const npcData = NPCS["boss_hyunseok_climax"];
 
-    import("../audioManager.js").then((module) => {
-      module.audioManager.playBGM("bgm_climax_event");
-    });
+    audioManager.playBGM("bgm_climax_event");
 
     await cutsceneSystem.playDialogue(
       scene,
@@ -235,9 +230,7 @@ export const worldStorySystem = {
       npcData.faceIndex,
     );
 
-    import("../audioManager.js").then((module) => {
-      module.audioManager.playBGS("bgs_quake");
-    });
+    audioManager.playBGS("bgs_quake");
 
     await cutsceneSystem.shakeCamera(scene, 3000, 0.05);
 
@@ -282,9 +275,7 @@ export const worldStorySystem = {
 
       questSystem.completeObjective(scene.registry, "climax_hyunseok_betrayal", "defeat_hyunseok");
 
-      import("../audioManager.js").then((module) => {
-        module.audioManager.stopBGS();
-      });
+      audioManager.stopBGS();
 
       scene.events.emit("notifyItem", {
         message: "=== 챕터 1 완료! ===\n대륙 곳곳으로 흩어진 전설의 고양이들을 찾아 다음 챕터를 준비하세요!",

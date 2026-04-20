@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { buttonFactory } from '../systems/uiHelpers/buttonFactory.js';
 
 /**
  * InventoryScene
@@ -116,33 +117,19 @@ export class InventoryScene extends Phaser.Scene {
                const btnW = 90;
                const btnH = 40;
 
-               const useBtnG = this.add.graphics();
-               useBtnG.fillStyle(0x27ae60, 0.8);
-               useBtnG.fillRoundedRect(btnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 8);
-               useBtnG.lineStyle(2, 0xffffff, 0.9);
-               useBtnG.strokeRoundedRect(btnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 8);
+               const { graphics: useBtnG, label: useLbl, hitArea } = buttonFactory.create(
+                 this, btnX, btnY, '사용', btnW, btnH,
+                 {
+                   onClick: () => this.handleUseItem(itemDef, quantity),
+                   baseColor: 0x27ae60,
+                   hoverColor: 0x2ecc71,
+                   borderColor: 0xffffff,
+                   radius: 8,
+                   fontSize: "18px",
+                 }
+               );
                this.itemsContainer.add(useBtnG);
-
-               const useLbl = this.add.text(btnX, btnY, '사용', { font: 'bold 18px Arial', fill: '#ffffff' }).setOrigin(0.5);
                this.itemsContainer.add(useLbl);
-
-               const hitArea = this.add.rectangle(btnX, btnY, btnW, btnH, 0x000000, 0).setInteractive({ useHandCursor: true });
-               
-               hitArea.on('pointerover', () => {
-                 useBtnG.clear();
-                 useBtnG.fillStyle(0x2ecc71, 0.9);
-                 useBtnG.fillRoundedRect(btnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 8);
-                 useBtnG.lineStyle(2, 0xffffff, 1);
-                 useBtnG.strokeRoundedRect(btnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 8);
-               });
-               hitArea.on('pointerout', () => {
-                 useBtnG.clear();
-                 useBtnG.fillStyle(0x27ae60, 0.8);
-                 useBtnG.fillRoundedRect(btnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 8);
-                 useBtnG.lineStyle(2, 0xffffff, 0.9);
-                 useBtnG.strokeRoundedRect(btnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 8);
-               });
-               hitArea.on('pointerdown', () => this.handleUseItem(itemDef, quantity));
                this.itemsContainer.add(hitArea);
             } else {
                const passiveLbl = this.add.text(this.panelX + 410, yPos, '전투용', { font: 'bold 16px Arial', fill: '#95a5a6' }).setOrigin(0.5);

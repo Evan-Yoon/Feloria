@@ -1,6 +1,7 @@
 import { ASSETS } from "../../config/assetPaths.js";
 import { SKILLS } from "../../data/skills.js";
 import { koreanUtils } from "../koreanUtils.js";
+import { audioManager } from "../audioManager.js";
 
 /**
  * battleUI
@@ -126,7 +127,7 @@ export const battleUI = {
       btnBg.on("pointerdown", () => scene.handleAction(text));
       btnBg.on("pointerover", () => {
         btnBg.setFillStyle(0xe74c3c);
-        import("../audioManager.js").then(m => m.audioManager.playSE("se_cursor"));
+        audioManager.playSE("se_cursor");
       });
       btnBg.on("pointerout", () => btnBg.setFillStyle(0x34495e));
 
@@ -177,7 +178,7 @@ export const battleUI = {
         btnBg.on("pointerdown", () => {
           scene.skillMenuUI.setVisible(false);
           scene.menuUI.setVisible(true);
-          import("../audioManager.js").then(m => m.audioManager.playSE("se_cancel"));
+          audioManager.playSE("se_cancel");
         });
       } else {
         btnBg.on("pointerdown", () => {
@@ -187,7 +188,7 @@ export const battleUI = {
       }
       btnBg.on("pointerover", () => {
         btnBg.setFillStyle(0xe74c3c);
-        import("../audioManager.js").then(m => m.audioManager.playSE("se_cursor"));
+        audioManager.playSE("se_cursor");
       });
       btnBg.on("pointerout", () => btnBg.setFillStyle(0x34495e));
 
@@ -238,7 +239,7 @@ export const battleUI = {
         btnBg.on("pointerdown", () => {
           scene.swapMenuUI.setVisible(false);
           scene.menuUI.setVisible(true);
-          import("../audioManager.js").then(m => m.audioManager.playSE("se_cancel"));
+          audioManager.playSE("se_cancel");
         });
       } else {
         btnBg.on("pointerdown", () => {
@@ -248,7 +249,7 @@ export const battleUI = {
       }
       btnBg.on("pointerover", () => {
         btnBg.setFillStyle(0xe74c3c);
-        import("../audioManager.js").then(m => m.audioManager.playSE("se_cursor"));
+        audioManager.playSE("se_cursor");
       });
       btnBg.on("pointerout", () => btnBg.setFillStyle(0x34495e));
 
@@ -298,7 +299,7 @@ export const battleUI = {
         btnBg.on("pointerdown", () => {
           scene.itemMenuUI.setVisible(false);
           scene.menuUI.setVisible(true);
-          import("../audioManager.js").then(m => m.audioManager.playSE("se_cancel"));
+          audioManager.playSE("se_cancel");
         });
       } else {
         btnBg.on("pointerdown", () => {
@@ -308,7 +309,7 @@ export const battleUI = {
       }
       btnBg.on("pointerover", () => {
         btnBg.setFillStyle(0xe74c3c);
-        import("../audioManager.js").then(m => m.audioManager.playSE("se_cursor"));
+        audioManager.playSE("se_cursor");
       });
       btnBg.on("pointerout", () => btnBg.setFillStyle(0x34495e));
 
@@ -331,10 +332,7 @@ export const battleUI = {
       scene.enemySprite.setTint(0xff0000);
 
       if (target.currentHp <= 0) {
-        import("../audioManager.js").then(m => {
-          const key = targetType === "player" ? "se_collapse_player" : "se_collapse_enemy";
-          m.audioManager.playSE(key);
-        });
+        audioManager.playSE(targetType === "player" ? "se_collapse_player" : "se_collapse_enemy");
       }
 
       scene.time.delayedCall(100, () => scene.enemySprite.clearTint());
@@ -395,7 +393,7 @@ export const battleUI = {
       onComplete: () => sparkle.destroy(),
     });
 
-    import("../audioManager.js").then(m => m.audioManager.playME("me_level_up", { duckBGM: true }));
+    audioManager.playME("me_level_up", { duckBGM: true });
 
     const levelUpText = scene.add
       .text(scene.playerSprite.x, scene.playerSprite.y - 80, "레벨 업!", {
