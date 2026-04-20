@@ -8,7 +8,19 @@
       "Bash(npm list:*)",
       "Bash(node --check /c/Feloria/src/game/scenes/WorldScene.js)",
       "Bash(node --check /c/Feloria/src/game/systems/npcInteractionSystem.js)",
-      "Bash(node --check /c/Feloria/src/game/systems/worldStorySystem.js)"
+      "Bash(node --check /c/Feloria/src/game/systems/worldStorySystem.js)",
+      "Bash(xargs wc:*)",
+      "Bash(grep \"\\\\.js$\")",
+      "Bash(node --check /c/Feloria/src/game/scenes/BattleScene.js)",
+      "Bash(node --check /c/Feloria/src/game/systems/battleUI.js)",
+      "Bash(node --check /c/Feloria/src/game/systems/battleActions.js)",
+      "Bash(node --check /c/Feloria/src/game/systems/battleSystem.js)",
+      "Bash(node --check /c/Feloria/src/game/systems/battle/battleSystem.js)",
+      "Bash(node --check /c/Feloria/src/game/systems/battle/battleUI.js)",
+      "Bash(node --check /c/Feloria/src/game/systems/battle/battleActions.js)",
+      "Bash(node --check /c/Feloria/src/game/systems/world/characterSystem.js)",
+      "Bash(node --check /c/Feloria/src/game/systems/world/npcSpawnSystem.js)",
+      "Bash(wc -l /c/Feloria/src/game/scenes/WorldScene.js /c/Feloria/src/game/scenes/BattleScene.js /c/Feloria/src/game/systems/battle/*.js /c/Feloria/src/game/systems/world/*.js)"
     ]
   }
 }

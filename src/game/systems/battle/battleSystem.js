@@ -1,6 +1,6 @@
-import { CREATURES } from "../data/creatures.js";
-import { SKILLS } from "../data/skills.js";
-import { TYPE_CHART, TYPE_MAPPING } from "../data/typeChart.js";
+import { CREATURES } from "../../data/creatures.js";
+import { SKILLS } from "../../data/skills.js";
+import { TYPE_CHART, TYPE_MAPPING } from "../../data/typeChart.js";
 
 /**
  * battleSystem.js - Core logic for turn-based battles.
@@ -165,9 +165,31 @@ export const battleSystem = {
   },
 
   /**
-   * Applies EXP to a creature and handles level ups.
-   * Returns true if the creature leveled up.
+   * Applies story-mode nerf to a trainer's creature (50% stats; 50% again for boss).
    */
+  applyTrainerNerf: (cat, isBoss = false) => {
+    cat.maxHp = Math.max(1, Math.floor(cat.maxHp * 0.5));
+    cat.currentHp = cat.maxHp;
+    cat.stats.attack = Math.max(1, Math.floor(cat.stats.attack * 0.5));
+    cat.stats.defense = Math.max(1, Math.floor(cat.stats.defense * 0.5));
+    if (isBoss) {
+      cat.maxHp = Math.max(1, Math.floor(cat.maxHp * 0.5));
+      cat.currentHp = cat.maxHp;
+      cat.stats.attack = Math.max(1, Math.floor(cat.stats.attack * 0.5));
+      cat.stats.defense = Math.max(1, Math.floor(cat.stats.defense * 0.5));
+    }
+  },
+
+  /**
+   * Applies story-mode nerf to a wild creature (50% stats).
+   */
+  applyWildNerf: (cat) => {
+    cat.maxHp = Math.max(1, Math.floor(cat.maxHp * 0.5));
+    cat.currentHp = cat.maxHp;
+    cat.stats.attack = Math.max(1, Math.floor(cat.stats.attack * 0.5));
+    cat.stats.defense = Math.max(1, Math.floor(cat.stats.defense * 0.5));
+  },
+
   gainExp: (creature, amount) => {
     if (!creature.exp) creature.exp = 0;
     creature.exp += amount;

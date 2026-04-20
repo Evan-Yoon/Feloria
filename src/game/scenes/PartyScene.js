@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { battleSystem } from "../systems/battleSystem.js";
+import { battleSystem } from "../systems/battle/battleSystem.js";
 
 /**
  * PartyScene

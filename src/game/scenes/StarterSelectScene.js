@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { battleSystem } from "../systems/battleSystem.js";
+import { battleSystem } from "../systems/battle/battleSystem.js";
 import { questSystem } from "../systems/questSystem.js";
 import { codexSystem } from "../systems/codexSystem.js";
 import { CREATURES } from "../data/creatures.js";

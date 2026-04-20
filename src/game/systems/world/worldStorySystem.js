@@ -1,7 +1,7 @@
-import { ASSETS } from "../config/assetPaths.js";
-import { NPCS } from "../data/npcs.js";
-import { questSystem } from "./questSystem.js";
-import { cutsceneSystem } from "./cutsceneSystem.js";
+import { ASSETS } from "../../config/assetPaths.js";
+import { NPCS } from "../../data/npcs.js";
+import { questSystem } from "../questSystem.js";
+import { cutsceneSystem } from "../cutsceneSystem.js";
 
 /**
  * worldStorySystem
@@ -123,7 +123,7 @@ export const worldStorySystem = {
     scene.registry.set("lost_cat_event_triggered", true);
     cutsceneSystem.lockInput(scene);
 
-    import("./audioManager.js").then((module) => {
+    import("../audioManager.js").then((module) => {
       module.audioManager.playBGS("bgs_quake");
     });
 
@@ -139,7 +139,7 @@ export const worldStorySystem = {
 
     await cutsceneSystem.panCameraTo(scene, cat.x, cat.y, 1000);
 
-    import("./audioManager.js").then((module) => {
+    import("../audioManager.js").then((module) => {
       module.audioManager.playSE("se_cat");
       module.audioManager.stopBGS();
     });
@@ -204,7 +204,7 @@ export const worldStorySystem = {
 
     const npcData = NPCS["boss_hyunseok_climax"];
 
-    import("./audioManager.js").then((module) => {
+    import("../audioManager.js").then((module) => {
       module.audioManager.playBGM("bgm_climax_event");
     });
 
@@ -235,7 +235,7 @@ export const worldStorySystem = {
       npcData.faceIndex,
     );
 
-    import("./audioManager.js").then((module) => {
+    import("../audioManager.js").then((module) => {
       module.audioManager.playBGS("bgs_quake");
     });
 
@@ -282,7 +282,7 @@ export const worldStorySystem = {
 
       questSystem.completeObjective(scene.registry, "climax_hyunseok_betrayal", "defeat_hyunseok");
 
-      import("./audioManager.js").then((module) => {
+      import("../audioManager.js").then((module) => {
         module.audioManager.stopBGS();
       });
 
