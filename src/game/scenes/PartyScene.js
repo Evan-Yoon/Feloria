@@ -164,7 +164,7 @@ export class PartyScene extends Phaser.Scene {
     card.add(cardG);
 
     // Creature Sprite
-    const spriteKey = creature.id.toLowerCase();
+    const spriteKey = "creature_" + creature.id.toLowerCase();
     const creatureSprite = this.add
       .sprite(-bgWidth / 2 + 75, -20, spriteKey);
     

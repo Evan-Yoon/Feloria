@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -lh /c/Feloria/src/game/scenes/*.js)",
+      "Read(//c/Feloria/**)",
+      "Bash(ls -lh /c/Feloria/src/game/systems/*.js)",
+      "Bash(node_modules/.bin/vite build:*)",
+      "Bash(npm list:*)",
+      "Bash(node --check /c/Feloria/src/game/scenes/WorldScene.js)",
+      "Bash(node --check /c/Feloria/src/game/systems/npcInteractionSystem.js)",
+      "Bash(node --check /c/Feloria/src/game/systems/worldStorySystem.js)"
+    ]
+  }
+}

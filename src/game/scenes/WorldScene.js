@@ -3,12 +3,13 @@ import { ASSETS } from "../config/assetPaths.js";
 import { mapLoader } from "../systems/mapLoader.js";
 import { saveSystem } from "../systems/saveSystem.js";
 import { encounterSystem } from "../systems/encounterSystem.js";
-import { dialogueSystem } from "../systems/dialogueSystem.js";
 import { questSystem } from "../systems/questSystem.js";
 import { TRAINERS } from "../data/trainers.js";
 import { NPCS } from "../data/npcs.js";
 import { cutsceneSystem } from "../systems/cutsceneSystem.js";
 import { legendarySystem } from "../systems/legendarySystem.js";
+import { npcInteractionSystem } from "../systems/npcInteractionSystem.js";
+import { worldStorySystem } from "../systems/worldStorySystem.js";
 
 /**
  * WorldScene
@@ -47,9 +48,6 @@ export class WorldScene extends Phaser.Scene {
   }
 
   create(data = {}) {
-    console.log(`WorldScene: Entering ${this.mapId}`);
-    console.log(`WorldScene: NPCS keys = ${Object.keys(NPCS).join(", ")}`);
-    console.log(`WorldScene: elder_hyunseok data =`, NPCS.elder_hyunseok);
 
     // 0. Initialize Inputs Early (Prevents 'left' of undefined if create() returns early)
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -84,21 +82,12 @@ export class WorldScene extends Phaser.Scene {
 
     // Quest Check: Enter Forest
     if (this.mapId === "greenpaw_forest") {
-      questSystem.completeObjective(
-        this.registry,
-        "first_steps",
-        "enter_forest",
-      );
+      questSystem.completeObjective(this.registry, "first_steps", "enter_forest");
     }
 
     // 2. Set Camera Bounds
     if (this.mapData.widthInPixels && this.mapData.heightInPixels) {
-      this.cameras.main.setBounds(
-        0,
-        0,
-        this.mapData.widthInPixels,
-        this.mapData.heightInPixels,
-      );
+      this.cameras.main.setBounds(0, 0, this.mapData.widthInPixels, this.mapData.heightInPixels);
     }
 
     // 3. Create Player
@@ -110,20 +99,16 @@ export class WorldScene extends Phaser.Scene {
     // 4.5. Initialize Indicator Group
     this.indicatorGroup = this.add.group();
 
-    // 5. Input Handling (Remaining setup)
-
-    // Interaction Key (Space)
-    this.input.keyboard.on("keydown-SPACE", () => this.handleInteraction());
-
-    // Menu Key (ESC or ENTER)
+    // 5. Input Handling
+    this.input.keyboard.on("keydown-SPACE", () => npcInteractionSystem.handleInteraction(this));
     this.input.keyboard.on("keydown-ESC", () => this.openMenu());
     this.input.keyboard.on("keydown-ENTER", () => this.openMenu());
     this.input.keyboard.on("keydown-C", () => this.openCodex());
 
     // 6. Camera Follow
-    this.cameras.main.setBackgroundColor(0x000000); // Ensure opaque background
+    this.cameras.main.setBackgroundColor(0x000000);
     this.cameras.main.startFollow(this.player, true);
-    this.cameras.main.setZoom(2); // Zoom in for the pixel RPG feel
+    this.cameras.main.setZoom(2);
 
     // 7. Map Name UI
     if (!this.scene.isActive("UIScene")) {
@@ -145,7 +130,6 @@ export class WorldScene extends Phaser.Scene {
         const bgmKey = bgmMap[this.mapId] || "bgm_village";
         module.audioManager.setMapBGM(bgmKey);
 
-        // Don't restart if already playing (e.g. from battle return)
         if (!data.triggerClimax && !data.triggerPostClimax) {
           module.audioManager.resumeMapBGM(1000);
         }
@@ -179,7 +163,7 @@ export class WorldScene extends Phaser.Scene {
       !this.registry.get("intro_started")
     ) {
       this.time.delayedCall(500, () => {
-        this.triggerForcedDialogue("elder_hyunseok");
+        worldStorySystem.triggerForcedDialogue(this, "elder_hyunseok");
       });
       return;
     }
@@ -187,32 +171,20 @@ export class WorldScene extends Phaser.Scene {
     // 2. Post-Starter Dialogue
     if (data.intro_phase === "received_starter" && !introDone) {
       this.time.delayedCall(500, () => {
-        this.triggerForcedDialogue("elder_hyunseok_gift");
+        worldStorySystem.triggerForcedDialogue(this, "elder_hyunseok_gift");
       });
       return;
     }
 
     // Existing Quest/Legendary checks
     if (this.mapId === "mosslight_path") {
-      questSystem.completeObjective(
-        this.registry,
-        "forest_awakening",
-        "explore_path",
-      );
+      questSystem.completeObjective(this.registry, "forest_awakening", "explore_path");
     } else if (this.mapId === "ancient_forest") {
-      questSystem.completeObjective(
-        this.registry,
-        "forest_awakening",
-        "enter_ancient_forest",
-      );
+      questSystem.completeObjective(this.registry, "forest_awakening", "enter_ancient_forest");
 
       const ld = this.registry.get("activeQuests")?.["quest_luke_despair"];
       if (ld && !ld.completed) {
-        questSystem.completeObjective(
-          this.registry,
-          "quest_luke_despair",
-          "reach_ancient_forest",
-        );
+        questSystem.completeObjective(this.registry, "quest_luke_despair", "reach_ancient_forest");
       }
     }
 
@@ -220,23 +192,17 @@ export class WorldScene extends Phaser.Scene {
     const defeated = this.registry.get("defeatedTrainers") || [];
     const activeQuests = this.registry.get("activeQuests") || {};
 
-    // Sera
     if (defeated.includes("sera") && activeQuests["quest_sera_blockade"]) {
       questSystem.completeObjective(this.registry, "quest_sera_blockade", "defeat_sera");
     }
 
-    // Luke
     if (defeated.includes("luke") && activeQuests["quest_luke_despair"]) {
       questSystem.completeObjective(this.registry, "quest_luke_despair", "defeat_luke");
     }
 
-    // Rowan
     if (defeated.includes("guardian_rowan") && activeQuests["forest_awakening"]) {
       const isComplete = questSystem.completeObjective(this.registry, "forest_awakening", "defeat_rowan");
-      
-      // If we just completed it now
       if (isComplete) {
-        // Prompt user
         setTimeout(() => {
           this.events.emit("notifyItem", {
             message: "신전 중심부(최상단)로 이동해 [Spacebar]로 정화의 유물을 조율하세요.",
@@ -247,72 +213,6 @@ export class WorldScene extends Phaser.Scene {
     }
 
     legendarySystem.applyWorldEffects(this);
-  }
-
-  triggerForcedDialogue(npcId) {
-    let npcData = NPCS[npcId];
-    let customDialogue = null;
-
-    if (npcId === "elder_hyunseok_gift") {
-      npcData = NPCS["elder_hyunseok"];
-      customDialogue = [
-        "훌륭한 선택이구나! 그 고양이와 함께라면 숲의 뒤틀림도 해결할 수 있을 게야.",
-        "자, 이건 내 선물이다.",
-        "이걸 활용해서 더 많은 고양이를 잡게나. 더 필요하면 상점에서 살 수 있다네.",
-      ];
-    }
-
-    if (!npcData) return;
-
-    this.isDialogueActive = true;
-    this.playerDir = "up";
-    this.player.setFrame(ASSETS.CHARACTERS.PLAYER.UP_FRAME || 1);
-
-    this.scene.launch("DialogScene", {
-      dialogue: {
-        name: npcData.name,
-        pages: customDialogue || npcData.getDialogue(this.registry),
-        faceKey: npcData.faceKey,
-        faceIndex: npcData.faceIndex || 0,
-      },
-      onComplete: () => {
-        this.isDialogueActive = false;
-
-        if (npcId === "elder_hyunseok") {
-          this.isTransitioning = true;
-          this.registry.set("intro_started", true);
-          questSystem.completeObjective(
-            this.registry,
-            "first_steps",
-            "talk_mira",
-          );
-          this.scene.start("StarterSelectScene");
-        } else if (npcId === "elder_hyunseok_gift") {
-          // Give crystals
-          const inventory = this.registry.get("playerInventory") || {};
-          inventory["capture_crystal"] =
-            (inventory["capture_crystal"] || 0) + 2;
-          this.registry.set("playerInventory", inventory);
-
-          this.events.emit("notifyItem", {
-            message: `포획 크리스탈 x2 획득!`,
-            color: 0x27ae60,
-          });
-
-          this.registry.set("intro_done", true);
-
-          // Start first quest instantly
-          const activeQuests = this.registry.get("activeQuests") || {};
-          if (activeQuests["first_steps"]) {
-            questSystem.completeObjective(
-              this.registry,
-              "first_steps",
-              "talk_mira",
-            );
-          }
-        }
-      },
-    });
   }
 
   openMenu() {
@@ -334,7 +234,6 @@ export class WorldScene extends Phaser.Scene {
    */
   createPlayer() {
     const config = ASSETS.CHARACTERS.PLAYER;
-    // If no specific spawn provided, use map default
     const spawn = this.mapData.spawns.find((s) => s.type === "player");
     const isInitialSpawn =
       this.mapId === "starwhisk_village" && !this.registry.get("intro_done");
@@ -356,23 +255,16 @@ export class WorldScene extends Phaser.Scene {
             ? spawn.y
             : 10;
 
-    // Get frames for the specific character block
     const frames = this.getCharacterFrames(config.KEY, config.CHARACTER_INDEX);
-    const startFrame = frames.down[1]; // Middle frame, down facing
+    const startFrame = frames.down[1];
 
-    this.player = this.add.sprite(
-      tx * 32 + 16,
-      (ty + 1) * 32,
-      config.KEY,
-      startFrame,
-    );
+    this.player = this.add.sprite(tx * 32 + 16, (ty + 1) * 32, config.KEY, startFrame);
     this.player.setOrigin(0.5, 1);
     this.player.setDepth(10);
     this.player.tileX = tx;
     this.player.tileY = ty;
     this.player.animFrames = frames;
 
-    // Create animations for this specific player block
     this.createCharacterAnims(this.player, "player", frames);
   }
 
@@ -381,19 +273,8 @@ export class WorldScene extends Phaser.Scene {
    * Sheet usually 4x2 blocks of 3x4 frames
    */
   getCharacterFrames(textureKey, charIndex) {
-    const texture = this.textures.get(textureKey);
-    // Find how many frames per row in the actual texture
-    // Each character block is 3 frames wide.
-    const frameCount = texture.getFrameNames().length;
-    // For spritesheets loaded via load.spritesheet, we can check the number of frames
-    // Standard RPG Maker MV Actor sheet is 12 frames wide, 8 frames high (total 96 frames)
-    // If it's a 4x2 block sheet, it has 12 columns.
-    const image = texture.getSourceImage();
-    const frameWidth = 32; // DEFINITIVE: 384 / 12 = 32. 256 / 8 = 32.
-    const sheetCols = 12; // 12 columns in a standard 4x2 RPG Maker sheet
-    console.log(
-      `WorldScene: getCharacterFrames for ${textureKey}, index ${charIndex}, sheet size: ${image.width}x${image.height}, cols: ${sheetCols}`,
-    );
+    // Standard RPG Maker MV Actor sheet: 4x2 character blocks, 3x4 frames each = 12 cols, 8 rows
+    const sheetCols = 12;
 
     const blocksPerRow = 4;
     const blockX = charIndex % blocksPerRow;
@@ -424,7 +305,6 @@ export class WorldScene extends Phaser.Scene {
         (startY + 3) * sheetCols + startX + 2,
       ],
     };
-    console.log(`WorldScene: calculated frames for ${textureKey}:`, frames);
     return frames;
   }
 
@@ -481,17 +361,14 @@ export class WorldScene extends Phaser.Scene {
           ).includes("guardian_rowan");
 
           if (this.registry.get("chapter1_done")) {
-            // Force him to spawn in village prison regardless of where the spawn point is normally
             if (this.mapId !== "starwhisk_village") return;
           } else if (isRowanDefeated) {
             if (this.mapId === "mosslight_shrine") {
               // Spawn him at the altar
             } else if (this.mapId === "starwhisk_village") {
-              // He left the village
               return;
             }
           } else if (isClimaxStarted && this.mapId === "starwhisk_village") {
-            // He "leaves" for the shrine
             return;
           }
         }
@@ -500,14 +377,12 @@ export class WorldScene extends Phaser.Scene {
         if (npcId === "ellie") {
           const defeated = this.registry.get("defeatedTrainers") || [];
           if (defeated.includes("ellie")) {
-            console.log("WorldScene: Ellie has been defeated and removed.");
             return;
           }
         }
 
         // 1. Determine Sprite Key and Character Block
         const spriteKey = npcData.sprite || "people1";
-        // Find the character block in ASSETS.CHARACTERS that matches this KEY
         const config =
           Object.values(ASSETS.CHARACTERS).find((c) => c.KEY === spriteKey) ||
           ASSETS.CHARACTERS.PEOPLE1;
@@ -516,8 +391,6 @@ export class WorldScene extends Phaser.Scene {
           npcData.characterIndex !== undefined
             ? npcData.characterIndex
             : config.CHARACTER_INDEX || 0;
-
-        const frames = this.getCharacterFrames(config.KEY, characterIndex);
 
         let nx = spawn.x;
         let ny = spawn.y;
@@ -531,17 +404,15 @@ export class WorldScene extends Phaser.Scene {
           ).includes("guardian_rowan");
 
           if (this.registry.get("chapter1_done")) {
-            // Hyunseok in Prison
             nx = 2;
             ny = 16;
             finalSpriteKey = "people2";
-            finalCharIdx = 0; // matching boss_hyunseok_defeated appearance
+            finalCharIdx = 0;
           } else if (isRowanDefeated && this.mapId === "mosslight_shrine") {
-            // Hyunseok at Altar after Rowan is defeated
             nx = 7;
             ny = 5;
-            finalSpriteKey = "people4"; // Boss appearance
-            finalCharIdx = 37; // actor sheet index for boss hyunseok
+            finalSpriteKey = "people4";
+            finalCharIdx = 37;
           }
         }
 
@@ -562,7 +433,7 @@ export class WorldScene extends Phaser.Scene {
 
         // 2. Differentiate Trainers with red tint
         if (npcData.role === "trainer" || npcData.role === "boss_trainer") {
-          npc.setTint(0xff8888); // Reddish color for trainers
+          npc.setTint(0xff8888);
         }
 
         this.npcs.add(npc);
@@ -574,15 +445,10 @@ export class WorldScene extends Phaser.Scene {
       this.mapId === "ancient_forest" &&
       legendarySystem.canSpawnLegendary(this.registry, "VERDANTLYNX")
     ) {
-      const lx = 20; // Deep in the forest
+      const lx = 20;
       const ly = 12;
 
-      // Use the newly registered creature sprite asset
-      const legSprite = this.add.sprite(
-        lx * 32 + 16,
-        (ly + 1) * 32,
-        "creature_verdantlynx",
-      );
+      const legSprite = this.add.sprite(lx * 32 + 16, (ly + 1) * 32, "creature_verdantlynx");
       legSprite.setOrigin(0.5, 1);
       legSprite.npcId = "legendary_verdantlynx";
       legSprite.tileX = lx;
@@ -598,10 +464,7 @@ export class WorldScene extends Phaser.Scene {
       try {
         this.indicatorGroup.clear(true, true);
       } catch (e) {
-        console.warn(
-          "WorldScene: Failed to clear indicatorGroup, recreating...",
-          e,
-        );
+        console.warn("WorldScene: Failed to clear indicatorGroup, recreating...", e);
         this.indicatorGroup = this.add.group();
       }
     }
@@ -611,9 +474,8 @@ export class WorldScene extends Phaser.Scene {
 
     this.npcs.getChildren().forEach((npcSprite) => {
       if (npcSprite.isHerb || npcSprite.npcId === "lost_cat") return;
-      const npcId =
-        npcSprite.npcId === "mira" ? "elder_hyunseok" : npcSprite.npcId;
-      const status = this.getNpcQuestStatus(npcId, activeQuests);
+      const npcId = npcSprite.npcId === "mira" ? "elder_hyunseok" : npcSprite.npcId;
+      const status = npcInteractionSystem.getNpcQuestStatus(npcId, activeQuests);
 
       if (status) {
         const char = status === "available" ? "!" : "?";
@@ -643,7 +505,11 @@ export class WorldScene extends Phaser.Scene {
     // Custom indicator for relic placement at the Altar
     if (this.mapId === "mosslight_shrine") {
       const fa = activeQuests["forest_awakening"];
-      if (fa && !fa.completed && fa.objectives.find(o => o.id === "defeat_rowan").completed && !fa.objectives.find(o => o.id === "use_relic").completed) {
+      if (
+        fa && !fa.completed &&
+        fa.objectives.find(o => o.id === "defeat_rowan").completed &&
+        !fa.objectives.find(o => o.id === "use_relic").completed
+      ) {
         const indicator = this.add
           .text(7 * 32 + 16, 2 * 32 + 16 - 20, "?", {
             font: "bold 24px Arial",
@@ -666,52 +532,6 @@ export class WorldScene extends Phaser.Scene {
         this.indicatorGroup.add(indicator);
       }
     }
-  }
-
-  getNpcQuestStatus(npcId, activeQuests) {
-    const fs = activeQuests["first_steps"];
-    const ts = activeQuests["quest_toby_supply"];
-    const lc = activeQuests["quest_lina_lost_cat"];
-    const sb = activeQuests["quest_sera_blockade"];
-    const ld = activeQuests["quest_luke_despair"];
-    const cr = activeQuests["quest_chiefs_relic"];
-    const fa = activeQuests["forest_awakening"];
-
-    // 1. First Steps Quest (Chief Hyunseok)
-    if (!fs && npcId === "elder_hyunseok") return "available"; // Give quest 'first_steps' (!)
-    if (fs && !fs.completed && fs.objectives.find((o) => o.id === "capture_cat").completed && npcId === "elder_hyunseok") return "ready"; // Report back (?)
-
-    // 2. Toby Supply Quest (Shopkeeper)
-    if (ts && !ts.objectives.find((o) => o.id === "talk_toby").completed && npcId === "shopkeeper") return "available"; // Needs to talk to Toby (!)
-    if (ts && !ts.completed && ts.objectives[1].completed && npcId === "shopkeeper") return "ready"; // Turn in herbs (?)
-
-    // 3. Lina Lost Cat Quest (Villager1)
-    if (!lc && ts && ts.completed && npcId === "villager1") return "available"; // Give quest 'quest_lina_lost_cat' (!)
-    if (lc && !lc.completed && lc.objectives[1].completed && npcId === "villager1") return "ready"; // Return Mira (?)
-
-    // 4. Sera Blockade Quest (Chief -> Sera -> Chief)
-    if (!sb && lc && lc.completed && npcId === "elder_hyunseok") return "available"; // Give quest 'quest_sera_blockade' (!)
-    if (sb && !sb.completed && !sb.objectives.find(o => o.id === "defeat_sera").completed && npcId === "trainer_sera") return "ready"; // Sera battle (ready symbol indicates important interaction)
-    if (sb && !sb.completed && sb.objectives.find(o => o.id === "defeat_sera").completed && !sb.objectives.find(o => o.id === "report_chief").completed && npcId === "elder_hyunseok") return "ready"; // Report defeated Sera (?)
-
-    // 5. Luke Despair Quest (Chief -> Luke -> Chief)
-    if (!ld && sb && sb.completed && npcId === "elder_hyunseok") return "available"; // Give quest 'quest_luke_despair' (!)
-    if (ld && !ld.completed && !ld.objectives.find(o => o.id === "defeat_luke").completed && npcId === "trainer_luke") return "ready"; // Luke battle (ready symbol indicates important interaction)
-    if (ld && !ld.completed && ld.objectives.find(o => o.id === "defeat_luke").completed && !ld.objectives.find(o => o.id === "report_chief").completed && npcId === "elder_hyunseok") return "ready"; // Report defeated Luke (?)
-
-    // 6. Chief's Relic Quest (Chief)
-    // After returning from defeating Luke, Chief gives the relic automatically.
-    // However, if we split the interaction, first we report Luke (above), then Chief gives relic quest.
-    if (!cr && ld && ld.completed && npcId === "elder_hyunseok") return "available"; // Give quest 'quest_chiefs_relic' (!)
-    if (cr && !cr.completed && cr.objectives[0].completed && npcId === "elder_hyunseok") return "ready"; // Turn in relic -> wait, it completes immediately during talk usually but if not, logic fallback
-    if (cr && !cr.completed && !cr.objectives[0].completed && npcId === "elder_hyunseok") return "ready"; // Interaction to receive relic (?)
-
-    // 7. Forest Awakening Quest
-    // Guardian Rowan battle
-    if (fa && !fa.completed && fa.objectives.find(o => o.id === "enter_ancient_forest").completed && !fa.objectives.find(o => o.id === "defeat_rowan").completed && npcId === "trainer_guardian_rowan") return "ready"; // Rowan battle
-    if (fa && !fa.completed && !fa.objectives.find(o => o.id === "defeat_rowan").completed && npcId === "ellie") return "complete"; // Ellie gives warning/advice (?)
-
-    return null;
   }
 
   spawnHerbs() {
@@ -740,12 +560,7 @@ export class WorldScene extends Phaser.Scene {
 
     herbSpawnCoords.forEach((coord) => {
       if (this.registry.get(`${coord.id}_picked`)) return;
-      const herb = this.add.sprite(
-        coord.x * 32 + 16,
-        coord.y * 32 + 16,
-        "monster2",
-        0,
-      );
+      const herb = this.add.sprite(coord.x * 32 + 16, coord.y * 32 + 16, "monster2", 0);
       herb.isHerb = true;
       herb.herbId = coord.id;
       herb.tileX = coord.x;
@@ -769,7 +584,6 @@ export class WorldScene extends Phaser.Scene {
     if (dx !== 0 || dy !== 0) {
       this.movePlayer(dx, dy);
     } else {
-      // Idle - stop animation and set to middle frame
       if (this.player.anims.isPlaying) {
         this.player.stop();
         this.player.setFrame(this.player.animFrames[this.playerDir][1]);
@@ -784,7 +598,6 @@ export class WorldScene extends Phaser.Scene {
     const nextX = this.player.tileX + dx;
     const nextY = this.player.tileY + dy;
 
-    // Update direction and play animation
     if (dx > 0) this.playerDir = "right";
     else if (dx < 0) this.playerDir = "left";
     else if (dy > 0) this.playerDir = "down";
@@ -805,7 +618,7 @@ export class WorldScene extends Phaser.Scene {
     const collisionLayer = this.mapData.layers.collisionLayer;
     if (collisionLayer) {
       const tile = collisionLayer.getTileAt(nextX, nextY);
-      if (tile && tile.index !== 0) return; // Blocked
+      if (tile && tile.index !== 0) return;
     }
 
     // Safety check: Block gray walls (index 4) even if not in collision layer
@@ -849,7 +662,7 @@ export class WorldScene extends Phaser.Scene {
       const activeQuests = this.registry.get("activeQuests") || {};
       const lc = activeQuests["quest_lina_lost_cat"];
       if (lc && !lc.completed && !lc.objectives[1].completed) {
-        this.triggerLostCatEvent();
+        worldStorySystem.triggerLostCatEvent(this);
       }
     }
 
@@ -858,25 +671,16 @@ export class WorldScene extends Phaser.Scene {
       (w) => w.x === this.player.tileX && w.y === this.player.tileY,
     );
     if (warp) {
-      // Add a slight delay to prevent warp loop jitter
       this.isMoving = true;
       this.events.emit("hideMapName");
 
-      // Play Map Transition SE
       import("../systems/audioManager.js").then((module) => {
         module.audioManager.playSE("se_move");
       });
 
       this.cameras.main.fadeOut(300, 0, 0, 0);
       this.cameras.main.once("camerafadeoutcomplete", () => {
-        // Autosave upon map transition securely
-        saveSystem.saveData(
-          this.registry,
-          warp.targetMap,
-          warp.targetX,
-          warp.targetY,
-        );
-
+        saveSystem.saveData(this.registry, warp.targetMap, warp.targetX, warp.targetY);
         this.scene.start("WorldScene", {
           mapId: warp.targetMap,
           spawnX: warp.targetX,
@@ -889,10 +693,7 @@ export class WorldScene extends Phaser.Scene {
     // 2. Check Encounters
     const encounterLayer = this.mapData.layers.encounterLayer;
     if (encounterLayer) {
-      const tile = encounterLayer.getTileAt(
-        this.player.tileX,
-        this.player.tileY,
-      );
+      const tile = encounterLayer.getTileAt(this.player.tileX, this.player.tileY);
       if (tile && tile.index !== 0 && !this.isPartyDead()) {
         const encounter = encounterSystem.checkEncounter(this.mapId, 0.15);
         if (encounter) {
@@ -902,913 +703,16 @@ export class WorldScene extends Phaser.Scene {
     }
   }
 
-  handleInteraction() {
-    if (this.isTransitioning || this.isMoving || this.isDialogueActive) return;
-
-    // Determine tile in front of player
-    let targetX = this.player.tileX;
-    let targetY = this.player.tileY;
-
-    if (this.playerDir === "left") targetX--;
-    else if (this.playerDir === "right") targetX++;
-    else if (this.playerDir === "up") targetY--;
-    else if (this.playerDir === "down") targetY++;
-
-    // Relic usage check at Shrine Altar
-    if (this.mapId === "mosslight_shrine" && targetY <= 2) {
-      const activeQuests = this.registry.get("activeQuests") || {};
-      const fa = activeQuests["forest_awakening"];
-      if (fa && !fa.completed && fa.objectives.find(o => o.id === "defeat_rowan").completed && !fa.objectives.find(o => o.id === "use_relic").completed) {
-        // Trigger relic usage
-        questSystem.completeObjective(this.registry, "forest_awakening", "use_relic");
-
-        // Relic Event Feedback
-        this.events.emit("notifyItem", {
-          message: "신전의 중심부에서 정화의 유물을 조율합니다...",
-          color: 0x3498db,
-        });
-
-        // Pause to let the message show then trigger climax
-        setTimeout(() => {
-          this.runClimaxSequence();
-        }, 1500);
-
-        return;
-      }
-    }
-
-    // Find NPC Sprite
-    let npcSprite = this.npcs
-      .getChildren()
-      .find((n) => n.tileX === targetX && n.tileY === targetY);
-
-    // Custom check for prison bars interaction (interact across rock)
-    if (!npcSprite && this.mapId === "starwhisk_village") {
-      let farX = targetX;
-      let farY = targetY;
-      if (this.playerDir === "left") farX--;
-      else if (this.playerDir === "right") farX++;
-      else if (this.playerDir === "up") farY--;
-      else if (this.playerDir === "down") farY++;
-
-      const farNpc = this.npcs
-        .getChildren()
-        .find(
-          (n) =>
-            n.tileX === farX &&
-            n.tileY === farY &&
-            (n.npcId === "elder_hyunseok" || n.npcId === "mira")
-        );
-
-      if (farNpc) {
-        npcSprite = farNpc;
-      }
-    }
-
-    if (npcSprite) {
-      if (npcSprite.isHerb) {
-        this.collectHerb(npcSprite);
-        return;
-      }
-
-      if (npcSprite.npcId === "lost_cat") {
-        this.handleLostCatPickup(npcSprite);
-        return;
-      }
-
-      // Find NPC Data
-      let npcId = npcSprite.npcId;
-      // Fallback: mira is actually Chief Hyunseok (elder_hyunseok)
-      if (npcId === "mira") npcId = "elder_hyunseok";
-
-      const npcData = NPCS[npcId];
-
-      if (!npcData) {
-        console.warn(`WorldScene: NPC ID '${npcId}' not found in npcs.js`);
-        return;
-      }
-
-      this.isDialogueActive = true;
-
-      // Automatic Quest Start Logic
-      const activeQuests = this.registry.get("activeQuests") || {};
-      const status = this.getNpcQuestStatus(npcId, activeQuests);
-      if (status === "available") {
-        if (npcId === "shopkeeper")
-          questSystem.startQuest(this.registry, "quest_toby_supply");
-        else if (npcId === "villager1")
-          questSystem.startQuest(this.registry, "quest_lina_lost_cat");
-        else if (npcId === "elder_hyunseok") {
-          const lc = questSystem.getQuest(this.registry, "quest_lina_lost_cat");
-          const ld = questSystem.getQuest(this.registry, "quest_luke_despair");
-          if (lc?.completed)
-            questSystem.startQuest(this.registry, "quest_sera_blockade");
-          else if (ld?.completed)
-            questSystem.startQuest(this.registry, "quest_chiefs_relic");
-        } else if (npcId === "trainer_luke") {
-          questSystem.startQuest(this.registry, "quest_luke_despair");
-        }
-      }
-
-      let pages = npcData.getDialogue(this.registry);
-
-      // Pre-dialogue objective triggers
-      if (npcData.id === "Chief Hyunseok") {
-        const quest = questSystem.getQuest(this.registry, "first_steps");
-        if (
-          quest &&
-          !quest.objectives.find((o) => o.id === "talk_mira").completed
-        ) {
-          questSystem.completeObjective(
-            this.registry,
-            "first_steps",
-            "talk_mira",
-          );
-        } else if (
-          quest &&
-          quest.objectives.find((o) => o.id === "capture_cat").completed
-        ) {
-          questSystem.completeObjective(
-            this.registry,
-            "first_steps",
-            "return_mira",
-          );
-        }
-
-        // --- Added fixes for elder_hyunseok interactions missing earlier ---
-        const seraQuest = questSystem.getQuest(this.registry, "quest_sera_blockade");
-        const lukeQuest = questSystem.getQuest(this.registry, "quest_luke_despair");
-        const relicQuest = questSystem.getQuest(this.registry, "quest_chiefs_relic");
-
-        if (seraQuest && !seraQuest.completed) {
-          questSystem.completeObjective(
-            this.registry,
-            "quest_sera_blockade",
-            "talk_chief",
-          );
-        } else if (lukeQuest && !lukeQuest.completed && lukeQuest.objectives.find(o => o.id === "defeat_luke").completed) {
-          questSystem.completeObjective(
-            this.registry,
-            "quest_luke_despair",
-            "report_chief"
-          );
-        } else if (relicQuest && !relicQuest.completed) {
-          questSystem.completeObjective(
-            this.registry,
-            "quest_chiefs_relic",
-            "receive_relic",
-          );
-        }
-      } else if (npcId === "shopkeeper") {
-        const quest = questSystem.getQuest(this.registry, "quest_toby_supply");
-        if (quest) {
-          if (!quest.objectives[0].completed) {
-            questSystem.completeObjective(
-              this.registry,
-              "quest_toby_supply",
-              "talk_toby",
-            );
-            this.wasQuestUpdatedInInteraction = true;
-          } else if (
-            quest.objectives[1].completed &&
-            !quest.objectives[2].completed
-          ) {
-            questSystem.completeObjective(
-              this.registry,
-              "quest_toby_supply",
-              "return_toby",
-            );
-            this.wasQuestUpdatedInInteraction = true;
-          }
-        }
-      } else if (npcId === "villager1") {
-        const quest = questSystem.getQuest(
-          this.registry,
-          "quest_lina_lost_cat",
-        );
-        if (quest) {
-          if (!quest.objectives[0].completed) {
-            questSystem.completeObjective(
-              this.registry,
-              "quest_lina_lost_cat",
-              "talk_lina",
-            );
-          } else if (
-            quest.objectives[1].completed &&
-            !quest.objectives[2].completed
-          ) {
-            questSystem.completeObjective(
-              this.registry,
-              "quest_lina_lost_cat",
-              "return_lina",
-            );
-          }
-        }
-      }
-
-      console.log(`WorldScene: Interacting with ${npcSprite.npcId}`, npcData);
-
-      // Look at player
-      const oppDir = { up: "down", down: "up", left: "right", right: "left" };
-      npcSprite.setFrame(npcSprite.animFrames[oppDir[this.playerDir]][1]);
-
-      this.scene.launch("DialogScene", {
-        dialogue: {
-          name: npcData.name,
-          pages: pages,
-          faceKey: npcData.faceKey,
-          faceIndex: npcData.faceIndex || 0,
-        },
-        onComplete: () => {
-          this.isDialogueActive = false;
-          this.processNpcRole(npcSprite, npcData);
-          this.wasQuestUpdatedInInteraction = false; // Reset for next time
-          this.updateQuestIndicators();
-        },
-      });
-    }
-  }
-
-  collectHerb(herbSprite) {
-    this.registry.set(`${herbSprite.herbId}_picked`, true);
-
-    import("../systems/audioManager.js").then((module) => {
-      module.audioManager.playME("me_item_get");
-    });
-
-    this.events.emit("notifyItem", {
-      message: "신비한 약초를 채집했습니다!",
-      color: 0x2ecc71,
-    });
-
-    const activeQuests = this.registry.get("activeQuests") || {};
-    const ts = activeQuests["quest_toby_supply"];
-    if (ts) {
-      if (ts.objectives[1].count < 3) {
-        ts.objectives[1].count = (ts.objectives[1].count || 0) + 1;
-        ts.objectives[1].text = `[그린포우 숲] 신비한 약초 3개 채집하기 (${ts.objectives[1].count}/3)`;
-        this.registry.set("activeQuests", activeQuests);
-
-        // Complete objective properly to emit events if reached 3
-        if (ts.objectives[1].count >= 3) {
-          questSystem.completeObjective(this.registry, "quest_toby_supply", "collect_herbs");
-        } else {
-          // Just update UI manually if not fully complete
-          const uiScene = this.scene.manager.getScene("UIScene");
-          if (uiScene) uiScene.events.emit("updateQuests");
-        }
-      }
-    }
-
-    herbSprite.destroy();
-    this.updateQuestIndicators();
-  }
-
-  async playCutscene(
-    npcSprite,
-    targetTileX,
-    targetTileY,
-    dialogueKey,
-    onCompleteCallback,
-  ) {
-    this.isDialogueActive = true;
-    this.player.play(`player_walk_${this.playerDir}`, false).stop();
-    this.player.setFrame(this.player.animFrames[this.playerDir][1]);
-
-    const tx = targetTileX * 32 + 16;
-    const ty = (targetTileY + 1) * 32;
-
-    // Movement animation
-    const dx = targetTileX - npcSprite.tileX;
-    const dy = targetTileY - npcSprite.tileY;
-    let dir = "down";
-    if (dx > 0) dir = "right";
-    else if (dx < 0) dir = "left";
-    else if (dy > 0) dir = "down";
-    else if (dy < 0) dir = "up";
-
-    npcSprite.play(`${npcSprite.npcId}_walk_${dir}`, true);
-
-    await new Promise((resolve) => {
-      this.tweens.add({
-        targets: npcSprite,
-        x: tx,
-        y: ty,
-        duration: Math.abs(dx + dy) * this.movementDuration * 1.5,
-        onComplete: () => {
-          npcSprite.stop();
-          npcSprite.tileX = targetTileX;
-          npcSprite.tileY = targetTileY;
-          resolve();
-        },
-      });
-    });
-
-    const npcData = NPCS[npcSprite.npcId];
-    this.scene.launch("DialogScene", {
-      dialogue: {
-        name: npcData.name,
-        pages: NPCS[dialogueKey]
-          ? NPCS[dialogueKey].getDialogue(this.registry)
-          : npcData.getDialogue(this.registry),
-        faceKey: npcData.faceKey,
-        faceIndex: npcData.faceIndex || 0,
-      },
-      onComplete: () => {
-        this.isDialogueActive = false;
-        if (onCompleteCallback) onCompleteCallback();
-        this.updateQuestIndicators();
-      },
-    });
-  }
-
-  /**
-   * Dispatches behavior based on the NPC's role rather than hardcoded IDs.
-   */
-  processNpcRole(npcSprite, npcData) {
-    let currentRole = npcData.role;
-
-    // Story-based role overrides
-    if (npcSprite.npcId === "eugene" && this.registry.get("chapter1_done")) {
-      currentRole = "healer_quest";
-    } else if (
-      (npcSprite.npcId === "mira" || npcSprite.npcId === "elder_hyunseok") &&
-      this.registry.get("chapter1_done")
-    ) {
-      currentRole = "prison";
-    }
-
-    switch (currentRole) {
-      case "healer_quest":
-        this.healParty();
-        // Transition Quest logic
-        const qH = this.registry.get("activeQuests") || {};
-        const firstSteps = qH["first_steps"];
-        const seraBlockade = qH["quest_sera_blockade"];
-        const lukeDespair = qH["quest_luke_despair"];
-
-        if (
-          firstSteps &&
-          !firstSteps.completed &&
-          firstSteps.objectives.find((o) => o.id === "return_mira").completed
-        ) {
-          questSystem.completeObjective(
-            this.registry,
-            "first_steps",
-            "return_mira",
-          );
-          this.events.emit("notifyItem", {
-            message: "새로운 퀘스트: 숲의 각성",
-            color: 0xf1c40f,
-          });
-        }
-
-        // Handle Sera Report Back
-        if (seraBlockade && !seraBlockade.completed && seraBlockade.objectives.find(o => o.id === "defeat_sera").completed) {
-          questSystem.completeObjective(this.registry, "quest_sera_blockade", "report_chief");
-        }
-
-        // Handle Luke Report Back
-        if (lukeDespair && !lukeDespair.completed && lukeDespair.objectives.find(o => o.id === "defeat_luke").completed) {
-          questSystem.completeObjective(this.registry, "quest_luke_despair", "report_chief");
-        }
-
-        // Also fallback to default quest assignment if possible
-        if (!qH["quest_toby_supply"] && qH["first_steps"]?.completed) {
-          this.startQuest("quest_toby_supply");
-        } else if (
-          qH["quest_toby_supply"]?.completed &&
-          qH["quest_lina_lost_cat"]?.completed &&
-          !qH["quest_sera_blockade"]
-        ) {
-          this.startQuest("quest_sera_blockade");
-        } else if (
-          qH["quest_sera_blockade"]?.completed &&
-          !qH["quest_luke_despair"]
-        ) {
-          this.startQuest("quest_luke_despair");
-        } else if (
-          qH["quest_luke_despair"]?.completed &&
-          !qH["quest_chiefs_relic"]
-        ) {
-          this.startQuest("quest_chiefs_relic");
-        } else if (qH["quest_chiefs_relic"]) {
-          if (qH["quest_chiefs_relic"].objectives[0].completed) {
-            if (!(this.registry.get("playerInventory") || {}).purification_relic) {
-              this.registry.set("playerInventory", {
-                ...this.registry.get("playerInventory"),
-                purification_relic: 1,
-              });
-              this.events.emit("notifyItem", {
-                message: "정화의 유물을 획득했습니다!",
-                color: 0x3498db,
-              });
-            }
-            if (!qH["forest_awakening"]) {
-              this.startQuest("forest_awakening");
-            }
-          }
-        }
-        break;
-      case "shopkeeper":
-        if (this.wasQuestUpdatedInInteraction) {
-          console.log("WorldScene: Skipping shop launch due to quest progression.");
-          return;
-        }
-        this.scene.pause();
-        this.scene.launch("ShopScene");
-        break;
-      case "trainer":
-      case "boss_trainer":
-        if (this.isPartyDead()) {
-          this.events.emit("notifyItem", {
-            message: `모든 고양이가 쓰러졌습니다! 촌장 현석에게 치료를 받으세요.`,
-            color: 0xe74c3c,
-          });
-          return;
-        }
-        const defeated = this.registry.get("defeatedTrainers") || [];
-        if (!defeated.includes(npcData.trainerId)) {
-          const activeQuests = this.registry.get("activeQuests") || {};
-
-          if (npcData.trainerId === "ellie") {
-            const forestQuest = activeQuests["forest_awakening"];
-            if (!forestQuest || forestQuest.completed) {
-              this.scene.launch("DialogScene", {
-                dialogue: {
-                  name: npcData.name,
-                  pages: npcData.getDialogue(this.registry),
-                  faceKey: npcData.faceKey,
-                  faceIndex: npcData.faceIndex || 0,
-                },
-                onComplete: () => {
-                  this.isDialogueActive = false;
-                  this.updateQuestIndicators();
-                },
-              });
-              return;
-            }
-          } else if (npcData.trainerId === "sera") {
-            const seraQuest = activeQuests["quest_sera_blockade"];
-            if (!seraQuest || seraQuest.completed || seraQuest.objectives.find(o => o.id === "defeat_sera").completed) {
-              this.scene.launch("DialogScene", {
-                dialogue: {
-                  name: npcData.name,
-                  pages: npcData.getDialogue(this.registry),
-                  faceKey: npcData.faceKey,
-                  faceIndex: npcData.faceIndex || 0,
-                },
-                onComplete: () => {
-                  this.isDialogueActive = false;
-                  this.updateQuestIndicators();
-                },
-              });
-              return;
-            }
-          } else if (npcData.trainerId === "luke") {
-            const lukeQuest = activeQuests["quest_luke_despair"];
-            if (!lukeQuest || lukeQuest.completed || lukeQuest.objectives.find(o => o.id === "defeat_luke").completed) {
-              this.scene.launch("DialogScene", {
-                dialogue: {
-                  name: npcData.name,
-                  pages: npcData.getDialogue(this.registry),
-                  faceKey: npcData.faceKey,
-                  faceIndex: npcData.faceIndex || 0,
-                },
-                onComplete: () => {
-                  this.isDialogueActive = false;
-                  this.updateQuestIndicators();
-                },
-              });
-              return;
-            }
-          }
-
-          this.isTransitioning = true;
-          this.triggerTrainerBattle(npcData.trainerId);
-        }
-        break;
-      case "lore_npc":
-        if (npcData.id === "Chief Hyunseok") {
-          const quests = this.registry.get("activeQuests") || {};
-          if (
-            quests["quest_sera_blockade"] &&
-            quests["quest_sera_blockade"].completed &&
-            !quests["quest_luke_despair"]
-          ) {
-            // Automatically move to Luke quest handled elsewhere
-          }
-        }
-        break;
-      default:
-        // Transition Quest start/report logic
-        const q = this.registry.get("activeQuests") || {};
-        if (npcData.id === "Chief Hyunseok") {
-          if (!q["quest_toby_supply"] && q["first_steps"]?.completed) {
-            this.startQuest("quest_toby_supply");
-          } else if (
-            q["quest_toby_supply"]?.completed &&
-            q["quest_lina_lost_cat"]?.completed &&
-            !q["quest_sera_blockade"]
-          ) {
-            this.startQuest("quest_sera_blockade");
-          } else if (
-            q["quest_sera_blockade"]?.completed &&
-            !q["quest_luke_despair"]
-          ) {
-            this.startQuest("quest_luke_despair");
-          } else if (
-            q["quest_luke_despair"]?.completed &&
-            !q["quest_chiefs_relic"]
-          ) {
-            this.startQuest("quest_chiefs_relic");
-          } else if (q["quest_chiefs_relic"]) {
-            if (
-              q["quest_chiefs_relic"].objectives[0].completed
-            ) {
-              if (!(this.registry.get("playerInventory") || {}).purification_relic) {
-                this.registry.set("playerInventory", {
-                  ...this.registry.get("playerInventory"),
-                  purification_relic: 1,
-                });
-
-                this.events.emit("notifyItem", {
-                  message: "정화의 유물을 획득했습니다!",
-                  color: 0x3498db,
-                });
-              }
-              if (!q["forest_awakening"]) {
-                this.startQuest("forest_awakening");
-              }
-            }
-          }
-        } else if (npcData.id === "shopkeeper") {
-          if (q["quest_toby_supply"]) {
-            questSystem.completeObjective(
-              this.registry,
-              "quest_toby_supply",
-              "talk_toby",
-            );
-            if (q["quest_toby_supply"].objectives[1].completed) {
-              questSystem.completeObjective(
-                this.registry,
-                "quest_toby_supply",
-                "return_toby",
-              );
-            }
-          }
-        } else if (npcData.id === "villager1") {
-          if (q["quest_lina_lost_cat"]) {
-            questSystem.completeObjective(
-              this.registry,
-              "quest_lina_lost_cat",
-              "talk_lina",
-            );
-            if (q["quest_lina_lost_cat"].objectives[1].completed) {
-              questSystem.completeObjective(
-                this.registry,
-                "quest_lina_lost_cat",
-                "return_lina",
-              );
-            }
-          } else if (q["quest_toby_supply"]?.completed) {
-            this.startQuest("quest_lina_lost_cat");
-          }
-        } else if (npcData.id === "trainer_sera") {
-          if (q["quest_sera_blockade"] && !q["quest_luke_despair"]) {
-            this.startQuest("quest_luke_despair");
-          }
-        }
-        break;
-    }
-  }
-
   startQuest(id) {
     if (questSystem.startQuest(this.registry, id)) {
       const q = questSystem.getQuest(this.registry, id);
-      this.events.emit("notifyItem", {
-        message: `새로운 퀘스트: ${q.title}`,
-        color: 0xf1c40f,
-      });
+      this.events.emit("notifyItem", { message: `새로운 퀘스트: ${q.title}`, color: 0xf1c40f });
       this.updateQuestIndicators();
     }
   }
 
-  async triggerLostCatEvent() {
-    this.registry.set("lost_cat_event_triggered", true);
-    cutsceneSystem.lockInput(this);
-
-    import("../systems/audioManager.js").then((module) => {
-      module.audioManager.playBGS("bgs_quake");
-    });
-
-    await cutsceneSystem.shakeCamera(this, 2000, 0.02);
-
-    // Spawn cat at a valid within-bounds location (grass area on right)
-    const spawnX = 11,
-      spawnY = 4;
-    const cat = this.add.sprite(
-      spawnX * 32 + 16,
-      (spawnY + 1) * 32,
-      "animal",
-      40,
-    ); // Cat index
-    cat.setOrigin(0.5, 1);
-    cat.npcId = "lost_cat";
-    cat.tileX = spawnX;
-    cat.tileY = spawnY;
-    this.npcs.add(cat);
-
-    await cutsceneSystem.panCameraTo(this, cat.x, cat.y, 1000);
-
-    import("../systems/audioManager.js").then((module) => {
-      module.audioManager.playSE("se_cat");
-      module.audioManager.stopBGS();
-    });
-
-    await cutsceneSystem.delay(this, 1000);
-    await cutsceneSystem.restoreCameraToPlayer(this, 1000);
-
-    cutsceneSystem.unlockInput(this);
-    this.updateQuestIndicators();
-  }
-
-  async handleLostCatPickup(catSprite) {
-    this.isDialogueActive = true;
-    import("../systems/audioManager.js").then((module) =>
-      module.audioManager.playSE("se_cat"),
-    );
-
-    this.events.emit("notifyItem", {
-      message: "고양이를 발견하여 품에 안았습니다!",
-      color: 0x2ecc71,
-    });
-
-    questSystem.completeObjective(
-      this.registry,
-      "quest_lina_lost_cat",
-      "find_cat",
-    );
-
-    catSprite.destroy();
-    this.isDialogueActive = false;
-    this.updateQuestIndicators();
-  }
-
-  checkEventTriggers() {
-    // Current event triggers (handled in onMoveComplete for better control)
-    return false;
-  }
-
-  async runMosslightBossIntro() {
-    // Find Rowan
-    const rowan = this.npcs
-      .getChildren()
-      .find((n) => n.npcId === "trainer_guardian_rowan");
-    if (!rowan) return;
-
-    cutsceneSystem.lockInput(this);
-
-    // Pan camera to Rowan
-    await cutsceneSystem.panCameraTo(this, rowan.x, rowan.y * 32, 1500);
-
-    await cutsceneSystem.delay(this, 500);
-
-    const npcData = NPCS["trainer_guardian_rowan"];
-    await cutsceneSystem.playDialogue(this, npcData.name, [
-      "여기까지 온 것을 보니 실력은 인정하겠다.",
-      "하지만 이곳은 신성한 신전이다.",
-      "세계의 균형을 지키기 위해…",
-      "나는 너를 막아야 한다.",
-    ]);
-
-    // Pan back to player
-    await cutsceneSystem.restoreCameraToPlayer(this, 1500);
-
-    this.registry.set("boss_rowan_intro", true);
-    cutsceneSystem.unlockInput(this);
-
-    // Force trigger battle
-    this.triggerTrainerBattle("guardian_rowan");
-  }
-
-  async runClimaxSequence() {
-    this.isDialogueActive = true;
-    cutsceneSystem.lockInput(this);
-
-    // 1. Rowan's final words (if any additional needed, but npc dialogue already says enough)
-
-    // 2. Chief Hyunseok Appears
-    const spawn = this.mapData.spawns.find(
-      (s) => s.id === "trainer_guardian_rowan",
-    );
-    const hyunseok = this.add.sprite(
-      spawn.x * 32 + 16,
-      (spawn.y + 5) * 32,
-      "people4",
-      37,
-    ); // actor sheet index
-    hyunseok.setOrigin(0.5, 1);
-    hyunseok.setAlpha(0);
-    hyunseok.setDepth(11);
-
-    await cutsceneSystem.panCameraTo(this, hyunseok.x, hyunseok.y, 1000);
-
-    this.tweens.add({
-      targets: hyunseok,
-      alpha: 1,
-      duration: 1000,
-    });
-
-    await cutsceneSystem.delay(this, 1000);
-
-    // Walk up to player
-    await new Promise((resolve) => {
-      this.tweens.add({
-        targets: hyunseok,
-        y: (spawn.y + 2) * 32,
-        duration: 2000,
-        onComplete: resolve,
-      });
-    });
-
-    const npcData = NPCS["boss_hyunseok_climax"];
-
-    // Play Climax BGM
-    import("../systems/audioManager.js").then((module) => {
-      module.audioManager.playBGM("bgm_climax_event");
-    });
-
-    await cutsceneSystem.playDialogue(
-      this,
-      npcData.name,
-      npcData.getDialogue(this.registry),
-      npcData.faceKey,
-      npcData.faceIndex,
-    );
-
-    // 3. Start Hidden Quest and Trigger Battle
-    this.startQuest("climax_hyunseok_betrayal");
-
-    this.registry.set("is_climax_battle", true);
-    this.triggerTrainerBattle("boss_hyunseok");
-  }
-
-  async runPostClimaxSequence() {
-    this.isDialogueActive = true;
-    cutsceneSystem.lockInput(this);
-
-    const npcData = NPCS["boss_hyunseok_defeated"];
-    await cutsceneSystem.playDialogue(
-      this,
-      npcData.name,
-      npcData.getDialogue(this.registry),
-      npcData.faceKey,
-      npcData.faceIndex,
-    );
-
-    // 4. Legendary Cats Scatter Effect
-    import("../systems/audioManager.js").then((module) => {
-      module.audioManager.playBGS("bgs_quake");
-    });
-
-    await cutsceneSystem.shakeCamera(this, 3000, 0.05);
-
-    // --- Scatter Effect ---
-    const altarPxX = 7 * 32 + 16;
-    const altarPxY = 2 * 32 + 16;
-    const legendaries = [
-      "creature_verdantlynx",
-      "creature_embermane",
-      "creature_floodlynx",
-      "creature_voidlynx"
-    ];
-
-    legendaries.forEach((key, index) => {
-      const sprite = this.add.sprite(altarPxX, altarPxY, key);
-      sprite.setDepth(20);
-      sprite.setTintFill(0x000000); // Black silhouette effect
-
-      const angle = (Math.PI * 2 * index) / legendaries.length;
-      const dist = 600;
-
-      this.tweens.add({
-        targets: sprite,
-        x: altarPxX + Math.cos(angle) * dist,
-        y: altarPxY + Math.sin(angle) * dist,
-        alpha: 0,
-        duration: 4500,
-        ease: 'Cubic.easeOut',
-        onComplete: () => sprite.destroy()
-      });
-    });
-
-    this.cameras.main.flash(1000, 255, 255, 255);
-    // -----------------------
-
-    this.updateLogText("전설의 고양이들이 대륙 곳곳으로 흩어졌습니다...");
-
-    await cutsceneSystem.delay(this, 4500);
-
-    // 5. Final Fade and Set State
-    this.cameras.main.fadeOut(2000, 0, 0, 0);
-    this.cameras.main.once("camerafadeoutcomplete", () => {
-      this.registry.set("chapter1_done", true);
-      this.registry.set("is_climax_battle", false);
-
-      // Complete the Climax Quest
-      questSystem.completeObjective(
-        this.registry,
-        "climax_hyunseok_betrayal",
-        "defeat_hyunseok"
-      );
-
-      // Stop Quake BGS
-      import("../systems/audioManager.js").then((module) => {
-        module.audioManager.stopBGS();
-      });
-
-      // Chapter 1 End Message before destroying the scene
-      this.events.emit("notifyItem", {
-        message: "=== 챕터 1 완료! ===\n대륙 곳곳으로 흩어진 전설의 고양이들을 찾아 다음 챕터를 준비하세요!",
-        color: 0xf39c12
-      });
-
-      // Wait 3 seconds to let the player read the message, then transition
-      this.time.delayedCall(3000, () => {
-        // Return to village prison
-        this.scene.start("WorldScene", {
-          mapId: "starwhisk_village",
-          spawnX: 4,
-          spawnY: 16,
-        });
-      });
-    });
-  }
-
   updateLogText(text) {
     this.events.emit("notifyItem", { message: text, color: 0x3498db });
-  }
-
-  async triggerLegendaryEncounter(sprite) {
-    if (this.isDialogueActive) return;
-    this.isDialogueActive = true;
-
-    const legendaryId = sprite.npcId.split("_")[1].toUpperCase();
-
-    cutsceneSystem.lockInput(this);
-
-    // Dramatic pan smoothly
-    await cutsceneSystem.panCameraTo(this, sprite.x, sprite.y, 1500);
-
-    // Pulse animation
-    this.tweens.add({
-      targets: sprite,
-      scale: 1.2,
-      yoyo: true,
-      duration: 300,
-      repeat: 2,
-    });
-
-    await cutsceneSystem.shakeCamera(this, 1000, 0.02);
-
-    const roarText = this.add
-      .text(sprite.x, sprite.y - 40, "GROOOOAAAR!", {
-        font: 'bold 24px "Press Start 2P", Courier',
-        fill: "#e74c3c",
-        stroke: "#000",
-        strokeThickness: 4,
-      })
-      .setOrigin(0.5);
-
-    await cutsceneSystem.delay(this, 1500);
-    roarText.destroy();
-
-    await cutsceneSystem.restoreCameraToPlayer(this, 1000);
-
-    // Cinematic Sequence (Foreshadowing)
-    await cutsceneSystem.delay(this, 1000);
-
-    // Fade out the legendary sprite (it vanishes into the forest)
-    this.tweens.add({
-      targets: sprite,
-      alpha: 0,
-      y: sprite.y - 20,
-      duration: 1000,
-      onComplete: () => {
-        sprite.destroy();
-      },
-    });
-
-    await cutsceneSystem.delay(this, 1000);
-
-    this.isDialogueActive = false;
-    cutsceneSystem.unlockInput(this);
-
-    // Note: Battle Scene is NOT launched here for foreshadowing
-    console.log(
-      `WorldScene: Legendary ${legendaryId} foreshadowed. No battle triggered in Chapter 1.`,
-    );
   }
 
   healParty() {
@@ -1838,25 +742,14 @@ export class WorldScene extends Phaser.Scene {
 
     this.cameras.main.flash(300, 150, 255, 150);
 
-    // Play Heal SE
     import("../systems/audioManager.js").then((module) => {
       module.audioManager.playSE("se_heal");
     });
 
-    // Flash completely heals, log internally
-    console.log("WorldScene: Party fully healed via Elder Mira.");
-
-    // Autosave after healing
-    saveSystem.saveData(
-      this.registry,
-      this.mapId,
-      this.player.tileX,
-      this.player.tileY,
-    );
+    saveSystem.saveData(this.registry, this.mapId, this.player.tileX, this.player.tileY);
   }
 
   triggerTrainerBattle(trainerId) {
-    console.log(`TRAINER BATTLE: ${trainerId}`);
     this.registry.set("world_mapId", this.mapId);
     this.registry.set("world_spawnX", this.player.tileX);
     this.registry.set("world_spawnY", this.player.tileY);
@@ -1867,29 +760,20 @@ export class WorldScene extends Phaser.Scene {
 
     this.events.emit("hideMapName");
 
-    // Play Encounter SE
     import("../systems/audioManager.js").then((module) => {
       module.audioManager.playSE("se_encounter");
     });
 
-    this.cameras.main.flash(500, 255, 0, 0); // Red flash
+    this.cameras.main.flash(500, 255, 0, 0);
 
     this.time.delayedCall(600, () => {
-      this.scene.start("BattleScene", {
-        isTrainer: true,
-        trainerId: trainerId,
-      });
+      this.scene.start("BattleScene", { isTrainer: true, trainerId: trainerId });
     });
   }
 
   triggerBattle(encounter) {
     if (!encounter) return;
 
-    console.log(
-      `ENCOUNTER TRIGGERED: ${encounter.creatureId} Lvl ${encounter.level}`,
-    );
-
-    // Save return state
     this.registry.set("world_mapId", this.mapId);
     this.registry.set("world_spawnX", this.player.tileX);
     this.registry.set("world_spawnY", this.player.tileY);
@@ -1900,7 +784,6 @@ export class WorldScene extends Phaser.Scene {
 
     this.events.emit("hideMapName");
 
-    // Play Encounter SE
     import("../systems/audioManager.js").then((module) => {
       module.audioManager.playSE("se_encounter");
     });
@@ -1908,10 +791,7 @@ export class WorldScene extends Phaser.Scene {
     this.cameras.main.flash(500, 255, 255, 255);
 
     this.time.delayedCall(600, () => {
-      this.scene.start("BattleScene", {
-        enemyId: encounter.creatureId,
-        enemyLevel: encounter.level,
-      });
+      this.scene.start("BattleScene", { enemyId: encounter.creatureId, enemyLevel: encounter.level });
     });
   }
 
@@ -1919,5 +799,15 @@ export class WorldScene extends Phaser.Scene {
     const party = this.registry.get("playerParty") || [];
     if (party.length === 0) return false;
     return party.every((cat) => cat.currentHp <= 0);
+  }
+
+  // --- Story sequence delegates ---
+
+  runClimaxSequence() {
+    worldStorySystem.runClimaxSequence(this);
+  }
+
+  runPostClimaxSequence() {
+    worldStorySystem.runPostClimaxSequence(this);
   }
 }

@@ -1,3 +1,4 @@
+import Phaser from "phaser";
 import { ASSETS } from "../config/assetPaths.js";
 import { battleSystem } from "../systems/battleSystem.js";
 import { codexSystem } from "../systems/codexSystem.js";
@@ -57,7 +58,6 @@ export class BattleScene extends Phaser.Scene {
         this.enemyParty.push(catInstance);
       });
       this.enemyCat = this.enemyParty[0];
-      console.log(`BattleScene: Trainer ${trainerData.name} wants to battle!`);
     } else {
       const enemyId =
         data.enemyId && typeof data.enemyId === "string"
@@ -251,14 +251,14 @@ export class BattleScene extends Phaser.Scene {
       this.playerHpBg,
       this.playerHpBar,
     ]);
-    this.playerSprite.setTexture(this.playerCat.id.toLowerCase());
+    this.playerSprite.setTexture("creature_" + this.playerCat.id.toLowerCase());
 
     // 2. Enemy UI (Top Left)
     this.enemyUI = this.add.container(width * 0.3, height * 0.25);
     this.enemySprite = this.add
       .sprite(0, 0, ASSETS.SPRITES.MONSTER_FALLBACK.KEY)
       .setScale(1.6);
-    this.enemySprite.setTexture(this.enemyCat.id.toLowerCase());
+    this.enemySprite.setTexture("creature_" + this.enemyCat.id.toLowerCase());
 
     this.enemyBg = this.add
       .rectangle(0, 120, 300, 100, 0x1a252f)
@@ -597,7 +597,7 @@ export class BattleScene extends Phaser.Scene {
     this.playerCat = newCat;
 
     // Update UI
-    this.playerSprite.setTexture(this.playerCat.id.toLowerCase());
+    this.playerSprite.setTexture("creature_" + this.playerCat.id.toLowerCase());
     this.playerName.setText(`${this.playerCat.name} Lv. ${this.playerCat.level}`);
     this.playerHpText.setText(`HP: ${this.playerCat.currentHp}/${this.playerCat.maxHp}`);
 
@@ -971,7 +971,7 @@ export class BattleScene extends Phaser.Scene {
       this.updateLog(`트레이너가 ${koreanUtils.getPostPosition(this.enemyCat.name, '을')} 내보냈다!`);
 
       // Refresh UI
-      this.enemySprite.setTexture(this.enemyCat.id.toLowerCase());
+      this.enemySprite.setTexture("creature_" + this.enemyCat.id.toLowerCase());
       this.enemyName.setText(
         `${this.enemyCat.name} Lvl ${this.enemyCat.level}`,
       );
@@ -1020,7 +1020,6 @@ export class BattleScene extends Phaser.Scene {
           module.audioManager.playME('me_item_get', { duckBGM: true });
         });
 
-        console.log(`BattleScene: Granted item reward ${itemId}`);
       }
     } else {
       // Wild Gold Drop

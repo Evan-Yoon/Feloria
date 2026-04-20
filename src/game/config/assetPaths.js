@@ -1467,4 +1467,11 @@ export const ASSETS = {
       CAT: { KEY: "se_cat", PATH: "/assets/audio/SE/Cat.ogg" },
     },
   },
+  CUTSCENE_IMAGES: {
+    BG_CONTINENT: { KEY: "bg_continent", PATH: "/assets/images/startscene/펠로리아 대륙.png" },
+    BG_ANCIENT_CATS: { KEY: "bg_ancient_cats", PATH: "/assets/images/startscene/고대 고양이.png" },
+    BG_TWISTED_FOREST: { KEY: "bg_twisted_forest", PATH: "/assets/images/startscene/뒤틀린 숲.png" },
+    BG_SHADOW: { KEY: "bg_shadow", PATH: "/assets/images/startscene/흑막.png" },
+    BG_TITLE_SCREEN: { KEY: "bg_title_screen", PATH: "/assets/images/startscene/Feloria_title_screen.png" },
+  },
 };

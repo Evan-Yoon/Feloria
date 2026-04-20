@@ -92,6 +92,110 @@ export const pixelArtGenerator = {
   },
 
   /**
+   * Generates all placeholder textures used by the game (tileset, player, NPCs, UI).
+   * Called from PreloadScene after assets are loaded.
+   */
+  createPlaceholders: (scene) => {
+    // 1. TILESET
+    const tEmpty = Array(16).fill("................");
+    const tGrass = [
+      "EEEEEEEEEEEEEEEE","EEGEEEEEEEEEEEEE","EEEEEEEGEEEEEEEE","EEEEEEEEEEEEEEEE",
+      "EEEEEEEEEEEEGEEE","EGEEEEEEEEEEEEEE","EEEEEEEEEEEEEEEE","EEEEEEGEEEEEEEEE",
+      "EEEEEEEEEEEEEEEE","EEEEEEEEEEEGEEEE","EEGEEEEEEEEEEEEE","EEEEEEEEEEEEEEEE",
+      "EEEEEEEGEEEEEEEE","EEEEEEEEEEEEEEEE","EEEEEEEEEEEEGEEE","EEEEEEEEEEEEEEEE",
+    ];
+    const tDirt = [
+      "vvvvvvvvvvvvvvvv","vvWvvvvvvvvvvvvv","vvvvvvvwvvvvvvvv","vvvvvvvvvvvvWvvv",
+      "vvvvwvvvvvvvvvvv","vvvvvvvvvvWvvvvv","vvvvvvvvwvvvvvvv","vvWvvvvvvvvvvvvv",
+      "vvvvvvvvvvvvvvvv","vvvvvWvvvvvvvvwv","vvvvvvvvvvvvvvvv","vvwvvvvvvWvvvvvv",
+      "vvvvvvvvvvvvvvvv","vvWvvvvvvvvvvwvv","vvvvvvvvvvvvvvvv","vvvvvvvvwvvvvvvv",
+    ];
+    const tWater = [
+      "bbbbbbbbbbbbbbbb","bbbbbsbbbbbbbbbb","bbbbbbbbbbbbbbbs","bbbbbbbbbbbbbbbb",
+      "bbsbbbbbbbbbbbbb","bbbbbbbbbsbbbbbb","bbbbbbbbbbbbbbbb","bbbbbbbbbbbbbbbb",
+      "bbbbbbbbbbbsbbbb","bbbbbbbbbbbbbbbb","bbbbbsbbbbbbbbbb","bbbbbbbbbbbbbbbb",
+      "bbbbbbbbbbbbbbbs","bbsbbbbbbbbbbbbb","bbbbbbbbbbbbbbbb","bbbbbbbbbsbbbbbb",
+    ];
+    const tWall = [
+      "2222222222222222","3333333133333331","3333333133333331","3333333133333331",
+      "1111111111111111","3331333333313333","3331333333313333","3331333333313333",
+      "1111111111111111","3333333133333331","3333333133333331","3333333133333331",
+      "1111111111111111","3331333333313333","3331333333313333","3331333333313333",
+    ];
+    const tTallGrass = [
+      "EEEEEEEEEEEEEEEE","EEEGGGEEEEEGGGEE","EEGGgGGEEEEGGgGE","EGgGGGEEEEEGGgGE",
+      "GGGGGGGEEEGGGGGG","GgGGgGGEEEGgGGgG","GGGGGGGGEEGGGGGG","EEGGGGGEEEEGGGGG",
+      "EGGgGGEEEEEGGgGE","GGGGGGGEEEGGGGGG","GgGGgGGEEEGgGGgG","GGGGGGGGEEGGGGGG",
+      "EEEGGGEEEEEGGGEE","EEGGGGGEEEEGGGGG","EGGgGGEEEEEGGgGE","EEEEEEEEEEEEEEEE",
+    ];
+    const tTree = [
+      "......GGGG......","....GGGGGGGG....","...GGGGGGGGGG...","..GGGGGGGGGGGG..",
+      "..GGGGGGGGGGGG..",".GGGGGGGGGGGGGG.",".GGGGGGGGGGGGGG.",".GGGGGGGGGGGGGG.",
+      ".GGGGGGGGGGGGGG.","..GGGGGGGGGGGG..","...GGGGGGGGGG...",".....wwwwww.....",
+      ".....wWwwWw.....",".....wwWwww.....",".....wwwwww......","......wwww......",
+    ];
+    pixelArtGenerator.createTileset(scene, "overworld-tiles", [tEmpty, tGrass, tDirt, tWater, tWall, tTallGrass, tTree], 2);
+
+    // 2. PLAYER SPRITE
+    const pDown = [
+      ".....HHHHHH.....","....HHHHHHHH....","....HHffffHH....","....Hff00ffH....",
+      "....HffffffH.....",".....ffffff.....","....bbbbbbbb....","...bbbbbbbbbb...",
+      "...bbbbbbbbbb...","...bbbbbbbbbb...","....KKKKKKKK....","....KKKKKKKK....",
+      "....KK....KK....","....KK....KK....","....00....00....","....00....00....",
+    ];
+    const pUp = [
+      ".....HHHHHH.....","....HHHHHHHH....","....HHHHHHHH....","....HHHHHHHH....",
+      "....HHHHHHHH.....",".....HHHHHH.....","....bbbbbbbb....","...bbbbbbbbbb...",
+      "...bbbbbbbbbb...","...bbbbbbbbbb...","....KKKKKKKK....","....KKKKKKKK....",
+      "....KK....KK....","....KK....KK....","....00....00....","....00....00....",
+    ];
+    const pLeft = [
+      ".....HHHHH......","....HHHHHHH.....","....HffffHH.....","....Hff0fHH.....",
+      "....HffffHH......",".....fffff......","....bbbbbbb.....","...bbbbbbbbb....",
+      "...bbbbbbbbb....","...bbbbbbbbb....","....KKKKKKK.....","....KKKKKKK.....",
+      "....KK...KK.....","....KK...KK.....","....00...00.....","....00...00.....",
+    ];
+    const pRight = [
+      "......HHHHH.....","....HHHHHHHH....","....HHffffH.....","....HHf0ffH.....",  // fixed width
+      ".....HHffffH......","......fffff.....","....bbbbbbb.....","....bbbbbbbbb...",
+      "....bbbbbbbbb...","....bbbbbbbbb...",".....KKKKKKK.....",".....KKKKKKK....",
+      ".....KK...KK.....",".....KK...KK.....",".....00...00.....",".....00...00....",
+    ];
+    pixelArtGenerator.createSpritesheet(scene, "player", [pDown, pUp, pLeft, pRight], 16, 16, 2);
+
+    // 3. NPC SPRITES
+    const miraFrame = [
+      ".....444444.....","....44444444....","....44ffff44....","....44f00f44....",
+      "....44ffff44.....",".....ffffff.....","....UUUUUUUU....","...UUUUUUUUUU...",
+      "...UUUUUUUUUU...","...UUUUUUUUUU...","...UUUUUUUUUU...","...UUUUUUUUUU...",
+      "...UUUUUUUUUU...","...UUUUUUUUUU...","....00....00....","....00....00....",
+    ];
+    pixelArtGenerator.createTexture(scene, "npc_mira", miraFrame, 2);
+
+    const npcFrame = [
+      ".....HHHHHH.....","....HHHHHHHH....","....HHffffHH....","....Hff00ffH....",
+      "....HffffffH.....",".....ffffff.....","....GGGGGGGG....","...GGGGGGGGGG...",
+      "...GGGGGGGGGG...","...GGGGGGGGGG...","....KKKKKKKK....","....KKKKKKKK....",
+      "....KK....KK....","....KK....KK....","....00....00....","....00....00....",
+    ];
+    pixelArtGenerator.createTexture(scene, "npc", npcFrame, 2);
+
+    const trainerFrame = [
+      ".....RRRRRR.....","....RRRRRRRR....","....RRffffRR....","....Rf00ffRH....",
+      "....RffffffH.....",".....ffffff.....","....rrrrrrrr....","...rrrrrrrrrr...",
+      "...rrrr00rrrr...","...rrrr00rrrr...","....KKKKKKKK....","....KKKKKKKK....",
+      "....KK....KK....","....KK....KK....","....00....00....","....00....00....",
+    ];
+    pixelArtGenerator.createTexture(scene, "npc_trainer", trainerFrame, 2);
+
+    // 4. UI FRAME
+    const uiFrameGraphics = scene.make.graphics({ x: 0, y: 0, add: false });
+    uiFrameGraphics.fillStyle(0x000000, 0.9).fillRect(0, 0, 64, 64);
+    uiFrameGraphics.lineStyle(2, 0xffffff, 1).strokeRect(0, 0, 64, 64);
+    uiFrameGraphics.generateTexture("ui-frame", 64, 64);
+  },
+
+  /**
    * Create a horizontal tileset from an array of 2D string patterns
    */
   createTileset: (scene, key, tilePatterns, pixelSize = 2) => {
