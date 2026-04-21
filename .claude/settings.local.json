@@ -28,7 +28,8 @@
       "Bash(node --check /c/Feloria/src/game/systems/uiHelpers/buttonFactory.js)",
       "Bash(node --check /c/Feloria/src/game/scenes/MenuScene.js)",
       "Bash(node --check /c/Feloria/src/game/scenes/InventoryScene.js)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(xargs grep *)"
     ]
   }
 }

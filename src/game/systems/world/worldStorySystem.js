@@ -239,7 +239,7 @@ export const worldStorySystem = {
     const altarPxY = 2 * 32 + 16;
     const legendaries = [
       "creature_verdantlynx",
-      "creature_embermane",
+      "creature_pyrolynx",
       "creature_floodlynx",
       "creature_voidlynx",
     ];
