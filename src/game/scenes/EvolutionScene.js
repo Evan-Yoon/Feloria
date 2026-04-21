@@ -162,8 +162,10 @@ export class EvolutionScene extends Phaser.Scene {
       if (this.glowTween) this.glowTween.stop();
       this.cameras.main.flash(200, 255, 255, 255);
       this.oldSprite.setAlpha(0);
-      this.newSprite.setAlpha(1);
-      this.newSprite.clearTint();
+      if (this.newSprite) {
+        this.newSprite.setAlpha(1);
+        this.newSprite.clearTint();
+      }
       this.headerText.setText(
         "축하합니다! 당신의 " +
           this.creatureName +

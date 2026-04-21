@@ -88,10 +88,10 @@ export const cutsceneSystem = {
   /**
    * Launches DialogScene and waits for it to close.
    */
-  playDialogue(scene, name, pages) {
+  playDialogue(scene, name, pages, faceKey, faceIndex) {
     return new Promise((resolve) => {
       scene.scene.launch("DialogScene", {
-        dialogue: { name, pages },
+        dialogue: { name, pages, faceKey, faceIndex },
         onComplete: resolve
       });
     });

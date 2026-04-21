@@ -99,7 +99,7 @@ export class StarterSelectScene extends Phaser.Scene {
     const height = this.cameras.main.height;
     const container = this.add.container(data.x, height / 2);
 
-    const sprite = this.add.sprite(0, -60, data.id).setScale(1.5);
+    const sprite = this.add.sprite(0, -60, "creature_" + data.id).setScale(1.5);
     const label = this.add
       .text(0, 130, data.name, { font: "bold 24px Arial", fill: data.color })
       .setOrigin(0.5);

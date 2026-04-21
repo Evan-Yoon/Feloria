@@ -13,7 +13,8 @@ export class CodexScene extends Phaser.Scene {
     super({ key: "CodexScene" });
   }
 
-  init() {
+  init(data) {
+    this.callerScene = (data && data.callerScene) || "MenuScene";
     this.creatureList = Object.values(CREATURES).sort((a, b) =>
       a.id.localeCompare(b.id),
     );
@@ -132,7 +133,7 @@ export class CodexScene extends Phaser.Scene {
   setupInputs() {
     this.input.keyboard.on("keydown-ESC", () => {
       this.scene.stop();
-      this.scene.resume("MenuScene");
+      this.scene.resume(this.callerScene);
     });
 
     this.input.keyboard.on("keydown-UP", () => this.moveSelection(-this.cols));

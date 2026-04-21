@@ -36,7 +36,7 @@ export class MenuScene extends Phaser.Scene {
     const buttons = [
       { text: '파티',   onClick: () => { this.scene.pause(); this.scene.launch('PartyScene'); } },
       { text: '가방',   onClick: () => { this.scene.pause(); this.scene.launch('InventoryScene'); } },
-      { text: '도감',   onClick: () => { this.scene.pause(); this.scene.launch('CodexScene'); } },
+      { text: '도감',   onClick: () => { this.scene.pause(); this.scene.launch('CodexScene', { callerScene: 'MenuScene' }); } },
       { text: '퀘스트', onClick: () => { this.scene.pause(); this.scene.launch('QuestScene'); } },
       { text: '저장',   onClick: () => { this.scene.pause(); this.scene.launch('SaveLoadScene', { mode: 'save' }); } },
       { text: '닫기',   onClick: () => { this.scene.resume('WorldScene'); this.scene.stop(); }, baseColor: 0xc0392b, hoverColor: 0xe74c3c },

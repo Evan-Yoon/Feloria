@@ -1,3 +1,4 @@
+import Phaser from 'phaser';
 import { ASSETS } from "../../config/assetPaths.js";
 import { SKILLS } from "../../data/skills.js";
 import { koreanUtils } from "../koreanUtils.js";

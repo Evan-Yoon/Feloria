@@ -215,7 +215,7 @@ export class WorldScene extends Phaser.Scene {
     if (this.isDialogueActive || this.isMoving) return;
     this.events.emit("hideMapName");
     this.scene.pause();
-    this.scene.launch("CodexScene");
+    this.scene.launch("CodexScene", { callerScene: "WorldScene" });
   }
 
   // ─── Game Loop ──────────────────────────────────────────────────────────────

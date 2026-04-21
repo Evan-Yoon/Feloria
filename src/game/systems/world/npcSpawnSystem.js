@@ -156,7 +156,7 @@ export const npcSpawnSystem = {
 
     herbSpawnCoords.forEach((coord) => {
       if (scene.registry.get(`${coord.id}_picked`)) return;
-      const herb = scene.add.sprite(coord.x * 32 + 16, coord.y * 32 + 16, "monster2", 0);
+      const herb = scene.add.image(coord.x * 32 + 16, coord.y * 32 + 16, "icon_00_01");
       herb.isHerb = true;
       herb.herbId = coord.id;
       herb.tileX = coord.x;

@@ -180,6 +180,7 @@ export const worldStorySystem = {
     cutsceneSystem.lockInput(scene);
 
     const spawn = scene.mapData.spawns.find((s) => s.id === "trainer_guardian_rowan");
+    if (!spawn) return;
     const hyunseok = scene.add.sprite(spawn.x * 32 + 16, (spawn.y + 5) * 32, "people4", 37);
     hyunseok.setOrigin(0.5, 1);
     hyunseok.setAlpha(0);

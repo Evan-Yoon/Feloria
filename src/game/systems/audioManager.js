@@ -291,12 +291,16 @@ class AudioManager {
    */
   playSkillSE(type) {
     const typeMap = {
-      "물": "se_skill_mystic", // Wait, water... let me check my keys
+      "물": "se_skill_ice",
       "불": "se_skill_fire",
       "숲": "se_skill_wind",
       "신비": "se_skill_mystic",
       "전기": "se_skill_thunder",
       "어둠": "se_skill_shadow",
+      "그림자": "se_skill_shadow",
+      "얼음": "se_skill_ice",
+      "폭풍": "se_skill_thunder",
+      "영혼": "se_skill_mystic",
       "바위": "se_skill_rock",
       "빛": "se_skill_light",
       "노말": "se_attack_basic"
