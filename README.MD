@@ -1,6 +1,6 @@
 # Feloria: A Feline Monster-Taming RPG
 
-![Feloria Game Icon](icon.png)
+![Feloria Game Icon](public/assets/images/startscene/Feloria_title_screen.png)
 
 Feloria is a top-down, retro-style RPG where you explore a world entirely populated by various elemental cats. Collect, train, and evolve your feline companions to restore balance to the continent.
 
